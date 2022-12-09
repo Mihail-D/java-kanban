@@ -31,14 +31,22 @@ public class ControlManager {
                         case 1:
                             Task task = recordCreator.taskCreate();
                             tasksStorage.put(task.getRecordId(), task);
-                            for (String i : tasksStorage.keySet()) {
+
+                            /*for (String i : tasksStorage.keySet()) { // TODO TODO TODO
                                 System.out.println(tasksStorage.get(i));
-                            }
+                            }*/
+
                             break;
-                        /*case 2:
-                            // добавить эпик
+                        case 2:
+                            Epic epic = recordCreator.epicCreate();
+                            epicStorage.put(epic.getRecordId(), epic);
+
+                            /*for (String i : epicStorage.keySet()) { // TODO TODO TODO
+                                System.out.println(epicStorage.get(i));
+                            }*/
+
                             break;
-                        case 3:
+                        /*case 3:
                             // добавить подзадачу (проверка эпика и/или привязка к эпику)
                             break;*/
 
