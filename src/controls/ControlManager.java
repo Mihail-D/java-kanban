@@ -46,9 +46,15 @@ public class ControlManager {
                             }*/
 
                             break;
-                        /*case 3:
-                            // добавить подзадачу (проверка эпика и/или привязка к эпику)
-                            break;*/
+                        case 3:
+                            SubTask subTask = recordCreator.subTaskCreate();
+                            subTasksStorage.put(subTask.getSubTaskId(), subTask);
+
+                            for (String i : subTasksStorage.keySet()) { // TODO TODO TODO
+                                System.out.println(subTasksStorage.get(i));
+                            }
+
+                            break;
 
                     }
                     break;

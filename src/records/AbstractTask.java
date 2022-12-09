@@ -71,10 +71,10 @@ public abstract class AbstractTask {
     }
     @Override
     public String toString() {
-        return "recordTitle='" + recordTitle + '\'' +
-                ", recordDescription='" + recordDescription + '\'' +
-                ", recordId=" + recordId +
-                ", recordStatus='" + recordStatus + '\'' +
+        return "Title='" + recordTitle + '\'' +
+                ", Description='" + recordDescription + '\'' +
+                ", Id=" + recordId +
+                ", Status='" + recordStatus + '\'' +
                 '}';
     }
 }

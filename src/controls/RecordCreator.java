@@ -1,12 +1,13 @@
 package controls;
 
 import records.Epic;
+import records.SubTask;
 import records.Task;
 
 import java.util.Scanner;
 
 public class RecordCreator {
-    //ControlManager controlManager = new ControlManager();
+    ControlManager controlManager;
     Scanner scanner = new Scanner(System.in);
 
     int taskId = 0;
@@ -37,13 +38,27 @@ public class RecordCreator {
         return new Epic(title, taskDescription, id, taskStatus);
     }
 
+    public SubTask subTaskCreate() {
+        System.out.println("parent"); // TODO TODO TODO
+        String parentId = scanner.next();
+        controlManager = new ControlManager();
 
-  /*public Epic epicTaskCreate() {
+        if (!controlManager.epicStorage.containsKey(parentId)) {
 
-  };*/
-  /*public SubTask subTaskCreate() {
+        }
 
-  };*/
+        System.out.println("title"); // TODO TODO TODO
+        String title = scanner.next();
+        System.out.println("description");// TODO TODO TODO
+        String taskDescription = scanner.next();
+        System.out.println("status");// TODO TODO TODO
+        String taskStatus = scanner.next();
+        String subTaskId = getId(3);
+        System.out.println(subTaskId);// TODO TODO TODO
+        return new SubTask (title, taskDescription, parentId, taskStatus, subTaskId);
+    }
+
+
 
     private String getId(int mode) {
 
