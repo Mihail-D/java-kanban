@@ -97,6 +97,8 @@ public class ControlManager {
                             System.out.println("Введите ключ основной задачи");
                             String parentKey = scanner.next();
 
+                            recordUpdater.subTaskUpdate(subTaskKey, parentKey);
+                            recordUpdater.setEpicStatus(parentKey);
 
                             // TODO
                             System.out.println(epicStorage.get("e.1"));
@@ -139,6 +141,61 @@ public class ControlManager {
         System.out.println("0 - Выход.");
     }
 
+    public void fillStorages() {
+        tasksStorage.put("t.1", new Task("Title1", "Describe1", "t.1", "NEW"));
+        tasksStorage.put("t.2", new Task("Title2", "Describe2", "t.2", "NEW"));
+        tasksStorage.put("t.3", new Task("Title3", "Describe3", "t.3", "NEW"));
+        tasksStorage.put("t.4", new Task("Title4", "Describe4", "t.4", "NEW"));
+        tasksStorage.put("t.5", new Task("Title5", "Describe5", "t.5", "NEW"));
+        tasksStorage.put("t.6", new Task("Title6", "Describe6", "t.6", "NEW"));
+        tasksStorage.put("t.7", new Task("Title7", "Describe7", "t.7", "NEW"));
+
+        epicStorage.put("e.1", new Epic("Title1", "Describe1", "e.1", "NEW", new HashMap<>()));
+        epicStorage.put("e.2", new Epic("Title2", "Describe2", "e.2", "NEW", new HashMap<>()));
+        epicStorage.put("e.3", new Epic("Title3", "Describe3", "e.3", "NEW", new HashMap<>()));
+        epicStorage.put("e.4", new Epic("Title4", "Describe4", "e.4", "NEW", new HashMap<>()));
+        epicStorage.put("e.5", new Epic("Title5", "Describe5", "e.5", "NEW", new HashMap<>()));
+        epicStorage.put("e.6", new Epic("Title6", "Describe6", "e.6", "NEW", new HashMap<>()));
+        epicStorage.put("e.7", new Epic("Title7", "Describe7", "e.7", "NEW", new HashMap<>()));
+
+        /*subTasksStorage.put("sub.1", new SubTask("Title1", "Describe1", "sub.1",
+                "NEW", "e.4"
+        ));
+        subTasksStorage.put("sub.2", new SubTask("Title2", "Describe2", "sub.2",
+                "NEW", "e.4"
+        ));
+        subTasksStorage.put("sub.3", new SubTask("Title3", "Describe3", "sub.3",
+                "NEW", "e.4"
+        ));
+        subTasksStorage.put("sub.4", new SubTask("Title4", "Describe4", "sub.4",
+                "NEW", "e.4"
+        ));
+        subTasksStorage.put("sub.5", new SubTask("Title5", "Describe5", "sub.5",
+                "NEW", "e.4"
+        ));
+        subTasksStorage.put("sub.6", new SubTask("Title6", "Describe6", "sub.6",
+                "NEW", "e.4"
+        ));
+        subTasksStorage.put("sub.7", new SubTask("Title7", "Describe7", "sub.7",
+                "NEW", "e.4"
+        ));
+        subTasksStorage.put("sub.8", new SubTask("Title8", "Describe8", "sub.8",
+                "NEW", "e.4"
+        ));
+        subTasksStorage.put("sub.9", new SubTask("Title9", "Describe9", "sub.9",
+                "NEW", "e.4"
+        ));
+        subTasksStorage.put("sub.10", new SubTask("Title10", "Describe10", "sub.10",
+                "NEW", "e.4"
+        ));*/
+
+        System.out.println(tasksStorage);
+        System.out.println();
+        System.out.println(epicStorage);
+        System.out.println();
+        System.out.println(subTasksStorage);
+
+    }
 }
 
 
