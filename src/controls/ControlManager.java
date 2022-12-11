@@ -10,7 +10,7 @@ import java.util.Scanner;
 public class ControlManager {
 
     HashMap<String, Task> tasksStorage = new HashMap<>();
-    HashMap<String, Epic> epicStorage = new HashMap<>();
+    static HashMap<String, Epic> epicStorage = new HashMap<>();
     HashMap<String, SubTask> subTasksStorage = new HashMap<>();
 
     public void getControlOptions() {
@@ -44,10 +44,10 @@ public class ControlManager {
                             Epic epic = recordCreator.epicCreate();
                             epicStorage.put(epic.getRecordId(), epic);
 
-                           /* for (String i : epicStorage.keySet()) { // TODO TODO TODO
+                            for (String i : epicStorage.keySet()) { // TODO TODO TODO
                                 System.out.println("From case 2 loop " + epicStorage.get(i));
 
-                            }*/
+                            }
 
                             break;
                         case 3:
@@ -81,16 +81,16 @@ public class ControlManager {
                             System.out.println(tasksStorage.get("t.1"));
 
                             break;
-/*                        case 2:
-                            System.out.println("Введите номер ключа");
+                        case 2:
+                            System.out.println("Введите ключ");
                             String epicKey = scanner.next();
                             Epic updateEpic = recordUpdater.epicUpdate(epicKey);
                             epicStorage.put(epicKey, updateEpic);
 
                             // TODO
-                            System.out.println(epicStorage.get("e.5"));
+                            System.out.println(epicStorage.get("e.1"));
 
-                            break;*/
+                            break;
 /*                        case 3:
                             System.out.println("Введите ключ");
                             String subTaskKey = scanner.next();

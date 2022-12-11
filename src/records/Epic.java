@@ -3,7 +3,6 @@ package records;
 import java.util.HashMap;
 
 public class Epic extends AbstractTask {
-
     public HashMap<String, String> relatedSubTask;
 
     public Epic(
@@ -13,6 +12,15 @@ public class Epic extends AbstractTask {
         super(recordTitle, recordDescription, recordId, recordStatus);
         this.relatedSubTask = relatedSubTask;
     }
+
+    @Override
+    public void setRecordTitle(String recordTitle) {
+        this.recordTitle = recordTitle;
+    }
+
+
+
+
     @Override
     public String toString() {
         return "Epic{ relatedSubTask" + relatedSubTask + " " + super.toString();

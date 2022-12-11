@@ -1,13 +1,15 @@
 package controls;
+
 import records.Epic;
 import records.SubTask;
 import records.Task;
 
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.TreeSet;
 
 public class RecordUpdater {
-    ControlManager controlManager = new ControlManager();
+    //ControlManager controlManager = new ControlManager();
     RecordCreator recordCreator = new RecordCreator();
     Scanner scanner = new Scanner(System.in);
 
@@ -21,5 +23,36 @@ public class RecordUpdater {
         return new Task(title, taskDescription, key, taskStatus);
     }
 
+    public Epic epicUpdate(String key) {
+        Epic epic = ControlManager.epicStorage.get(key);
+        System.out.println(epic);
+        System.out.println("title");                                               // TODO
+        String title = scanner.next();
+        epic.setRecordTitle(title);
 
+        System.out.println("description");                                         // TODO
+        String taskDescription = scanner.next();
+        epic.setRecordDescription(taskDescription);
+
+        String taskStatus = getEpicStatus(key);
+        epic.setRecordStatus(taskStatus);
+
+        return epic;
+    }
+
+    public String getEpicStatus(String key) {
+        Epic epicTask = ControlManager.epicStorage.get(key);
+        String status = "IN_PROGRESS";
+        HashMap<String, String> relatedSubtasks = epicTask.relatedSubTask;
+        TreeSet<String> set = new TreeSet<>(relatedSubtasks.values());
+
+        if (set.size() == 1 && set.contains("NEW")) {
+            status = "NEW";
+        }
+        else if (set.size() == 1 && set.contains("DONE")) {
+            status = "DONE";
+        }
+
+        return status;
+    }
 }

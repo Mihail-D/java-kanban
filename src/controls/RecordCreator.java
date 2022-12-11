@@ -82,7 +82,7 @@ public class RecordCreator {
         return id;
     }
 
-    public String getEpicStatus(String key) {
+/*    public String getEpicStatus(String key) {
         Epic epicTask = controlManager.epicStorage.get(key);
         String status = "IN_PROGRESS";
         HashMap<String, String> relatedSubtasks = epicTask.relatedSubTask;
@@ -96,5 +96,5 @@ public class RecordCreator {
         }
 
         return status;
-    }
+    }*/
 }
