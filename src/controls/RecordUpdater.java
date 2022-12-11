@@ -34,13 +34,37 @@ public class RecordUpdater {
         String taskDescription = scanner.next();
         epic.setRecordDescription(taskDescription);
 
-        String taskStatus = getEpicStatus(key);
+        String taskStatus = setEpicStatus(key);
         epic.setRecordStatus(taskStatus);
 
         return epic;
     }
 
-    public String getEpicStatus(String key) {
+    public SubTask subTaskUpdate(String subTaskKey, String parentKey) {
+        SubTask subTask = ControlManager.subTasksStorage.get(subTaskKey);
+
+        if (!ControlManager.epicStorage.containsKey(parentKey)) {
+            System.out.println("Key not found!!!");
+            parentKey = scanner.next();
+        }
+
+        System.out.println("title");                                               // TODO
+        String title = scanner.next();
+        subTask.setRecordTitle(title);
+
+        System.out.println("description");                                         // TODO
+        String taskDescription = scanner.next();
+        subTask.setRecordDescription(taskDescription);
+
+        System.out.println("Введите статус");
+        String taskStatus = scanner.next();
+        subTask.setRecordStatus(taskStatus);
+        setEpicStatus(parentKey);
+
+        return subTask;
+    }
+
+    public String setEpicStatus(String key) {
         Epic epicTask = ControlManager.epicStorage.get(key);
         String status = "IN_PROGRESS";
         HashMap<String, String> relatedSubtasks = epicTask.relatedSubTask;
@@ -55,4 +79,5 @@ public class RecordUpdater {
 
         return status;
     }
+
 }

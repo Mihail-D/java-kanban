@@ -9,9 +9,9 @@ import java.util.Scanner;
 
 public class ControlManager {
 
-    HashMap<String, Task> tasksStorage = new HashMap<>();
+    static HashMap<String, Task> tasksStorage = new HashMap<>();
     static HashMap<String, Epic> epicStorage = new HashMap<>();
-    HashMap<String, SubTask> subTasksStorage = new HashMap<>();
+    static HashMap<String, SubTask> subTasksStorage = new HashMap<>();
 
     public void getControlOptions() {
         RecordCreator recordCreator = new RecordCreator();
@@ -91,7 +91,7 @@ public class ControlManager {
                             System.out.println(epicStorage.get("e.1"));
 
                             break;
-/*                        case 3:
+                        case 3:
                             System.out.println("Введите ключ");
                             String subTaskKey = scanner.next();
                             System.out.println("Введите ключ основной задачи");
@@ -99,10 +99,12 @@ public class ControlManager {
                             SubTask updateSubTask = recordUpdater.subTaskUpdate(subTaskKey, parentKey);
                             subTasksStorage.put(subTaskKey, updateSubTask);
 
-                            // TODO
-                            System.out.println(subTasksStorage.get("sub.2"));
 
-                            break;*/
+                            // TODO
+                            System.out.println(epicStorage.get("e.1"));
+                            System.out.println(subTasksStorage.get("sub.1"));
+
+                            break;
 
                     }
 
