@@ -96,8 +96,6 @@ public class ControlManager {
                             String subTaskKey = scanner.next();
                             System.out.println("Введите ключ основной задачи");
                             String parentKey = scanner.next();
-                            SubTask updateSubTask = recordUpdater.subTaskUpdate(subTaskKey, parentKey);
-                            subTasksStorage.put(subTaskKey, updateSubTask);
 
 
                             // TODO

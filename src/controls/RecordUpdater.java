@@ -4,9 +4,8 @@ import records.Epic;
 import records.SubTask;
 import records.Task;
 
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Scanner;
-import java.util.TreeSet;
 
 public class RecordUpdater {
     //ControlManager controlManager = new ControlManager();
@@ -34,8 +33,6 @@ public class RecordUpdater {
         String taskDescription = scanner.next();
         epic.setRecordDescription(taskDescription);
 
-        String taskStatus = setEpicStatus(key);
-        epic.setRecordStatus(taskStatus);
 
         return epic;
     }
@@ -58,17 +55,18 @@ public class RecordUpdater {
 
         System.out.println("Введите статус");
         String taskStatus = scanner.next();
+
         subTask.setRecordStatus(taskStatus);
-        setEpicStatus(parentKey);
 
         return subTask;
     }
 
-    public String setEpicStatus(String key) {
+    public void setEpicStatus(String key) {
         Epic epicTask = ControlManager.epicStorage.get(key);
         String status = "IN_PROGRESS";
-        HashMap<String, String> relatedSubtasks = epicTask.relatedSubTask;
-        TreeSet<String> set = new TreeSet<>(relatedSubtasks.values());
+        HashSet<String> set = new HashSet<>(epicTask.relatedSubTask.values());
+
+        System.out.println(set);
 
         if (set.size() == 1 && set.contains("NEW")) {
             status = "NEW";
@@ -77,7 +75,8 @@ public class RecordUpdater {
             status = "DONE";
         }
 
-        return status;
+
+
     }
 
 }
