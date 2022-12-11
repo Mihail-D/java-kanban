@@ -8,42 +8,45 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 public class ControlManager {
-    RecordCreator recordCreator = new RecordCreator();
 
     HashMap<String, Task> tasksStorage = new HashMap<>();
     HashMap<String, Epic> epicStorage = new HashMap<>();
     HashMap<String, SubTask> subTasksStorage = new HashMap<>();
 
+
     public void getControlOptions() {
+        RecordCreator recordCreator = new RecordCreator();
         int item;
 
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
+            System.out.println("Тип действий с записями");
+
             item = scanner.nextInt();
 
             switch (item) {
                 case 1:
-                    System.out.println("Создание. Сам объект должен передаваться в качестве параметра.");
-                    System.out.println("Выбрать типа задачи");
+                    System.out.println("Создание объекта. Сам объект должен передаваться в качестве параметра.");
+                    System.out.println("Выбрать типа объекта");
                     item = scanner.nextInt();
                     switch (item) {
                         case 1:
                             Task task = recordCreator.taskCreate();
                             tasksStorage.put(task.getRecordId(), task);
 
-                            /*for (String i : tasksStorage.keySet()) { // TODO TODO TODO
+                            for (String i : tasksStorage.keySet()) { // TODO TODO TODO
                                 System.out.println(tasksStorage.get(i));
-                            }*/
+                            }
 
                             break;
                         case 2:
                             Epic epic = recordCreator.epicCreate();
                             epicStorage.put(epic.getRecordId(), epic);
 
-                            /*for (String i : epicStorage.keySet()) { // TODO TODO TODO
+                            for (String i : epicStorage.keySet()) { // TODO TODO TODO
                                 System.out.println(epicStorage.get(i));
-                            }*/
+                            }
 
                             break;
                         case 3:

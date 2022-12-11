@@ -7,7 +7,7 @@ import records.Task;
 import java.util.Scanner;
 
 public class RecordCreator {
-    ControlManager controlManager;
+    ControlManager controlManager = new ControlManager();
     Scanner scanner = new Scanner(System.in);
 
     int taskId = 0;
@@ -41,7 +41,7 @@ public class RecordCreator {
     public SubTask subTaskCreate() {
         System.out.println("parent"); // TODO TODO TODO
         String parentId = scanner.next();
-        controlManager = new ControlManager();
+        //controlManager = new ControlManager();
 
         if (!controlManager.epicStorage.containsKey(parentId)) {
 
