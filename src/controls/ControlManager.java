@@ -13,9 +13,9 @@ public class ControlManager {
     HashMap<String, Epic> epicStorage = new HashMap<>();
     HashMap<String, SubTask> subTasksStorage = new HashMap<>();
 
-
     public void getControlOptions() {
         RecordCreator recordCreator = new RecordCreator();
+        RecordUpdater recordUpdater = new RecordUpdater();
         int item;
 
         Scanner scanner = new Scanner(System.in);
@@ -35,19 +35,19 @@ public class ControlManager {
                             Task task = recordCreator.taskCreate();
                             tasksStorage.put(task.getRecordId(), task);
 
-                            for (String i : tasksStorage.keySet()) { // TODO TODO TODO
+                           /* for (String i : tasksStorage.keySet()) { // TODO TODO TODO
                                 System.out.println(tasksStorage.get(i));
-                            }
+                            }*/
 
                             break;
                         case 2:
                             Epic epic = recordCreator.epicCreate();
                             epicStorage.put(epic.getRecordId(), epic);
 
-                            for (String i : epicStorage.keySet()) { // TODO TODO TODO
+                           /* for (String i : epicStorage.keySet()) { // TODO TODO TODO
                                 System.out.println("From case 2 loop " + epicStorage.get(i));
 
-                            }
+                            }*/
 
                             break;
                         case 3:
@@ -55,38 +55,71 @@ public class ControlManager {
                             subTasksStorage.put(subTask.getSubTaskId(), subTask);
                             Epic parentTask = epicStorage.get(subTask.getRecordId());
                             parentTask.relatedSubTask.put(subTask.getSubTaskId(), subTask.getRecordStatus());
-                            //epicStorage.put(subTask.getRecordId(), subTask.getRecordStatus());
-
-
-                            System.out.println("getSubTaskId " + subTask.getSubTaskId()); // sub.1
+                            // TODO
+                        /*    System.out.println("getSubTaskId " + subTask.getSubTaskId()); // sub.1
                             System.out.println("getRecordId: " + subTask.getRecordId()); // e.1
-                            System.out.println(epicStorage.get(subTask.getRecordId()));
-
-                            /*for (String i : subTasksStorage.keySet()) { // TODO TODO TODO
-                                System.out.println(subTasksStorage.get(i));
-                                System.out.println(epicStorage.get(i));
-                            }*/
+                            System.out.println(epicStorage.get(subTask.getRecordId()));*/
 
                             break;
 
                     }
                     break;
-                /*case 2:
+                case 2:
                     System.out.println("Обновление. Новая версия объекта с верным идентификатором передаётся в виде параметра.");
+                    System.out.println("Какой вид записи обновить?");
+
+                    item = scanner.nextInt();
+
+                    switch (item) {
+                        case 1:
+                            System.out.println("Введите номер ключа");
+                            String taskKey = scanner.next();
+                            Task updateTask = recordUpdater.taskUpdate(taskKey);
+                            tasksStorage.put(taskKey, updateTask);
+
+                            // TODO
+                            System.out.println(tasksStorage.get("t.1"));
+
+                            break;
+/*                        case 2:
+                            System.out.println("Введите номер ключа");
+                            String epicKey = scanner.next();
+                            Epic updateEpic = recordUpdater.epicUpdate(epicKey);
+                            epicStorage.put(epicKey, updateEpic);
+
+                            // TODO
+                            System.out.println(epicStorage.get("e.5"));
+
+                            break;*/
+/*                        case 3:
+                            System.out.println("Введите ключ");
+                            String subTaskKey = scanner.next();
+                            System.out.println("Введите ключ основной задачи");
+                            String parentKey = scanner.next();
+                            SubTask updateSubTask = recordUpdater.subTaskUpdate(subTaskKey, parentKey);
+                            subTasksStorage.put(subTaskKey, updateSubTask);
+
+                            // TODO
+                            System.out.println(subTasksStorage.get("sub.2"));
+
+                            break;*/
+
+                    }
+
                     break;
-                case 3:
+/*                case 3:
                     System.out.println("Получение по идентификатору.");
-                    break;
-                case 4:
+                    break;*/
+/*                case 4:
                     System.out.println("Получение списка всех задач.");
-                    break;
-                case 5:
+                    break;*/
+/*                case 5:
                     System.out.println("Удаление по идентификатору.");
-                    break;
-                case 6:
+                    break;*/
+/*                case 6:
                     System.out.println("Удаление всех задач.");
-                    break;
-                case 7:
+                    break;*/
+/*                case 7:
                     System.out.println("Получение списка всех подзадач определённого эпика.");
                     break;*/
                 case 0:

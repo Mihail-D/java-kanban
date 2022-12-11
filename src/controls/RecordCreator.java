@@ -6,6 +6,7 @@ import records.Task;
 
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.TreeSet;
 
 public class RecordCreator {
     ControlManager controlManager = new ControlManager();
@@ -27,18 +28,18 @@ public class RecordCreator {
     }
 
     public Epic epicCreate() {
-         System.out.println("title");                                   // TODO
+         System.out.println("title");                                        // TODO
         String title = scanner.next();
-        System.out.println("description");                             /// TODO
+        System.out.println("description");                                   // TODO
         String taskDescription = scanner.next();
         String taskStatus = "NEW";
         String id = getId(2);
-        HashMap<String, String> relatedTasks = new HashMap<>();                                       // TODO
+        HashMap<String, String> relatedTasks = new HashMap<>();               // TODO
         return new Epic(title, taskDescription, id, taskStatus, relatedTasks);
     }
 
     public SubTask subTaskCreate() {
-        System.out.println("parent");                                 // TODO
+        System.out.println("parent");                                          // TODO
         String parentId = scanner.next();
         Epic parent = controlManager.epicStorage.get(parentId);
         //System.out.println(parent.toString());
@@ -52,7 +53,6 @@ public class RecordCreator {
         String subTaskId = getId(3);
         System.out.println(subTaskId);                                         // TODO
 
-        //parent.relatedSubTask.put(subTaskId, taskStatus);
         controlManager.epicStorage.put(parentId, parent);
 
         return new SubTask (title, taskDescription, parentId, taskStatus, subTaskId);
@@ -82,4 +82,19 @@ public class RecordCreator {
         return id;
     }
 
+    public String getEpicStatus(String key) {
+        Epic epicTask = controlManager.epicStorage.get(key);
+        String status = "IN_PROGRESS";
+        HashMap<String, String> relatedSubtasks = epicTask.relatedSubTask;
+        TreeSet<String> set = new TreeSet<>(relatedSubtasks.values());
+
+        if (set.size() == 1 && set.contains("NEW")) {
+            status = "NEW";
+        }
+        else if (set.size() == 1 && set.contains("DONE")) {
+            status = "DONE";
+        }
+
+        return status;
+    }
 }
