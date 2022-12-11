@@ -1,13 +1,20 @@
 package records;
 
-public class Epic extends AbstractTask{
+import java.util.HashMap;
 
-    public Epic(String recordTitle, String recordDescription, String recordId, String recordStatus) {
+public class Epic extends AbstractTask {
+
+    public HashMap<String, String> relatedSubTask;
+
+    public Epic(
+            String recordTitle, String recordDescription, String recordId, String recordStatus,
+            HashMap<String, String> relatedSubTask
+    ) {
         super(recordTitle, recordDescription, recordId, recordStatus);
+        this.relatedSubTask = relatedSubTask;
     }
-
     @Override
     public String toString() {
-        return "Epic{" + super.toString();
+        return "Epic{ relatedSubTask" + relatedSubTask + " " + super.toString();
     }
 }

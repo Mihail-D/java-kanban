@@ -45,17 +45,27 @@ public class ControlManager {
                             epicStorage.put(epic.getRecordId(), epic);
 
                             for (String i : epicStorage.keySet()) { // TODO TODO TODO
-                                System.out.println(epicStorage.get(i));
+                                System.out.println("From case 2 loop " + epicStorage.get(i));
+
                             }
 
                             break;
                         case 3:
                             SubTask subTask = recordCreator.subTaskCreate();
                             subTasksStorage.put(subTask.getSubTaskId(), subTask);
+                            Epic parentTask = epicStorage.get(subTask.getRecordId());
+                            parentTask.relatedSubTask.put(subTask.getSubTaskId(), subTask.getRecordStatus());
+                            //epicStorage.put(subTask.getRecordId(), subTask.getRecordStatus());
 
-                            for (String i : subTasksStorage.keySet()) { // TODO TODO TODO
+
+                            System.out.println("getSubTaskId " + subTask.getSubTaskId()); // sub.1
+                            System.out.println("getRecordId: " + subTask.getRecordId()); // e.1
+                            System.out.println(epicStorage.get(subTask.getRecordId()));
+
+                            /*for (String i : subTasksStorage.keySet()) { // TODO TODO TODO
                                 System.out.println(subTasksStorage.get(i));
-                            }
+                                System.out.println(epicStorage.get(i));
+                            }*/
 
                             break;
 

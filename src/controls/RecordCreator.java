@@ -4,6 +4,7 @@ import records.Epic;
 import records.SubTask;
 import records.Task;
 
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class RecordCreator {
@@ -15,46 +16,45 @@ public class RecordCreator {
     int subTuskId = 0;
 
     public Task taskCreate() {
-        System.out.println("title"); // TODO TODO TODO
+        System.out.println("title");                                    // TODO
         String title = scanner.next();
-        System.out.println("description");// TODO TODO TODO
+        System.out.println("description");                               // TODO
         String taskDescription = scanner.next();
-        System.out.println("status");// TODO TODO TODO
-        String taskStatus = scanner.next();
+        String taskStatus = "NEW";
         String id = getId(1);
-        System.out.println(id);// TODO TODO TODO
+        System.out.println(id);                                         // TODO
         return new Task(title, taskDescription, id, taskStatus);
     }
 
     public Epic epicCreate() {
-        System.out.println("title"); // TODO TODO TODO
+         System.out.println("title");                                   // TODO
         String title = scanner.next();
-        System.out.println("description");// TODO TODO TODO
+        System.out.println("description");                             /// TODO
         String taskDescription = scanner.next();
-        System.out.println("status");// TODO TODO TODO
-        String taskStatus = scanner.next();
+        String taskStatus = "NEW";
         String id = getId(2);
-        System.out.println(id);// TODO TODO TODO
-        return new Epic(title, taskDescription, id, taskStatus);
+        HashMap<String, String> relatedTasks = new HashMap<>();                                       // TODO
+        return new Epic(title, taskDescription, id, taskStatus, relatedTasks);
     }
 
     public SubTask subTaskCreate() {
-        System.out.println("parent"); // TODO TODO TODO
+        System.out.println("parent");                                 // TODO
         String parentId = scanner.next();
-        //controlManager = new ControlManager();
+        Epic parent = controlManager.epicStorage.get(parentId);
+        //System.out.println(parent.toString());
+        //if (!controlManager.epicStorage.containsKey(parentId)) {}
 
-        if (!controlManager.epicStorage.containsKey(parentId)) {
-
-        }
-
-        System.out.println("title"); // TODO TODO TODO
+        System.out.println("title");                                          // TODO
         String title = scanner.next();
-        System.out.println("description");// TODO TODO TODO
+        System.out.println("description");                                    // TODO
         String taskDescription = scanner.next();
-        System.out.println("status");// TODO TODO TODO
-        String taskStatus = scanner.next();
+        String taskStatus = "NEW";
         String subTaskId = getId(3);
-        System.out.println(subTaskId);// TODO TODO TODO
+        System.out.println(subTaskId);                                         // TODO
+
+        //parent.relatedSubTask.put(subTaskId, taskStatus);
+        controlManager.epicStorage.put(parentId, parent);
+
         return new SubTask (title, taskDescription, parentId, taskStatus, subTaskId);
     }
 
