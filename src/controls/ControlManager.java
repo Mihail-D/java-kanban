@@ -65,7 +65,7 @@ public class ControlManager {
                     }
                     break;
                 case 2:
-                    System.out.println("Обновление. Новая версия объекта с верным идентификатором передаётся в виде параметра.");
+                    System.out.println("Обновление.");
                     System.out.println("Какой вид записи обновить?");
 
                     item = scanner.nextInt();

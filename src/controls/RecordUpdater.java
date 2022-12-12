@@ -12,26 +12,44 @@ public class RecordUpdater {
     RecordCreator recordCreator = new RecordCreator();
     Scanner scanner = new Scanner(System.in);
 
+    /*    public Task taskUpdate(String key) {
+            System.out.println("title");                                               // TODO
+            String title = scanner.next();
+            System.out.println("description");                                         // TODO
+            String taskDescription = scanner.next();
+            System.out.println("Введите статус");
+            String taskStatus = scanner.next();
+            return new Task(title, taskDescription, key, taskStatus);
+        }*/
     public Task taskUpdate(String key) {
-        System.out.println("title");                                               // TODO
+        Task task = ControlManager.tasksStorage.get(key);
+        System.out.println(task); // TODO
+
+        System.out.println("title");
         String title = scanner.next();
-        System.out.println("description");                                         // TODO
+        task.setRecordTitle(title);
+
+        System.out.println("description");
         String taskDescription = scanner.next();
-        System.out.println("Введите статус");
+        task.setRecordDescription(taskDescription);
+
+        System.out.println("status");
         String taskStatus = scanner.next();
-        return new Task(title, taskDescription, key, taskStatus);
+        task.setRecordStatus(taskStatus);
+
+        return task;
     }
 
     public Epic epicUpdate(String key) {
         Epic epic = ControlManager.epicStorage.get(key);
-        System.out.println(epic);
+        System.out.println(epic);                                                 // TODO
         System.out.println("title");                                               // TODO
         String title = scanner.next();
         epic.setRecordTitle(title);
 
         System.out.println("description");                                         // TODO
-        String taskDescription = scanner.next();
-        epic.setRecordDescription(taskDescription);
+        String epicDescription = scanner.next();
+        epic.setRecordDescription(epicDescription);
 
         return epic;
     }
@@ -41,7 +59,7 @@ public class RecordUpdater {
         Epic parentTask = ControlManager.epicStorage.get(parentKey);
 
         if (!ControlManager.epicStorage.containsKey(parentKey)) {
-            System.out.println("Key not found!!!");
+            System.out.println("Ключ не найден.");
             parentKey = scanner.next();
         }
 
