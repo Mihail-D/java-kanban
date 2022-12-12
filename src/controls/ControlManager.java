@@ -17,6 +17,7 @@ public class ControlManager {
         RecordCreator recordCreator = new RecordCreator();
         RecordUpdater recordUpdater = new RecordUpdater();
         RecordGetter recordGetter = new RecordGetter();
+        RecordRemover recordRemover = new RecordRemover();
         int item;
 
         Scanner scanner = new Scanner(System.in);
@@ -115,9 +116,17 @@ public class ControlManager {
                     String key = scanner.next();
                     recordGetter.collectEpicSubtasks(key);
                     break;
-/*                case 6:
+                case 6:
                     System.out.println("Удаление по идентификатору.");
-                    break;*/
+                    System.out.println("Введите ключ");
+                    String taskKey = scanner.next();
+                    recordRemover.taskRemove(taskKey);
+
+                    System.out.println(tasksStorage); // TODO 
+
+
+
+                    break;
 /*                case 7:
                     System.out.println("Удаление всех задач.");
                     break;*/
