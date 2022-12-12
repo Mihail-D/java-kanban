@@ -6,10 +6,8 @@ import records.Task;
 
 import java.util.HashMap;
 import java.util.Scanner;
-import java.util.TreeSet;
 
 public class RecordCreator {
-   //ControlManager controlManager = new ControlManager();
     Scanner scanner = new Scanner(System.in);
 
     int taskId = 0;

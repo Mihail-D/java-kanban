@@ -16,6 +16,7 @@ public class ControlManager {
     public void getControlOptions() {
         RecordCreator recordCreator = new RecordCreator();
         RecordUpdater recordUpdater = new RecordUpdater();
+        RecordGetter recordGetter = new RecordGetter();
         int item;
 
         Scanner scanner = new Scanner(System.in);
@@ -44,10 +45,10 @@ public class ControlManager {
                             Epic epic = recordCreator.epicCreate();
                             epicStorage.put(epic.getRecordId(), epic);
 
-                            for (String i : epicStorage.keySet()) { // TODO TODO TODO
+/*                            for (String i : epicStorage.keySet()) { // TODO TODO TODO
                                 System.out.println("From case 2 loop " + epicStorage.get(i));
 
-                            }
+                            }*/
 
                             break;
                         case 3:
@@ -55,6 +56,7 @@ public class ControlManager {
                             subTasksStorage.put(subTask.getSubTaskId(), subTask);
                             Epic parentTask = epicStorage.get(subTask.getRecordId());
                             parentTask.relatedSubTask.put(subTask.getSubTaskId(), subTask.getRecordStatus());
+
                             // TODO
                         /*    System.out.println("getSubTaskId " + subTask.getSubTaskId()); // sub.1
                             System.out.println("getRecordId: " + subTask.getRecordId()); // e.1
@@ -66,7 +68,7 @@ public class ControlManager {
                     break;
                 case 2:
                     System.out.println("Обновление.");
-                    System.out.println("Какой вид записи обновить?");
+                    System.out.println("Какой тип записи обновить?");
                     item = scanner.nextInt();
 
                     switch (item) {
@@ -106,11 +108,33 @@ public class ControlManager {
                             break;
 
                     }
-
                     break;
-/*                case 3:
+                case 3:
                     System.out.println("Получение по идентификатору.");
-                    break;*/
+                    System.out.println("Какой тип записи получить?");
+                    item = scanner.nextInt();
+
+                    switch (item) {
+                        case 1:
+                            System.out.println("Получение данных Задачи.");
+                            System.out.println("Введите ключ");
+                            String taskKey = scanner.next();
+                            recordGetter.getTaskRecord(taskKey);
+                            break;
+                        case 2:
+                            System.out.println("Получение данных Эпика.");
+                            System.out.println("Введите ключ");
+                            String epicKey = scanner.next();
+                            recordGetter.getEpicRecord(epicKey);
+                            break;
+                        case 3:
+                            System.out.println("Получение данных Подзадачи.");
+                            System.out.println("Введите ключ");
+                            String subTaskKey = scanner.next();
+                            recordGetter.getSubTaskRecord(subTaskKey);
+                            break;
+                    }
+                    break;
 /*                case 4:
                     System.out.println("Получение списка всех задач.");
                     break;*/
