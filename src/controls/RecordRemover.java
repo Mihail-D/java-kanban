@@ -21,11 +21,16 @@ public class RecordRemover {
 
         ControlManager.epicStorage.remove(key);
     }
+
+    public void subTaskRemove(String key, String parentKey) {
+        Epic epic = ControlManager.epicStorage.get(parentKey);
+        HashMap<String, String> relatedSubTasks = epic.relatedSubTask;
+        relatedSubTasks.remove(key);
+        ControlManager.subTasksStorage.remove(key);
+    }
 }
 
 /*
-* Удаление эпика : удаление всех его подзадач
-
    Удаление подзадачи :
    - обновление поля подзадач эпика
    - обновление его статуса
