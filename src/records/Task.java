@@ -1,6 +1,6 @@
 package records;
 
-public class Task extends AbstractTask{
+public class Task extends AbstractTask {
     public Task(String recordTitle, String recordDescription, String recordId, String recordStatus) {
         super(recordTitle, recordDescription, recordId, recordStatus);
     }

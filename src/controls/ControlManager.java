@@ -24,7 +24,6 @@ public class ControlManager {
 
         while (true) {
             System.out.println("Тип действий с записями");
-
             item = scanner.nextInt();
 
             switch (item) {
@@ -124,6 +123,7 @@ public class ControlManager {
                     recordRemover.epicRemove(taskKey);
                     recordRemover.subTaskRemove(taskKey, parentKey);
                     break;
+
                 case 7:
                     System.out.println("Удаление всех задач.");
                     recordRemover.taskRemoveAll();
@@ -135,7 +135,7 @@ public class ControlManager {
             }
         }
     }
-    public void menuPrint() {
+    /*public void menuPrint() {
         System.out.println("1 - Создание. Сам объект должен передаваться в качестве параметра.");
         System.out.println("2 - Обновление. Новая версия объекта с верным id передаётся в виде параметра" + ".");
         System.out.println("3 - Получение по идентификатору.");
@@ -144,7 +144,7 @@ public class ControlManager {
         System.out.println("6 - Удаление всех задач.");
         System.out.println("7 - Получение списка всех подзадач определённого эпика.");
         System.out.println("0 - Выход.");
-    }
+    }*/
 }
 
 

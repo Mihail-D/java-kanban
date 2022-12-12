@@ -12,7 +12,6 @@ public class RecordUpdater {
 
     public Task taskUpdate(String key) {
         Task task = ControlManager.tasksStorage.get(key);
-        System.out.println(task); // TODO
 
         System.out.println("title");
         String title = scanner.next();
@@ -31,12 +30,11 @@ public class RecordUpdater {
 
     public Epic epicUpdate(String key) {
         Epic epic = ControlManager.epicStorage.get(key);
-        System.out.println(epic);                                                 // TODO
-        System.out.println("title");                                               // TODO
+        System.out.println("title");
         String title = scanner.next();
         epic.setRecordTitle(title);
 
-        System.out.println("description");                                         // TODO
+        System.out.println("description");
         String epicDescription = scanner.next();
         epic.setRecordDescription(epicDescription);
 
@@ -47,11 +45,11 @@ public class RecordUpdater {
         SubTask subTask = ControlManager.subTasksStorage.get(subTaskKey);
         Epic parentTask = ControlManager.epicStorage.get(parentKey);
 
-        System.out.println("title");                                               // TODO
+        System.out.println("title");
         String title = scanner.next();
         subTask.setRecordTitle(title);
 
-        System.out.println("description");                                         // TODO
+        System.out.println("description");
         String taskDescription = scanner.next();
         subTask.setRecordDescription(taskDescription);
 
@@ -70,9 +68,7 @@ public class RecordUpdater {
         String status = "IN_PROGRESS";
         TreeSet<String> set = new TreeSet<>(epicTask.relatedSubTask.values());
 
-        System.out.println(set);                                                    // TODO
-
-        if (set.size() == 1 && set.contains("NEW")) {
+        if ((set.size() == 1 && set.contains("NEW")) || set.isEmpty()) {
             status = "NEW";
         }
         else if (set.size() == 1 && set.contains("DONE")) {
