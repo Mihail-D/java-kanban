@@ -5,6 +5,7 @@ import records.SubTask;
 import records.Task;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class RecordGetter {
 
@@ -68,4 +69,15 @@ public class RecordGetter {
         return subTasksList;
     }
 
+    public ArrayList<String> collectEpicSubtasks(String key) {
+        ArrayList<String> localTasksList = new ArrayList<>();
+        Epic epic = ControlManager.epicStorage.get(key);
+        HashMap<String, String> relatedSubTasks = epic.relatedSubTask;
+
+        for (String i : relatedSubTasks.keySet()) {
+            localTasksList.add(getSubTaskRecord(i));
+        }
+
+        return localTasksList;
+    }
 }

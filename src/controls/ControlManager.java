@@ -109,9 +109,12 @@ public class ControlManager {
                     recordGetter.collectEpics();
                     recordGetter.collectSubTasks();
                     break;
-/*                case 5:
+                case 5:
                     System.out.println("Получение списка всех подзадач определённого эпика.");
-                    break;*/
+                    System.out.println("Введите ключ");
+                    String key = scanner.next();
+                    recordGetter.collectEpicSubtasks(key);
+                    break;
 /*                case 6:
                     System.out.println("Удаление по идентификатору.");
                     break;*/
