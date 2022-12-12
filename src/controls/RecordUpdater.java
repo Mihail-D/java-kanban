@@ -12,15 +12,6 @@ public class RecordUpdater {
     RecordCreator recordCreator = new RecordCreator();
     Scanner scanner = new Scanner(System.in);
 
-    /*    public Task taskUpdate(String key) {
-            System.out.println("title");                                               // TODO
-            String title = scanner.next();
-            System.out.println("description");                                         // TODO
-            String taskDescription = scanner.next();
-            System.out.println("Введите статус");
-            String taskStatus = scanner.next();
-            return new Task(title, taskDescription, key, taskStatus);
-        }*/
     public Task taskUpdate(String key) {
         Task task = ControlManager.tasksStorage.get(key);
         System.out.println(task); // TODO
