@@ -75,7 +75,6 @@ public class ControlManager {
                             recordUpdater.subTaskUpdate(subTaskKey, parentKey);
                             recordUpdater.setEpicStatus(parentKey);
                             break;
-
                     }
                     break;
                 case 3:
@@ -125,13 +124,15 @@ public class ControlManager {
                     recordRemover.epicRemove(taskKey);
                     recordRemover.subTaskRemove(taskKey, parentKey);
                     break;
-/*                case 7:
+                case 7:
                     System.out.println("Удаление всех задач.");
-                    break;*/
+                    recordRemover.taskRemoveAll();
+                    recordRemover.epicsRemoveAll();
+                    recordRemover.subTasksRemoveAll();
+                    break;
                 case 0:
                     return;
             }
-
         }
     }
     public void menuPrint() {

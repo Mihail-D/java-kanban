@@ -4,6 +4,8 @@ import records.Epic;
 
 import java.util.HashMap;
 
+import static controls.ControlManager.epicStorage;
+
 public class RecordRemover {
     //ControlManager controlManager = new ControlManager();
 
@@ -12,27 +14,40 @@ public class RecordRemover {
     }
 
     public void epicRemove(String key) {
-        Epic epic = ControlManager.epicStorage.get(key);
+        Epic epic = epicStorage.get(key);
         HashMap<String, String> relatedSubTasks = epic.relatedSubTask;
 
         for (String i : relatedSubTasks.keySet()) {
             ControlManager.subTasksStorage.remove(i);
         }
 
-        ControlManager.epicStorage.remove(key);
+        epicStorage.remove(key);
     }
 
     public void subTaskRemove(String key, String parentKey) {
-        Epic epic = ControlManager.epicStorage.get(parentKey);
+        Epic epic = epicStorage.get(parentKey);
         HashMap<String, String> relatedSubTasks = epic.relatedSubTask;
         relatedSubTasks.remove(key);
         ControlManager.subTasksStorage.remove(key);
     }
+
+    public void taskRemoveAll() {
+        ControlManager.tasksStorage.clear();
+    }
+
+    public void epicsRemoveAll() {
+        epicStorage.clear();
+        ControlManager.subTasksStorage.clear();
+    }
+
+    public void subTasksRemoveAll() {
+        for (String i : ControlManager.epicStorage.keySet()) {
+            epicStorage.get(i).relatedSubTask.clear();
+        }
+        ControlManager.subTasksStorage.clear();
+    }
+
+
+
 }
 
-/*
-   Удаление подзадачи :
-   - обновление поля подзадач эпика
-   - обновление его статуса
-
-* */
