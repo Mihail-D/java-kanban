@@ -1,5 +1,9 @@
 package controls;
 
+import records.Epic;
+
+import java.util.HashMap;
+
 public class RecordRemover {
     //ControlManager controlManager = new ControlManager();
 
@@ -7,7 +11,16 @@ public class RecordRemover {
         ControlManager.tasksStorage.remove(key);
     }
 
+    public void epicRemove(String key) {
+        Epic epic = ControlManager.epicStorage.get(key);
+        HashMap<String, String> relatedSubTasks = epic.relatedSubTask;
 
+        for (String i : relatedSubTasks.keySet()) {
+            ControlManager.subTasksStorage.remove(i);
+        }
+
+        ControlManager.epicStorage.remove(key);
+    }
 }
 
 /*

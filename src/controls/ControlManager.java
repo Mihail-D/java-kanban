@@ -120,10 +120,11 @@ public class ControlManager {
                     System.out.println("Удаление по идентификатору.");
                     System.out.println("Введите ключ");
                     String taskKey = scanner.next();
-                    recordRemover.taskRemove(taskKey);
+                    //recordRemover.taskRemove(taskKey);
+                    //recordRemover.epicRemove(taskKey);
 
-                    System.out.println(tasksStorage); // TODO 
-
+                    System.out.println(epicStorage); // TODO
+                    System.out.println(subTasksStorage);
 
 
                     break;
