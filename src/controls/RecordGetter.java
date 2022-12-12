@@ -4,6 +4,8 @@ import records.Epic;
 import records.SubTask;
 import records.Task;
 
+import java.util.ArrayList;
+
 public class RecordGetter {
 
     public String getTaskRecord(String key) {
@@ -35,4 +37,35 @@ public class RecordGetter {
 
         return epicTitle + epicDescription + epicKey + epicStatus;
     }
+
+    public ArrayList<String> collectTasks() {
+        ArrayList<String> tasksList = new ArrayList<>();
+
+        for (String i : ControlManager.tasksStorage.keySet()) {
+            tasksList.add(getTaskRecord(i));
+        }
+
+        return tasksList;
+    }
+
+    public ArrayList<String> collectEpics() {
+        ArrayList<String> epicsList = new ArrayList<>();
+
+        for (String i : ControlManager.epicStorage.keySet()) {
+            epicsList.add(getEpicRecord(i));
+        }
+
+        return epicsList;
+    }
+
+    public ArrayList<String> collectSubTasks() {
+        ArrayList<String> subTasksList = new ArrayList<>();
+
+        for (String i : ControlManager.subTasksStorage.keySet()) {
+            subTasksList.add(getSubTaskRecord(i));
+        }
+
+        return subTasksList;
+    }
+
 }

@@ -35,35 +35,17 @@ public class ControlManager {
                         case 1:
                             Task task = recordCreator.taskCreate();
                             tasksStorage.put(task.getRecordId(), task);
-
-                           /* for (String i : tasksStorage.keySet()) { // TODO TODO TODO
-                                System.out.println(tasksStorage.get(i));
-                            }*/
-
                             break;
                         case 2:
                             Epic epic = recordCreator.epicCreate();
                             epicStorage.put(epic.getRecordId(), epic);
-
-/*                            for (String i : epicStorage.keySet()) { // TODO TODO TODO
-                                System.out.println("From case 2 loop " + epicStorage.get(i));
-
-                            }*/
-
                             break;
                         case 3:
                             SubTask subTask = recordCreator.subTaskCreate();
                             subTasksStorage.put(subTask.getSubTaskId(), subTask);
                             Epic parentTask = epicStorage.get(subTask.getRecordId());
                             parentTask.relatedSubTask.put(subTask.getSubTaskId(), subTask.getRecordStatus());
-
-                            // TODO
-                        /*    System.out.println("getSubTaskId " + subTask.getSubTaskId()); // sub.1
-                            System.out.println("getRecordId: " + subTask.getRecordId()); // e.1
-                            System.out.println(epicStorage.get(subTask.getRecordId()));*/
-
                             break;
-
                     }
                     break;
                 case 2:
@@ -77,34 +59,20 @@ public class ControlManager {
                             String taskKey = scanner.next();
                             Task updateTask = recordUpdater.taskUpdate(taskKey);
                             tasksStorage.put(taskKey, updateTask);
-
-                            // TODO
-                            System.out.println(tasksStorage.get("t.1"));
-
                             break;
                         case 2:
                             System.out.println("Введите ключ");
                             String epicKey = scanner.next();
                             Epic updateEpic = recordUpdater.epicUpdate(epicKey);
                             epicStorage.put(epicKey, updateEpic);
-
-                            // TODO
-                            System.out.println(epicStorage.get("e.1"));
-
                             break;
                         case 3:
                             System.out.println("Введите ключ");
                             String subTaskKey = scanner.next();
                             System.out.println("Введите ключ основной задачи");
                             String parentKey = scanner.next();
-
                             recordUpdater.subTaskUpdate(subTaskKey, parentKey);
                             recordUpdater.setEpicStatus(parentKey);
-
-                            // TODO
-                            System.out.println(epicStorage.get("e.1"));
-                            System.out.println(subTasksStorage.get("sub.1"));
-
                             break;
 
                     }
@@ -135,17 +103,20 @@ public class ControlManager {
                             break;
                     }
                     break;
-/*                case 4:
+                case 4:
                     System.out.println("Получение списка всех задач.");
-                    break;*/
+                    recordGetter.collectTasks();
+                    recordGetter.collectEpics();
+                    recordGetter.collectSubTasks();
+                    break;
 /*                case 5:
-                    System.out.println("Удаление по идентификатору.");
+                    System.out.println("Получение списка всех подзадач определённого эпика.");
                     break;*/
 /*                case 6:
-                    System.out.println("Удаление всех задач.");
+                    System.out.println("Удаление по идентификатору.");
                     break;*/
 /*                case 7:
-                    System.out.println("Получение списка всех подзадач определённого эпика.");
+                    System.out.println("Удаление всех задач.");
                     break;*/
                 case 0:
                     return;

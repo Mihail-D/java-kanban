@@ -41,7 +41,6 @@ public class RecordCreator {
         String parentId = scanner.next();
         Epic parent = ControlManager.epicStorage.get(parentId);
 
-        System.out.println(parent.toString());
         if (!ControlManager.epicStorage.containsKey(parentId)) {
             System.out.println("!!!");
             parentId = scanner.next();
@@ -53,7 +52,6 @@ public class RecordCreator {
         String taskDescription = scanner.next();
         String taskStatus = "NEW";
         String subTaskId = getId(3);
-        System.out.println(subTaskId);                                         // TODO
 
         ControlManager.epicStorage.put(parentId, parent);
 
