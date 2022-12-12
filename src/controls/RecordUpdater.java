@@ -49,11 +49,6 @@ public class RecordUpdater {
         SubTask subTask = ControlManager.subTasksStorage.get(subTaskKey);
         Epic parentTask = ControlManager.epicStorage.get(parentKey);
 
-        if (!ControlManager.epicStorage.containsKey(parentKey)) {
-            System.out.println("Ключ не найден.");
-            parentKey = scanner.next();
-        }
-
         System.out.println("title");                                               // TODO
         String title = scanner.next();
         subTask.setRecordTitle(title);
@@ -77,7 +72,7 @@ public class RecordUpdater {
         String status = "IN_PROGRESS";
         HashSet<String> set = new HashSet<>(epicTask.relatedSubTask.values());
 
-        System.out.println(set);
+        System.out.println(set);                                                    // TODO
 
         if (set.size() == 1 && set.contains("NEW")) {
             status = "NEW";

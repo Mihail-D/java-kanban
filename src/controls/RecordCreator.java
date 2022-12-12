@@ -9,7 +9,7 @@ import java.util.Scanner;
 import java.util.TreeSet;
 
 public class RecordCreator {
-    ControlManager controlManager = new ControlManager();
+   //ControlManager controlManager = new ControlManager();
     Scanner scanner = new Scanner(System.in);
 
     int taskId = 0;
@@ -41,9 +41,13 @@ public class RecordCreator {
     public SubTask subTaskCreate() {
         System.out.println("parent");                                          // TODO
         String parentId = scanner.next();
-        Epic parent = controlManager.epicStorage.get(parentId);
-        //System.out.println(parent.toString());
-        //if (!controlManager.epicStorage.containsKey(parentId)) {}
+        Epic parent = ControlManager.epicStorage.get(parentId);
+
+        System.out.println(parent.toString());
+        if (!ControlManager.epicStorage.containsKey(parentId)) {
+            System.out.println("!!!");
+            parentId = scanner.next();
+        }
 
         System.out.println("title");                                          // TODO
         String title = scanner.next();
@@ -53,12 +57,10 @@ public class RecordCreator {
         String subTaskId = getId(3);
         System.out.println(subTaskId);                                         // TODO
 
-        controlManager.epicStorage.put(parentId, parent);
+        ControlManager.epicStorage.put(parentId, parent);
 
         return new SubTask (title, taskDescription, parentId, taskStatus, subTaskId);
     }
-
-
 
     private String getId(int mode) {
 
@@ -81,20 +83,4 @@ public class RecordCreator {
 
         return id;
     }
-
-/*    public String getEpicStatus(String key) {
-        Epic epicTask = controlManager.epicStorage.get(key);
-        String status = "IN_PROGRESS";
-        HashMap<String, String> relatedSubtasks = epicTask.relatedSubTask;
-        TreeSet<String> set = new TreeSet<>(relatedSubtasks.values());
-
-        if (set.size() == 1 && set.contains("NEW")) {
-            status = "NEW";
-        }
-        else if (set.size() == 1 && set.contains("DONE")) {
-            status = "DONE";
-        }
-
-        return status;
-    }*/
 }

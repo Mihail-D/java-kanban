@@ -32,9 +32,9 @@ public abstract class AbstractTask {
     public void setRecordDescription(String recordDescription) {
         this.recordDescription = recordDescription;
     }
-    public void setRecordId(String recordId) {
+/*    public void setRecordId(String recordId) {
         this.recordId = recordId;
-    }
+    }*/
     public void setRecordStatus(String recordStatus) {
         this.recordStatus = recordStatus;
     }
