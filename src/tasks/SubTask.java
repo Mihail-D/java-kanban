@@ -4,10 +4,10 @@ public class SubTask extends AbstractTask {
     private String subTaskId;
 
     public SubTask(
-            String recordTitle, String recordDescription, String parentId, String recordStatus,
+            String taskTitle, String taskDescription, String parentId, String taskStatus,
             String subTaskId
     ) {
-        super(recordTitle, recordDescription, parentId, recordStatus);
+        super(taskTitle, taskDescription, parentId, taskStatus);
         this.subTaskId = subTaskId;
     }
 

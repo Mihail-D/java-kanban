@@ -6,8 +6,8 @@ import java.util.HashMap;
 
 import static controls.ControlManager.epicStorage;
 
-public class RecordRemover {
-    RecordUpdater recordUpdater = new RecordUpdater();
+public class TaskRemover {
+    TaskUpdater taskUpdater = new TaskUpdater();
 
     public void taskRemove(String key) {
         ControlManager.tasksStorage.remove(key);
@@ -29,7 +29,7 @@ public class RecordRemover {
         HashMap<String, String> relatedSubTasks = epic.relatedSubTask;
         relatedSubTasks.remove(key);
         ControlManager.subTasksStorage.remove(key);
-        recordUpdater.setEpicStatus(parentKey);
+        taskUpdater.setEpicStatus(parentKey);
     }
 
     public void taskRemoveAll() {
@@ -44,7 +44,7 @@ public class RecordRemover {
     public void subTasksRemoveAll() {
         for (String i : ControlManager.epicStorage.keySet()) {
             epicStorage.get(i).relatedSubTask.clear();
-            epicStorage.get(i).setRecordStatus("NEW");
+            epicStorage.get(i).setTaskStatus("NEW");
         }
         ControlManager.subTasksStorage.clear();
     }

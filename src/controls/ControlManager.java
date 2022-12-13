@@ -14,10 +14,10 @@ public class ControlManager {
     static HashMap<String, SubTask> subTasksStorage = new HashMap<>();
 
     public void getControlOptions() {
-        RecordCreator recordCreator = new RecordCreator();
-        RecordUpdater recordUpdater = new RecordUpdater();
-        RecordGetter recordGetter = new RecordGetter();
-        RecordRemover recordRemover = new RecordRemover();
+        TaskCreator taskCreator = new TaskCreator();
+        TaskUpdater taskUpdater = new TaskUpdater();
+        TaskGetter taskGetter = new TaskGetter();
+        TaskRemover taskRemover = new TaskRemover();
         int item;
 
         Scanner scanner = new Scanner(System.in);
@@ -33,18 +33,18 @@ public class ControlManager {
                     item = scanner.nextInt();
                     switch (item) {
                         case 1:
-                            Task task = recordCreator.taskCreate();
-                            tasksStorage.put(task.getRecordId(), task);
+                            Task task = taskCreator.taskCreate();
+                            tasksStorage.put(task.getTaskId(), task);
                             break;
                         case 2:
-                            Epic epic = recordCreator.epicCreate();
-                            epicStorage.put(epic.getRecordId(), epic);
+                            Epic epic = taskCreator.epicCreate();
+                            epicStorage.put(epic.getTaskId(), epic);
                             break;
                         case 3:
-                            SubTask subTask = recordCreator.subTaskCreate();
+                            SubTask subTask = taskCreator.subTaskCreate();
                             subTasksStorage.put(subTask.getSubTaskId(), subTask);
-                            Epic parentTask = epicStorage.get(subTask.getRecordId());
-                            parentTask.relatedSubTask.put(subTask.getSubTaskId(), subTask.getRecordStatus());
+                            Epic parentTask = epicStorage.get(subTask.getTaskId());
+                            parentTask.relatedSubTask.put(subTask.getSubTaskId(), subTask.getTaskStatus());
                             break;
                     }
                     break;
@@ -57,13 +57,13 @@ public class ControlManager {
                         case 1:
                             //System.out.println("Введите номер ключа");
                             String taskKey = scanner.next();
-                            Task updateTask = recordUpdater.taskUpdate(taskKey);
+                            Task updateTask = taskUpdater.taskUpdate(taskKey);
                             tasksStorage.put(taskKey, updateTask);
                             break;
                         case 2:
                             //System.out.println("Введите ключ");
                             String epicKey = scanner.next();
-                            Epic updateEpic = recordUpdater.epicUpdate(epicKey);
+                            Epic updateEpic = taskUpdater.epicUpdate(epicKey);
                             epicStorage.put(epicKey, updateEpic);
                             break;
                         case 3:
@@ -71,8 +71,8 @@ public class ControlManager {
                             String subTaskKey = scanner.next();
                             //System.out.println("Введите ключ основной задачи");
                             String parentKey = scanner.next();
-                            recordUpdater.subTaskUpdate(subTaskKey, parentKey);
-                            recordUpdater.setEpicStatus(parentKey);
+                            taskUpdater.subTaskUpdate(subTaskKey, parentKey);
+                            taskUpdater.setEpicStatus(parentKey);
                             break;
                     }
                     break;
@@ -86,48 +86,48 @@ public class ControlManager {
                             //System.out.println("Получение данных Задачи.");
                             //System.out.println("Введите ключ");
                             String taskKey = scanner.next();
-                            recordGetter.getTaskRecord(taskKey);
+                            taskGetter.getTaskTask(taskKey);
                             break;
                         case 2:
                             //System.out.println("Получение данных Эпика.");
                             //System.out.println("Введите ключ");
                             String epicKey = scanner.next();
-                            recordGetter.getEpicRecord(epicKey);
+                            taskGetter.getEpicTask(epicKey);
                             break;
                         case 3:
                             //System.out.println("Получение данных Подзадачи.");
                             //System.out.println("Введите ключ");
                             String subTaskKey = scanner.next();
-                            recordGetter.getSubTaskRecord(subTaskKey);
+                            taskGetter.getSubTaskNote(subTaskKey);
                             break;
                     }
                     break;
                 case 4:
                     //System.out.println("Получение списка всех задач.");
-                    recordGetter.collectTasks();
-                    recordGetter.collectEpics();
-                    recordGetter.collectSubTasks();
+                    taskGetter.collectTasks();
+                    taskGetter.collectEpics();
+                    taskGetter.collectSubTasks();
                     break;
                 case 5:
                     //System.out.println("Получение списка всех подзадач определённого эпика.");
                     //System.out.println("Введите ключ");
                     String key = scanner.next();
-                    recordGetter.collectEpicSubtasks(key);
+                    taskGetter.collectEpicSubtasks(key);
                     break;
                 case 6:
                     //System.out.println("Удаление по идентификатору.");
                     //System.out.println("Введите ключ");
                     String taskKey = scanner.next();
                     String parentKey = scanner.next();
-                    recordRemover.taskRemove(taskKey);
-                    recordRemover.epicRemove(taskKey);
-                    recordRemover.subTaskRemove(taskKey, parentKey);
+                    taskRemover.taskRemove(taskKey);
+                    taskRemover.epicRemove(taskKey);
+                    taskRemover.subTaskRemove(taskKey, parentKey);
                     break;
                 case 7:
                     //System.out.println("Удаление всех задач.");
-                    recordRemover.taskRemoveAll();
-                    recordRemover.epicsRemoveAll();
-                    recordRemover.subTasksRemoveAll();
+                    taskRemover.taskRemoveAll();
+                    taskRemover.epicsRemoveAll();
+                    taskRemover.subTasksRemoveAll();
                     break;
                 case 0:
                     return;

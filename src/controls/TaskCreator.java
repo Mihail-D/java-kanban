@@ -7,7 +7,7 @@ import tasks.Task;
 import java.util.HashMap;
 import java.util.Scanner;
 
-public class RecordCreator {
+public class TaskCreator {
     Scanner scanner = new Scanner(System.in);
 
     int taskId = 0;

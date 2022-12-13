@@ -7,7 +7,7 @@ import tasks.Task;
 import java.util.Scanner;
 import java.util.TreeSet;
 
-public class RecordUpdater {
+public class TaskUpdater {
     Scanner scanner = new Scanner(System.in);
 
     public Task taskUpdate(String key) {
@@ -15,15 +15,15 @@ public class RecordUpdater {
 
         //System.out.println("title");
         String title = scanner.next();
-        task.setRecordTitle(title);
+        task.setTaskTitle(title);
 
         //System.out.println("description");
         String taskDescription = scanner.next();
-        task.setRecordDescription(taskDescription);
+        task.setTaskDescription(taskDescription);
 
         //System.out.println("status");
         String taskStatus = scanner.next();
-        task.setRecordStatus(taskStatus);
+        task.setTaskStatus(taskStatus);
 
         return task;
     }
@@ -32,11 +32,11 @@ public class RecordUpdater {
         Epic epic = ControlManager.epicStorage.get(key);
         //System.out.println("title");
         String title = scanner.next();
-        epic.setRecordTitle(title);
+        epic.setTaskTitle(title);
 
         //System.out.println("description");
         String epicDescription = scanner.next();
-        epic.setRecordDescription(epicDescription);
+        epic.setTaskDescription(epicDescription);
 
         return epic;
     }
@@ -47,15 +47,15 @@ public class RecordUpdater {
 
         //System.out.println("title");
         String title = scanner.next();
-        subTask.setRecordTitle(title);
+        subTask.setTaskTitle(title);
 
         //System.out.println("description");
         String taskDescription = scanner.next();
-        subTask.setRecordDescription(taskDescription);
+        subTask.setTaskDescription(taskDescription);
 
         //System.out.println("Введите статус");
         String taskStatus = scanner.next();
-        subTask.setRecordStatus(taskStatus);
+        subTask.setTaskStatus(taskStatus);
         parentTask.relatedSubTask.put(subTaskKey, taskStatus);
 
         return subTask;
@@ -73,7 +73,7 @@ public class RecordUpdater {
             status = "DONE";
         }
 
-        epicTask.setRecordStatus(status);
+        epicTask.setTaskStatus(status);
         return epicTask;
     }
 }

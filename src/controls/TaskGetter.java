@@ -7,34 +7,34 @@ import tasks.Task;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class RecordGetter {
+public class TaskGetter {
 
-    public String getTaskRecord(String key) {
+    public String getTaskTask(String key) {
         Task task = ControlManager.tasksStorage.get(key);
-        String taskTitle = task.getRecordTitle() + ",";
-        String taskDescription = task.getRecordDescription() + ",";
-        String taskKey = task.getRecordId() + ",";
-        String taskStatus = task.getRecordStatus();
+        String taskTitle = task.getTaskTitle() + ",";
+        String taskDescription = task.getTaskDescription() + ",";
+        String taskKey = task.getTaskId() + ",";
+        String taskStatus = task.getTaskStatus();
 
         return taskTitle + taskDescription + taskKey + taskStatus;
     }
 
-    public String getEpicRecord(String key) {
+    public String getEpicTask(String key) {
         Epic epic = ControlManager.epicStorage.get(key);
-        String epicTitle = epic.getRecordTitle() + ",";
-        String epicDescription = epic.getRecordDescription() + ",";
-        String epicKey = epic.getRecordId() + ",";
-        String epicStatus = epic.getRecordStatus();
+        String epicTitle = epic.getTaskTitle() + ",";
+        String epicDescription = epic.getTaskDescription() + ",";
+        String epicKey = epic.getTaskId() + ",";
+        String epicStatus = epic.getTaskStatus();
 
         return epicTitle + epicDescription + epicKey + epicStatus;
     }
 
-    public String getSubTaskRecord(String key) {
+    public String getSubTaskNote(String key) {
         SubTask subTask = ControlManager.subTasksStorage.get(key);
-        String epicTitle = subTask.getRecordTitle() + ",";
-        String epicDescription = subTask.getRecordDescription() + ",";
-        String epicKey = subTask.getRecordId() + ",";
-        String epicStatus = subTask.getRecordStatus();
+        String epicTitle = subTask.getTaskTitle() + ",";
+        String epicDescription = subTask.getTaskDescription() + ",";
+        String epicKey = subTask.getTaskId() + ",";
+        String epicStatus = subTask.getTaskStatus();
 
         return epicTitle + epicDescription + epicKey + epicStatus;
     }
@@ -43,7 +43,7 @@ public class RecordGetter {
         ArrayList<String> tasksList = new ArrayList<>();
 
         for (String i : ControlManager.tasksStorage.keySet()) {
-            tasksList.add(getTaskRecord(i));
+            tasksList.add(getTaskTask(i));
         }
 
         return tasksList;
@@ -53,7 +53,7 @@ public class RecordGetter {
         ArrayList<String> epicsList = new ArrayList<>();
 
         for (String i : ControlManager.epicStorage.keySet()) {
-            epicsList.add(getEpicRecord(i));
+            epicsList.add(getEpicTask(i));
         }
 
         return epicsList;
@@ -63,7 +63,7 @@ public class RecordGetter {
         ArrayList<String> subTasksList = new ArrayList<>();
 
         for (String i : ControlManager.subTasksStorage.keySet()) {
-            subTasksList.add(getSubTaskRecord(i));
+            subTasksList.add(getSubTaskNote(i));
         }
 
         return subTasksList;
@@ -75,7 +75,7 @@ public class RecordGetter {
         HashMap<String, String> relatedSubTasks = epic.relatedSubTask;
 
         for (String i : relatedSubTasks.keySet()) {
-            localTasksList.add(getSubTaskRecord(i));
+            localTasksList.add(getSubTaskNote(i));
         }
 
         return localTasksList;

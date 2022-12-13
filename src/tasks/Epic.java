@@ -6,16 +6,16 @@ public class Epic extends AbstractTask {
     public HashMap<String, String> relatedSubTask;
 
     public Epic(
-            String recordTitle, String recordDescription, String recordId, String recordStatus,
+            String taskTitle, String taskDescription, String taskId, String taskStatus,
             HashMap<String, String> relatedSubTask
     ) {
-        super(recordTitle, recordDescription, recordId, recordStatus);
+        super(taskTitle, taskDescription, taskId, taskStatus);
         this.relatedSubTask = relatedSubTask;
     }
 
     @Override
-    public void setRecordTitle(String recordTitle) {
-        this.recordTitle = recordTitle;
+    public void setTaskTitle(String taskTitle) {
+        this.taskTitle = taskTitle;
     }
 
 

@@ -1,41 +1,39 @@
 package tasks;
 
-import java.util.Objects;
-
 public abstract class AbstractTask {
-    String recordTitle;
-    private String recordDescription;
-    private String recordId;
-    private String recordStatus;
+    String taskTitle;
+    private String taskDescription;
+    private String taskId;
+    private String taskStatus;
 
-    public AbstractTask(String recordTitle, String recordDescription, String recordId, String recordStatus) {
-        this.recordTitle = recordTitle;
-        this.recordDescription = recordDescription;
-        this.recordId = recordId;
-        this.recordStatus = recordStatus;
-    }
-
-    public String getRecordTitle() {
-        return recordTitle;
-    }
-    public String getRecordDescription() {
-        return recordDescription;
-    }
-    public String getRecordId() {
-        return recordId;
-    }
-    public String getRecordStatus() {
-        return recordStatus;
+    public AbstractTask(String taskTitle, String taskDescription, String taskId, String taskStatus) {
+        this.taskTitle = taskTitle;
+        this.taskDescription = taskDescription;
+        this.taskId = taskId;
+        this.taskStatus = taskStatus;
     }
 
-    public void setRecordTitle(String recordTitle) {
-        this.recordTitle = recordTitle;
+    public String getTaskTitle() {
+        return taskTitle;
     }
-    public void setRecordDescription(String recordDescription) {
-        this.recordDescription = recordDescription;
+    public String getTaskDescription() {
+        return taskDescription;
     }
-    public void setRecordStatus(String recordStatus) {
-        this.recordStatus = recordStatus;
+    public String getTaskId() {
+        return taskId;
+    }
+    public String getTaskStatus() {
+        return taskStatus;
+    }
+
+    public void setTaskTitle(String taskTitle) {
+        this.taskTitle = taskTitle;
+    }
+    public void setTaskDescription(String taskDescription) {
+        this.taskDescription = taskDescription;
+    }
+    public void setTaskStatus(String taskStatus) {
+        this.taskStatus = taskStatus;
     }
 
     @Override
@@ -49,31 +47,31 @@ public abstract class AbstractTask {
 
         AbstractTask that = (AbstractTask) o;
 
-        if (!Objects.equals(getRecordId(), that.getRecordId())) {
+        if (getTaskId() != that.getTaskId()) {
             return false;
         }
-        if (!getRecordTitle().equals(that.getRecordTitle())) {
+        if (!getTaskTitle().equals(that.getTaskTitle())) {
             return false;
         }
-        if (!getRecordDescription().equals(that.getRecordDescription())) {
+        if (!getTaskDescription().equals(that.getTaskDescription())) {
             return false;
         }
-        return getRecordStatus().equals(that.getRecordStatus());
+        return getTaskStatus().equals(that.getTaskStatus());
     }
     @Override
     public int hashCode() {
-        int result = getRecordTitle().hashCode();
-        result = 31 * result + getRecordDescription().hashCode();
-        result = 31 * result + getRecordId().hashCode();
-        result = 31 * result + getRecordStatus().hashCode();
+        int result = getTaskTitle().hashCode();
+        result = 31 * result + getTaskDescription().hashCode();
+        result = 31 * result + getTaskId().hashCode();
+        result = 31 * result + getTaskStatus().hashCode();
         return result;
     }
     @Override
     public String toString() {
-        return "Title='" + recordTitle + '\'' +
-                ", recordDescription='" + recordDescription + '\'' +
-                ", recordId=" + recordId +
-                ", recordStatus='" + recordStatus + '\'' +
+        return "Title='" + taskTitle + '\'' +
+                ", taskDescription='" + taskDescription + '\'' +
+                ", taskId=" + taskId +
+                ", taskStatus='" + taskStatus + '\'' +
                 '}';
     }
 }
