@@ -1,8 +1,8 @@
 package controls;
 
-import records.Epic;
-import records.SubTask;
-import records.Task;
+import tasks.Epic;
+import tasks.SubTask;
+import tasks.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;

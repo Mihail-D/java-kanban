@@ -1,4 +1,6 @@
-package records;
+package tasks;
+
+import java.util.Objects;
 
 public abstract class AbstractTask {
     String recordTitle;
@@ -47,7 +49,7 @@ public abstract class AbstractTask {
 
         AbstractTask that = (AbstractTask) o;
 
-        if (getRecordId() != that.getRecordId()) {
+        if (!Objects.equals(getRecordId(), that.getRecordId())) {
             return false;
         }
         if (!getRecordTitle().equals(that.getRecordTitle())) {

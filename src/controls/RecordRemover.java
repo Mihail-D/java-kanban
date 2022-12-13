@@ -1,6 +1,6 @@
 package controls;
 
-import records.Epic;
+import tasks.Epic;
 
 import java.util.HashMap;
 
