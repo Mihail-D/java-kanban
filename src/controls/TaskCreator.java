@@ -15,9 +15,9 @@ public class TaskCreator {
     int subTuskId = 0;
 
     public Task taskCreate() {
-        //System.out.println("title");
+        System.out.println("title");
         String title = scanner.next();
-        //System.out.println("description");
+        System.out.println("description");
         String taskDescription = scanner.next();
         String taskStatus = "NEW";
         String id = getId(1);
@@ -25,9 +25,9 @@ public class TaskCreator {
     }
 
     public Epic epicCreate() {
-        //System.out.println("title");
+        System.out.println("title");
         String title = scanner.next();
-        //System.out.println("description");
+        System.out.println("description");
         String taskDescription = scanner.next();
         String taskStatus = "NEW";
         String id = getId(2);
@@ -36,7 +36,7 @@ public class TaskCreator {
     }
 
     public SubTask subTaskCreate() {
-        //System.out.println("parent");
+        System.out.println("parent");
         String parentId = scanner.next();
         Epic parent = ControlManager.epicStorage.get(parentId);
 
@@ -45,9 +45,9 @@ public class TaskCreator {
             parentId = scanner.next();
         }
 
-        //System.out.println("title");
+        System.out.println("title");
         String title = scanner.next();
-        //System.out.println("description");
+        System.out.println("description");
         String taskDescription = scanner.next();
         String taskStatus = "NEW";
         String subTaskId = getId(3);
