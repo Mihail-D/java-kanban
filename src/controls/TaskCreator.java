@@ -3,6 +3,7 @@ package controls;
 import tasks.Epic;
 import tasks.SubTask;
 import tasks.Task;
+import tasks.TaskStages;
 
 import java.util.HashMap;
 import java.util.Scanner;
@@ -15,28 +16,28 @@ public class TaskCreator {
     int subTuskId = 0;
 
     public Task taskCreate() {
-        System.out.println("title");
+        //System.out.println("title");
         String title = scanner.next();
-        System.out.println("description");
+        //System.out.println("description");
         String taskDescription = scanner.next();
-        String taskStatus = "NEW";
+        TaskStages taskStatus = TaskStages.NEW;
         String id = getId(1);
         return new Task(title, taskDescription, id, taskStatus);
     }
 
     public Epic epicCreate() {
-        System.out.println("title");
+        //System.out.println("title");
         String title = scanner.next();
-        System.out.println("description");
+        //System.out.println("description");
         String taskDescription = scanner.next();
-        String taskStatus = "NEW";
+        TaskStages taskStatus = TaskStages.NEW;
         String id = getId(2);
         HashMap<String, String> relatedTasks = new HashMap<>();
         return new Epic(title, taskDescription, id, taskStatus, relatedTasks);
     }
 
     public SubTask subTaskCreate() {
-        System.out.println("parent");
+        //System.out.println("parent");
         String parentId = scanner.next();
         Epic parent = ControlManager.epicStorage.get(parentId);
 
@@ -45,11 +46,11 @@ public class TaskCreator {
             parentId = scanner.next();
         }
 
-        System.out.println("title");
+        //System.out.println("title");
         String title = scanner.next();
-        System.out.println("description");
+        //System.out.println("description");
         String taskDescription = scanner.next();
-        String taskStatus = "NEW";
+        TaskStages taskStatus = TaskStages.NEW;
         String subTaskId = getId(3);
 
         ControlManager.epicStorage.put(parentId, parent);

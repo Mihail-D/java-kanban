@@ -4,9 +4,9 @@ public abstract class AbstractTask {
     String taskTitle;
     private String taskDescription;
     private String taskId;
-    private String taskStatus;
+    private TaskStages taskStatus;
 
-    public AbstractTask(String taskTitle, String taskDescription, String taskId, String taskStatus) {
+    public AbstractTask(String taskTitle, String taskDescription, String taskId, TaskStages taskStatus) {
         this.taskTitle = taskTitle;
         this.taskDescription = taskDescription;
         this.taskId = taskId;
@@ -22,7 +22,7 @@ public abstract class AbstractTask {
     public String getTaskId() {
         return taskId;
     }
-    public String getTaskStatus() {
+    public TaskStages getTaskStatus() {
         return taskStatus;
     }
 
@@ -33,7 +33,17 @@ public abstract class AbstractTask {
         this.taskDescription = taskDescription;
     }
     public void setTaskStatus(String taskStatus) {
-        this.taskStatus = taskStatus;
+        switch (taskStatus) {
+            case "NEW":
+                this.taskStatus = TaskStages.NEW;
+                break;
+            case "IN_PROGRESS":
+                this.taskStatus = TaskStages.IN_PROGRESS;
+                break;
+            case "DONE":
+                this.taskStatus = TaskStages.DONE;
+                break;
+        }
     }
 
     @Override

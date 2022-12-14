@@ -4,7 +4,7 @@ public class SubTask extends AbstractTask {
     private String subTaskId;
 
     public SubTask(
-            String taskTitle, String taskDescription, String parentId, String taskStatus,
+            String taskTitle, String taskDescription, String parentId, TaskStages taskStatus,
             String subTaskId
     ) {
         super(taskTitle, taskDescription, parentId, taskStatus);

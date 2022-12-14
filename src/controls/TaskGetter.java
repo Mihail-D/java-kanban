@@ -14,7 +14,7 @@ public class TaskGetter {
         String taskTitle = task.getTaskTitle() + ",";
         String taskDescription = task.getTaskDescription() + ",";
         String taskKey = task.getTaskId() + ",";
-        String taskStatus = task.getTaskStatus();
+        String taskStatus = String.valueOf(task.getTaskStatus());
 
         return taskTitle + taskDescription + taskKey + taskStatus;
     }
@@ -24,7 +24,7 @@ public class TaskGetter {
         String epicTitle = epic.getTaskTitle() + ",";
         String epicDescription = epic.getTaskDescription() + ",";
         String epicKey = epic.getTaskId() + ",";
-        String epicStatus = epic.getTaskStatus();
+        String epicStatus = String.valueOf(epic.getTaskStatus());
 
         return epicTitle + epicDescription + epicKey + epicStatus;
     }
@@ -34,7 +34,7 @@ public class TaskGetter {
         String epicTitle = subTask.getTaskTitle() + ",";
         String epicDescription = subTask.getTaskDescription() + ",";
         String epicKey = subTask.getTaskId() + ",";
-        String epicStatus = subTask.getTaskStatus();
+        String epicStatus = String.valueOf(subTask.getTaskStatus());
 
         return epicTitle + epicDescription + epicKey + epicStatus;
     }

@@ -6,7 +6,7 @@ public class Epic extends AbstractTask {
     public HashMap<String, String> relatedSubTask;
 
     public Epic(
-            String taskTitle, String taskDescription, String taskId, String taskStatus,
+            String taskTitle, String taskDescription, String taskId, TaskStages taskStatus,
             HashMap<String, String> relatedSubTask
     ) {
         super(taskTitle, taskDescription, taskId, taskStatus);
@@ -17,9 +17,6 @@ public class Epic extends AbstractTask {
     public void setTaskTitle(String taskTitle) {
         this.taskTitle = taskTitle;
     }
-
-
-
 
     @Override
     public String toString() {

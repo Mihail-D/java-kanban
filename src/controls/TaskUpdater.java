@@ -3,6 +3,7 @@ package controls;
 import tasks.Epic;
 import tasks.SubTask;
 import tasks.Task;
+import tasks.TaskStages;
 
 import java.util.Scanner;
 import java.util.TreeSet;
@@ -13,15 +14,15 @@ public class TaskUpdater {
     public Task taskUpdate(String key) {
         Task task = ControlManager.tasksStorage.get(key);
 
-        System.out.println("title");
+        //System.out.println("title");
         String title = scanner.next();
         task.setTaskTitle(title);
 
-        System.out.println("description");
+        //System.out.println("description");
         String taskDescription = scanner.next();
         task.setTaskDescription(taskDescription);
 
-        System.out.println("status");
+        //System.out.println("status");
         String taskStatus = scanner.next();
         task.setTaskStatus(taskStatus);
 
@@ -30,11 +31,11 @@ public class TaskUpdater {
 
     public Epic epicUpdate(String key) {
         Epic epic = ControlManager.epicStorage.get(key);
-        System.out.println("title");
+        //System.out.println("title");
         String title = scanner.next();
         epic.setTaskTitle(title);
 
-        System.out.println("description");
+        //System.out.println("description");
         String epicDescription = scanner.next();
         epic.setTaskDescription(epicDescription);
 
@@ -45,35 +46,35 @@ public class TaskUpdater {
         SubTask subTask = ControlManager.subTasksStorage.get(subTaskKey);
         Epic parentTask = ControlManager.epicStorage.get(parentKey);
 
-        System.out.println("title");
+        //System.out.println("title");
         String title = scanner.next();
         subTask.setTaskTitle(title);
 
-        System.out.println("description");
-        String taskDescription = scanner.next();
-        subTask.setTaskDescription(taskDescription);
+        //System.out.println("description");
+        String subTaskDescription = scanner.next();
+        subTask.setTaskDescription(subTaskDescription);
 
-        System.out.println("Введите статус");
-        String taskStatus = scanner.next();
-        subTask.setTaskStatus(taskStatus);
-        parentTask.relatedSubTask.put(subTaskKey, taskStatus);
+        //System.out.println("Введите статус");
+        String subTaskStatus = scanner.next();
+        subTask.setTaskStatus(subTaskStatus);
+        parentTask.relatedSubTask.put(subTaskKey, subTaskStatus);
 
         return subTask;
     }
 
     public Epic setEpicStatus(String key) {
         Epic epicTask = ControlManager.epicStorage.get(key);
-        String status = "IN_PROGRESS";
+        TaskStages status = TaskStages.IN_PROGRESS;
         TreeSet<String> set = new TreeSet<>(epicTask.relatedSubTask.values());
 
         if ((set.size() == 1 && set.contains("NEW")) || set.isEmpty()) {
-            status = "NEW";
+            status = TaskStages.NEW;
         }
         else if (set.size() == 1 && set.contains("DONE")) {
-            status = "DONE";
+            status = TaskStages.DONE;
         }
 
-        epicTask.setTaskStatus(status);
+        epicTask.setTaskStatus(String.valueOf(status));
         return epicTask;
     }
 }
