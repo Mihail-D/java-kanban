@@ -89,7 +89,7 @@ public class ControlManager {
                             System.out.println("Получение данных Задачи.");
                             System.out.println("Введите ключ");
                             String taskKey = scanner.next();
-                            taskGetter.getTaskTask(taskKey);
+                            taskGetter.getTask(taskKey);
                             break;
                         case 2:
                             System.out.println("Введите ключ");

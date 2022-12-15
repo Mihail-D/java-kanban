@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 public class TaskGetter {
 
-    public String getTaskTask(String key) {
+    public String getTask(String key) {
         Task task = ControlManager.tasksStorage.get(key);
         String taskTitle = task.getTaskTitle() + ",";
         String taskDescription = task.getTaskDescription() + ",";
@@ -43,7 +43,7 @@ public class TaskGetter {
         ArrayList<String> tasksList = new ArrayList<>();
 
         for (String i : ControlManager.tasksStorage.keySet()) {
-            tasksList.add(getTaskTask(i));
+            tasksList.add(getTask(i));
         }
 
         return tasksList;
