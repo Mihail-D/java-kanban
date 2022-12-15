@@ -1,6 +1,6 @@
 package tasks;
 
-public class SubTask extends AbstractTask {
+public class SubTask extends Task {
     String parentId;
 
     public SubTask(String taskTitle, String taskDescription, String taskId, TaskStages taskStatus, String parentId) {
