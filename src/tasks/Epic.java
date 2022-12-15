@@ -14,11 +14,6 @@ public class Epic extends AbstractTask {
     }
 
     @Override
-    public void setTaskTitle(String taskTitle) {
-        this.taskTitle = taskTitle;
-    }
-
-    @Override
     public String toString() {
         return "Epic{ relatedSubTask" + relatedSubTask + " " + super.toString();
     }
