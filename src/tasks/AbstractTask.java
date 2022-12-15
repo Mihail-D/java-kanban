@@ -79,9 +79,9 @@ public abstract class AbstractTask {
     @Override
     public String toString() {
         return "Title='" + taskTitle + '\'' +
-                ", taskDescription='" + taskDescription + '\'' +
-                ", taskId=" + taskId +
-                ", taskStatus='" + taskStatus + '\'' +
+                ", Description='" + taskDescription + '\'' +
+                ", Id=" + taskId +
+                ", Status='" + taskStatus + '\'' +
                 '}';
     }
 }

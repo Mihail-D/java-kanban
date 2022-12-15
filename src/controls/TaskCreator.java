@@ -13,12 +13,12 @@ public class TaskCreator {
 
     int taskId = 0;
     int epicId = 0;
-    int subTuskId = 0;
+    int subTaskId = 0;
 
     public Task taskCreate() {
-        //System.out.println("title");
+        System.out.println("title");
         String title = scanner.next();
-        //System.out.println("description");
+        System.out.println("description");
         String taskDescription = scanner.next();
         TaskStages taskStatus = TaskStages.NEW;
         String id = getId(1);
@@ -26,9 +26,9 @@ public class TaskCreator {
     }
 
     public Epic epicCreate() {
-        //System.out.println("title");
+        System.out.println("title");
         String title = scanner.next();
-        //System.out.println("description");
+        System.out.println("description");
         String taskDescription = scanner.next();
         TaskStages taskStatus = TaskStages.NEW;
         String id = getId(2);
@@ -37,7 +37,7 @@ public class TaskCreator {
     }
 
     public SubTask subTaskCreate() {
-        //System.out.println("parent");
+        System.out.println("parent");
         String parentId = scanner.next();
         Epic parent = ControlManager.epicStorage.get(parentId);
 
@@ -46,16 +46,17 @@ public class TaskCreator {
             parentId = scanner.next();
         }
 
-        //System.out.println("title");
+        System.out.println("title");
         String title = scanner.next();
-        //System.out.println("description");
+        System.out.println("description");
         String taskDescription = scanner.next();
         TaskStages taskStatus = TaskStages.NEW;
-        String subTaskId = getId(3);
+        String taskId = getId(3);
 
+        parent.relatedSubTask.put(taskId, String.valueOf(taskStatus));
         ControlManager.epicStorage.put(parentId, parent);
 
-        return new SubTask(title, taskDescription, parentId, taskStatus, subTaskId);
+        return new SubTask(title, taskDescription, taskId, taskStatus, parentId);
     }
 
     private String getId(int mode) {
@@ -72,8 +73,8 @@ public class TaskCreator {
                 id = "e." + epicId;
                 break;
             case 3:
-                subTuskId++;
-                id = "sub." + subTuskId;
+                subTaskId++;
+                id = "sub." + subTaskId;
                 break;
         }
 

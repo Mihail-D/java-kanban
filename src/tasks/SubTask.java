@@ -1,22 +1,17 @@
 package tasks;
 
 public class SubTask extends AbstractTask {
-    private String subTaskId;
+    String parentId;
 
-    public SubTask(
-            String taskTitle, String taskDescription, String parentId, TaskStages taskStatus,
-            String subTaskId
-    ) {
-        super(taskTitle, taskDescription, parentId, taskStatus);
-        this.subTaskId = subTaskId;
+    public SubTask(String taskTitle, String taskDescription, String taskId, TaskStages taskStatus, String parentId) {
+        super(taskTitle, taskDescription, taskId, taskStatus);
+        this.parentId = parentId;
     }
 
-    public String getSubTaskId() {
-        return subTaskId;
-    }
     @Override
     public String toString() {
-        return "SubTask{subTaskId=" + subTaskId + " " + super.toString();
+        return "SubTask{" +
+                "parentId='" + parentId + '\'' + " " + super.toString() + '}';
     }
 }
 
