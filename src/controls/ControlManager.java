@@ -7,6 +7,7 @@ import tasks.TaskStages;
 
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.TreeSet;
 
 public class ControlManager {
     Scanner scanner = new Scanner(System.in);
@@ -14,11 +15,13 @@ public class ControlManager {
     int taskId = 0;
     int epicId = 0;
     int subTaskId = 0;
-    
+
     public void getControlOptions() {
 
         Scanner scanner = new Scanner(System.in);
         int item;
+        String taskKey;
+        String subTaskKey;
 
         while (true) {
             System.out.println("Тип действий с записями");
@@ -26,38 +29,26 @@ public class ControlManager {
 
             switch (item) {
                 case 1:
-                    System.out.println("Создание объекта. Сам объект должен передаваться в качестве параметра.");
-                    System.out.println("Выбрать типа объекта");
-                    item = scanner.nextInt();
+                    System.out.println("Создание объекта.");
                     taskAdd();
                     System.out.println(tasksStorage); // TODO
                     break;
                 case 2:
-                    System.out.println("Обновление.");
-                    System.out.println("Какой тип записи обновить?");
-                    item = scanner.nextInt();
+                    System.out.println("Обновление объекта.");
 
-                    switch (item) {
-                        case 1:
-                            System.out.println("Введите номер ключа");
-                            String taskKey = scanner.next();
+                    System.out.println("Task Key");
+                    taskKey = scanner.next();
 
-                            break;
-                        case 2:
-                            System.out.println("Введите ключ");
-                            String epicKey = scanner.next();
-
-                            break;
-                        case 3:
-                            System.out.println("Введите ключ");
-                            String subTaskKey = scanner.next();
-                            System.out.println("Введите ключ основной задачи");
-                            String parentKey = scanner.next();
-
-                            break;
+                    if (taskKey.charAt(0) == 's') {
+                        System.out.println("Parent Key");
+                        String parentKey = scanner.next();
+                        taskUpdate(taskKey, parentKey);
+                    }
+                    else {
+                        taskUpdate(taskKey);
                     }
                     break;
-                case 3:
+/*                case 3:
                     System.out.println("Получение по идентификатору.");
                     System.out.println("Какой тип записи получить?");
                     item = scanner.nextInt();
@@ -66,7 +57,7 @@ public class ControlManager {
                         case 1:
                             System.out.println("Получение данных Задачи.");
                             System.out.println("Введите ключ");
-                            String taskKey = scanner.next();
+                            taskKey = scanner.next();
 
                             break;
                         case 2:
@@ -77,33 +68,33 @@ public class ControlManager {
                         case 3:
                             System.out.println("Получение данных Подзадачи.");
                             System.out.println("Введите ключ");
-                            String subTaskKey = scanner.next();
+                            subTaskKey = scanner.next();
 
                             break;
                     }
-                    break;
-                case 4:
+                    break;*/
+/*                case 4:
                     System.out.println("Получение списка всех задач.");
 
-                    break;
-                case 5:
+                    break;*/
+/*                case 5:
                     System.out.println("Получение списка всех подзадач определённого эпика.");
                     System.out.println("Введите ключ");
                     String key = scanner.next();
 
-                    break;
-                case 6:
+                    break;*/
+/*                case 6:
                     System.out.println("Удаление по идентификатору.");
                     System.out.println("Введите ключ подзадачи");
-                    String taskKey = scanner.next();
+                    taskKey = scanner.next();
                     System.out.println("Введите ключ эпика");
                     String parentKey = scanner.next();
 
-                    break;
-                case 7:
+                    break;*/
+/*                case 7:
                     System.out.println("Удаление всех задач.");
 
-                    break;
+                    break;*/
                 case 0:
                     return;
             }
@@ -121,23 +112,68 @@ public class ControlManager {
         String taskId = getId(mode);
 
         switch (mode) {
-            case "taskMode":
+            case "q": // "taskMode" // TODO
                 tasksStorage.put(taskId, new Task(taskTitle, taskDescription, taskId, taskStatus));
                 break;
-            case "epicMode":
-                //HashMap<String, String> relatedTasks = new HashMap<>();
+            case "w": // "epicMode" // TODO
                 tasksStorage.put(taskId, new Epic(taskTitle, taskDescription, taskId, taskStatus, new HashMap<>()));
                 break;
-            case "subTaskMode":
+            case "e": // "subTaskMode" // TODO
                 System.out.println("parent ID");
                 String parentId = scanner.next();
                 Epic parentTask = (Epic) tasksStorage.get(parentId);
                 parentTask.relatedSubTask.put(taskId, String.valueOf(taskStatus));
+                setEpicStatus(parentId);
                 tasksStorage.put(taskId, new SubTask(taskTitle, taskDescription, taskId, taskStatus, parentId));
+                break;
+        }
+    }
+
+    public void taskUpdate(String... args) {
+        String taskKey = args[0];
+        Task task = tasksStorage.get(taskKey);
+
+        System.out.println("title");
+        String title = scanner.next();
+        task.setTaskTitle(title);
+
+        System.out.println("description");
+        String taskDescription = scanner.next();
+        task.setTaskDescription(taskDescription);
+
+        String keyChunk = taskKey.substring(0, 1);
+
+        switch (keyChunk) {
+            case "t":
+                System.out.println("status");
+                String taskStatus = scanner.next();
+                task.setTaskStatus(taskStatus);
+                tasksStorage.put(taskKey, task);
+                System.out.println(tasksStorage); // TODO
+                break;
+            case "e":
+                setEpicStatus(taskKey);
+                System.out.println(tasksStorage); // TODO
+                break;
+            case "s":
+                String parentKey = args[1];
+                Epic parentTask = (Epic) tasksStorage.get(parentKey);
+
+                System.out.println("status");
+                taskStatus = scanner.next();
+                task.setTaskStatus(taskStatus);
+
+                parentTask.relatedSubTask.put(taskKey, taskStatus);
+
+                tasksStorage.put(taskKey, task);
+                setEpicStatus(parentKey);
+                System.out.println(tasksStorage); // TODO
                 break;
         }
 
     }
+
+    // TODO                                         SERVICE METHODS
 
     private String getId(String taskMode) {
         String id = null;
@@ -151,13 +187,29 @@ public class ControlManager {
                 epicId++;
                 id = "e." + epicId;
                 break;
-            case "e": // subTaskMode  // TODO   
+            case "e": // subTaskMode  // TODO
                 subTaskId++;
                 id = "sub." + subTaskId;
                 break;
         }
 
         return id;
+    }
+
+    public void setEpicStatus(String key) {
+        Epic epicTask = (Epic) tasksStorage.get(key);
+        TaskStages status = TaskStages.IN_PROGRESS;
+
+        TreeSet<String> set = new TreeSet<>(epicTask.relatedSubTask.values());
+
+        if ((set.size() == 1 && set.contains("NEW")) || set.isEmpty()) {
+            status = TaskStages.NEW;
+        }
+        else if (set.size() == 1 && set.contains("DONE")) {
+            status = TaskStages.DONE;
+        }
+
+        epicTask.setTaskStatus(String.valueOf(status));
     }
 }
 
