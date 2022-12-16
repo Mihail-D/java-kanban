@@ -69,14 +69,23 @@ public class ControlManager {
                     System.out.println(collectEpicSubtasks(taskKey)); // TODO
 
                     break;
-/*                case 6:
+                case 6:
                     System.out.println("Удаление по идентификатору.");
-                    System.out.println("Введите ключ подзадачи");
+                    System.out.println("Введите ключ задачи");
                     taskKey = scanner.next();
-                    System.out.println("Введите ключ эпика");
-                    String parentKey = scanner.next();
 
-                    break;*/
+                    if (taskKey.charAt(0) == 's') {
+                        System.out.println("Parent Key");
+                        String parentKey = scanner.next();
+                        // TODO    очистить эпик
+                        taskDelete(taskKey, parentKey);
+                    }
+                    else {
+                        taskDelete(taskKey);
+                    }
+
+
+                    break;
 /*                case 7:
                     System.out.println("Удаление всех задач.");
 
@@ -191,14 +200,48 @@ public class ControlManager {
 
     public ArrayList<String> collectEpicSubtasks(String taskKey) {
         ArrayList<String> localTasksList = new ArrayList<>();
-        Epic epic = (Epic) tasksStorage.get(taskKey);
-        HashMap<String, String> relatedSubTasks = epic.relatedSubTask;
+        Epic epicTask = (Epic) tasksStorage.get(taskKey);
+        HashMap<String, String> relatedSubTasks = epicTask.relatedSubTask;
 
         for (String i : relatedSubTasks.keySet()) {
             localTasksList.add(taskRetrieve(i));
         }
 
         return localTasksList;
+    }
+
+    public void taskDelete (String ...args) {
+        String taskKey = args[0];
+        String keyChunk = taskKey.substring(0, 1);
+
+        switch (keyChunk) {
+            case "t":
+                tasksStorage.remove(taskKey);
+                System.out.println(tasksStorage); // TODO
+                break;
+            case "e":
+                Epic epicTask = (Epic) tasksStorage.get(taskKey);
+                HashMap<String, String> relatedSubTasks = epicTask.relatedSubTask;
+
+                for (String i : relatedSubTasks.keySet()) {
+                    tasksStorage.remove(i);
+                }
+
+                tasksStorage.remove(taskKey);
+
+                System.out.println(tasksStorage); // TODO
+                break;
+            case "s":
+                String parentKey = args[1];
+                epicTask = (Epic) tasksStorage.get(parentKey);
+                relatedSubTasks = epicTask.relatedSubTask;
+                relatedSubTasks.remove(taskKey);
+                setEpicStatus(parentKey);
+                tasksStorage.remove(taskKey);
+
+                System.out.println(tasksStorage); // TODO
+                break;
+        }
     }
 
     // TODO                                         SERVICE METHODS
