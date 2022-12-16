@@ -83,13 +83,15 @@ public class ControlManager {
                     else {
                         taskDelete(taskKey);
                     }
+                    break;
+                case 7:
+                    System.out.println(tasksStorage); // TODO   
+                    System.out.println("Удаление всех задач.");
+                    tasksClear();
 
+                    System.out.println(tasksStorage); // TODO   
 
                     break;
-/*                case 7:
-                    System.out.println("Удаление всех задач.");
-
-                    break;*/
                 case 0:
                     return;
             }
@@ -242,6 +244,10 @@ public class ControlManager {
                 System.out.println(tasksStorage); // TODO
                 break;
         }
+    }
+
+    public void tasksClear() {
+        tasksStorage.clear();
     }
 
     // TODO                                         SERVICE METHODS
