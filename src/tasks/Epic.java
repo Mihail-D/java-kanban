@@ -15,7 +15,7 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return "Epic{" +
+        return "Epic {" +
                 "relatedSubTask=" + relatedSubTask +
                 ", taskTitle='" + taskTitle + '\'' + super.toString() +
                 '}';

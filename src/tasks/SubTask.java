@@ -10,7 +10,7 @@ public class SubTask extends Task {
 
     @Override
     public String toString() {
-        return "SubTask{" +
+        return "SubTask {" +
                 "parentId='" + parentId + '\'' + " " + super.toString() + '}';
     }
 }

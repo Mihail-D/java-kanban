@@ -5,9 +5,7 @@ import tasks.SubTask;
 import tasks.Task;
 import tasks.TaskStages;
 
-import java.util.HashMap;
-import java.util.Scanner;
-import java.util.TreeSet;
+import java.util.*;
 
 public class ControlManager {
     Scanner scanner = new Scanner(System.in);
@@ -48,35 +46,20 @@ public class ControlManager {
                         taskUpdate(taskKey);
                     }
                     break;
-/*                case 3:
+                case 3:
                     System.out.println("Получение по идентификатору.");
-                    System.out.println("Какой тип записи получить?");
-                    item = scanner.nextInt();
+                    System.out.println("Task Key");
+                    taskKey = scanner.next();
+                    taskRetrieve(taskKey);
 
-                    switch (item) {
-                        case 1:
-                            System.out.println("Получение данных Задачи.");
-                            System.out.println("Введите ключ");
-                            taskKey = scanner.next();
+                    System.out.println(taskRetrieve(taskKey));     // TODO
 
-                            break;
-                        case 2:
-                            System.out.println("Введите ключ");
-                            String epicKey = scanner.next();
-
-                            break;
-                        case 3:
-                            System.out.println("Получение данных Подзадачи.");
-                            System.out.println("Введите ключ");
-                            subTaskKey = scanner.next();
-
-                            break;
-                    }
-                    break;*/
-/*                case 4:
+                    break;
+                case 4:
                     System.out.println("Получение списка всех задач.");
-
-                    break;*/
+                    collectAllTasks();
+                    System.out.println(Arrays.toString(collectAllTasks())); // TODO   
+                    break;
 /*                case 5:
                     System.out.println("Получение списка всех подзадач определённого эпика.");
                     System.out.println("Введите ключ");
@@ -171,6 +154,36 @@ public class ControlManager {
                 break;
         }
 
+    }
+
+    public String taskRetrieve(String taskKey) {
+        Task task = tasksStorage.get(taskKey);
+        String taskTitle = task.getTaskTitle() + ",";
+        String taskDescription = task.getTaskDescription() + ",";
+        taskKey = task.getTaskId() + ",";
+        String taskStatus = String.valueOf(task.getTaskStatus());
+
+        return taskTitle + taskDescription + taskKey + taskStatus;
+    }
+
+    public ArrayList<String>[] collectAllTasks() {
+         ArrayList<String> listOfTasks = new ArrayList<>();
+         ArrayList<String> listOfEpics = new ArrayList<>();
+         ArrayList<String> listOfSubTasks = new ArrayList<>();
+
+         for (String i : tasksStorage.keySet()) {
+             if (i.startsWith("t")) {
+                 listOfTasks.add(taskRetrieve(i));
+             }
+             else if (i.startsWith("e")) {
+                 listOfEpics.add(taskRetrieve(i));
+             }
+             if (i.startsWith("s")) {
+                 listOfSubTasks.add(taskRetrieve(i));
+             }
+         }
+
+         return new ArrayList[]{listOfTasks, listOfEpics, listOfSubTasks};
     }
 
     // TODO                                         SERVICE METHODS
