@@ -3,14 +3,18 @@ package controls;
 import tasks.Epic;
 import tasks.SubTask;
 import tasks.Task;
+import tasks.TaskStages;
 
 import java.util.HashMap;
 import java.util.Scanner;
 
 public class ControlManager {
-
+    Scanner scanner = new Scanner(System.in);
     static HashMap<String, Task> tasksStorage = new HashMap<>();
-
+    int taskId = 0;
+    int epicId = 0;
+    int subTaskId = 0;
+    
     public void getControlOptions() {
 
         Scanner scanner = new Scanner(System.in);
@@ -25,17 +29,8 @@ public class ControlManager {
                     System.out.println("Создание объекта. Сам объект должен передаваться в качестве параметра.");
                     System.out.println("Выбрать типа объекта");
                     item = scanner.nextInt();
-                    switch (item) {
-                        case 1:
-
-                            break;
-                        case 2:
-
-                            break;
-                        case 3:
-
-                            break;
-                    }
+                    taskAdd();
+                    System.out.println(tasksStorage); // TODO
                     break;
                 case 2:
                     System.out.println("Обновление.");
@@ -113,6 +108,56 @@ public class ControlManager {
                     return;
             }
         }
+    }
+
+    public void taskAdd() {
+        System.out.println("title");
+        String taskTitle = scanner.next();
+        System.out.println("description");
+        String taskDescription = scanner.next();
+        TaskStages taskStatus = TaskStages.NEW;
+        System.out.println("task type");
+        String mode = scanner.next();
+        String taskId = getId(mode);
+
+        switch (mode) {
+            case "taskMode":
+                tasksStorage.put(taskId, new Task(taskTitle, taskDescription, taskId, taskStatus));
+                break;
+            case "epicMode":
+                //HashMap<String, String> relatedTasks = new HashMap<>();
+                tasksStorage.put(taskId, new Epic(taskTitle, taskDescription, taskId, taskStatus, new HashMap<>()));
+                break;
+            case "subTaskMode":
+                System.out.println("parent ID");
+                String parentId = scanner.next();
+                Epic parentTask = (Epic) tasksStorage.get(parentId);
+                parentTask.relatedSubTask.put(taskId, String.valueOf(taskStatus));
+                tasksStorage.put(taskId, new SubTask(taskTitle, taskDescription, taskId, taskStatus, parentId));
+                break;
+        }
+
+    }
+
+    private String getId(String taskMode) {
+        String id = null;
+
+        switch (taskMode) {
+            case "q": // taskMode // TODO   
+                taskId++;
+                id = "t." + taskId;
+                break;
+            case "w":  // epicMode // TODO   
+                epicId++;
+                id = "e." + epicId;
+                break;
+            case "e": // subTaskMode  // TODO   
+                subTaskId++;
+                id = "sub." + subTaskId;
+                break;
+        }
+
+        return id;
     }
 }
 

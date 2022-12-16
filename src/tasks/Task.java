@@ -55,18 +55,18 @@ public class Task {
             return false;
         }
 
-        AbstractTask that = (AbstractTask) o;
+        Task task = (Task) o;
 
-        if (getTaskId() != that.getTaskId()) {
+        if (!getTaskTitle().equals(task.getTaskTitle())) {
             return false;
         }
-        if (!getTaskTitle().equals(that.getTaskTitle())) {
+        if (!getTaskDescription().equals(task.getTaskDescription())) {
             return false;
         }
-        if (!getTaskDescription().equals(that.getTaskDescription())) {
+        if (!getTaskId().equals(task.getTaskId())) {
             return false;
         }
-        return getTaskStatus().equals(that.getTaskStatus());
+        return getTaskStatus() == task.getTaskStatus();
     }
     @Override
     public int hashCode() {

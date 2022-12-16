@@ -12,4 +12,12 @@ public class Epic extends Task {
         super(taskTitle, taskDescription, taskId, taskStatus);
         this.relatedSubTask = relatedSubTask;
     }
+
+    @Override
+    public String toString() {
+        return "Epic{" +
+                "relatedSubTask=" + relatedSubTask +
+                ", taskTitle='" + taskTitle + '\'' + super.toString() +
+                '}';
+    }
 }
