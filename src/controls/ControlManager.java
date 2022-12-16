@@ -60,12 +60,15 @@ public class ControlManager {
                     collectAllTasks();
                     System.out.println(Arrays.toString(collectAllTasks())); // TODO   
                     break;
-/*                case 5:
+                case 5:
                     System.out.println("Получение списка всех подзадач определённого эпика.");
                     System.out.println("Введите ключ");
-                    String key = scanner.next();
+                    taskKey = scanner.next();
+                    collectEpicSubtasks(taskKey);
 
-                    break;*/
+                    System.out.println(collectEpicSubtasks(taskKey)); // TODO
+
+                    break;
 /*                case 6:
                     System.out.println("Удаление по идентификатору.");
                     System.out.println("Введите ключ подзадачи");
@@ -184,6 +187,18 @@ public class ControlManager {
          }
 
          return new ArrayList[]{listOfTasks, listOfEpics, listOfSubTasks};
+    }
+
+    public ArrayList<String> collectEpicSubtasks(String taskKey) {
+        ArrayList<String> localTasksList = new ArrayList<>();
+        Epic epic = (Epic) tasksStorage.get(taskKey);
+        HashMap<String, String> relatedSubTasks = epic.relatedSubTask;
+
+        for (String i : relatedSubTasks.keySet()) {
+            localTasksList.add(taskRetrieve(i));
+        }
+
+        return localTasksList;
     }
 
     // TODO                                         SERVICE METHODS
