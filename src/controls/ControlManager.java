@@ -22,23 +22,16 @@ public class ControlManager {
         String parentKey;
 
         while (true) {
-            System.out.println("Тип действий с записями");
             item = scanner.nextInt();
 
             switch (item) {
                 case 1:
-                    System.out.println("Создание объекта.");
                     taskAdd();
-                    System.out.println(tasksStorage); // TODO
                     break;
                 case 2:
-                    System.out.println("Обновление объекта.");
-
-                    System.out.println("Task Key");
                     taskKey = scanner.next();
 
                     if (taskKey.charAt(0) == 's') {
-                        System.out.println("Parent Key");
                         parentKey = scanner.next();
                         taskUpdate(taskKey, parentKey);
                     }
@@ -47,35 +40,20 @@ public class ControlManager {
                     }
                     break;
                 case 3:
-                    System.out.println("Получение по идентификатору.");
-                    System.out.println("Task Key");
                     taskKey = scanner.next();
                     taskRetrieve(taskKey);
-
-                    System.out.println(taskRetrieve(taskKey));     // TODO
-
                     break;
                 case 4:
-                    System.out.println("Получение списка всех задач.");
                     collectAllTasks();
-                    System.out.println(Arrays.toString(collectAllTasks())); // TODO   
                     break;
                 case 5:
-                    System.out.println("Получение списка всех подзадач определённого эпика.");
-                    System.out.println("Введите ключ");
                     taskKey = scanner.next();
                     collectEpicSubtasks(taskKey);
-
-                    System.out.println(collectEpicSubtasks(taskKey)); // TODO
-
                     break;
                 case 6:
-                    System.out.println("Удаление по идентификатору.");
-                    System.out.println("Введите ключ задачи");
                     taskKey = scanner.next();
 
                     if (taskKey.charAt(0) == 's') {
-                        System.out.println("Parent Key");
                         parentKey = scanner.next();
                         taskDelete(taskKey, parentKey);
                     }
@@ -84,12 +62,7 @@ public class ControlManager {
                     }
                     break;
                 case 7:
-                    System.out.println(tasksStorage); // TODO   
-                    System.out.println("Удаление всех задач.");
                     tasksClear();
-
-                    System.out.println(tasksStorage); // TODO   
-
                     break;
                 case 0:
                     return;
@@ -98,24 +71,20 @@ public class ControlManager {
     }
 
     public void taskAdd() {
-        System.out.println("title");
         String taskTitle = scanner.next();
-        System.out.println("description");
         String taskDescription = scanner.next();
         TaskStages taskStatus = TaskStages.NEW;
-        System.out.println("task type");
         String mode = scanner.next();
         String taskId = getId(mode);
 
         switch (mode) {
-            case "q": // "taskMode" // TODO
+            case "taskMode":
                 tasksStorage.put(taskId, new Task(taskTitle, taskDescription, taskId, taskStatus));
                 break;
-            case "w": // "epicMode" // TODO
+            case "epicMode":
                 tasksStorage.put(taskId, new Epic(taskTitle, taskDescription, taskId, taskStatus, new HashMap<>()));
                 break;
-            case "e": // "subTaskMode" // TODO
-                System.out.println("parent ID");
+            case "subTaskMode":
                 String parentId = scanner.next();
                 Epic parentTask = (Epic) tasksStorage.get(parentId);
                 parentTask.relatedSubTask.put(taskId, String.valueOf(taskStatus));
@@ -129,11 +98,9 @@ public class ControlManager {
         String taskKey = args[0];
         Task task = tasksStorage.get(taskKey);
 
-        System.out.println("title");
         String title = scanner.next();
         task.setTaskTitle(title);
 
-        System.out.println("description");
         String taskDescription = scanner.next();
         task.setTaskDescription(taskDescription);
 
@@ -141,21 +108,17 @@ public class ControlManager {
 
         switch (keyChunk) {
             case "t":
-                System.out.println("status");
                 String taskStatus = scanner.next();
                 task.setTaskStatus(taskStatus);
                 tasksStorage.put(taskKey, task);
-                System.out.println(tasksStorage); // TODO
                 break;
             case "e":
                 setEpicStatus(taskKey);
-                System.out.println(tasksStorage); // TODO
                 break;
             case "s":
                 String parentKey = args[1];
                 Epic parentTask = (Epic) tasksStorage.get(parentKey);
 
-                System.out.println("status");
                 taskStatus = scanner.next();
                 task.setTaskStatus(taskStatus);
 
@@ -163,7 +126,6 @@ public class ControlManager {
 
                 tasksStorage.put(taskKey, task);
                 setEpicStatus(parentKey);
-                System.out.println(tasksStorage); // TODO
                 break;
         }
     }
@@ -217,7 +179,6 @@ public class ControlManager {
         switch (keyChunk) {
             case "t":
                 tasksStorage.remove(taskKey);
-                System.out.println(tasksStorage); // TODO
                 break;
             case "e":
                 Epic epicTask = (Epic) tasksStorage.get(taskKey);
@@ -226,10 +187,7 @@ public class ControlManager {
                 for (String i : relatedSubTasks.keySet()) {
                     tasksStorage.remove(i);
                 }
-
                 tasksStorage.remove(taskKey);
-
-                System.out.println(tasksStorage); // TODO
                 break;
             case "s":
                 String parentKey = args[1];
@@ -239,7 +197,6 @@ public class ControlManager {
                 setEpicStatus(parentKey);
                 tasksStorage.remove(taskKey);
 
-                System.out.println(tasksStorage); // TODO
                 break;
         }
     }
@@ -248,21 +205,19 @@ public class ControlManager {
         tasksStorage.clear();
     }
 
-    // TODO                                         SERVICE METHODS
-
     private String getId(String taskMode) {
         String id = null;
 
         switch (taskMode) {
-            case "q": // taskMode // TODO   
+            case "taskMode":
                 taskId++;
                 id = "t." + taskId;
                 break;
-            case "w":  // epicMode // TODO   
+            case "epicMode":
                 epicId++;
                 id = "e." + epicId;
                 break;
-            case "e": // subTaskMode  // TODO
+            case "subTaskMode":
                 subTaskId++;
                 id = "sub." + subTaskId;
                 break;
