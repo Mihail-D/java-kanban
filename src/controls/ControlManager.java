@@ -58,7 +58,7 @@ public class ControlManager {
             case "t":
                 System.out.println("status");
                 String taskStatus = scanner.next();
-                task.setTaskStatus(taskStatus);
+                task.setTaskStatus(TaskStages.valueOf(taskStatus));
                 tasksStorage.put(taskKey, task);
                 System.out.println(tasksStorage); // TODO
                 break;
@@ -72,7 +72,7 @@ public class ControlManager {
 
                 System.out.println("status");
                 taskStatus = scanner.next();
-                task.setTaskStatus(taskStatus);
+                task.setTaskStatus(TaskStages.valueOf(taskStatus));
 
                 parentTask.relatedSubTask.put(taskKey, taskStatus);
 
@@ -199,7 +199,7 @@ public class ControlManager {
             status = TaskStages.DONE;
         }
 
-        epicTask.setTaskStatus(String.valueOf(status));
+        epicTask.setTaskStatus(status);
     }
 }
 

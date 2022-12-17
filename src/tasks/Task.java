@@ -32,18 +32,8 @@ public class Task {
     public void setTaskDescription(String taskDescription) {
         this.taskDescription = taskDescription;
     }
-    public void setTaskStatus(String taskStatus) {
-        switch (taskStatus) {
-            case "NEW":
-                this.taskStatus = TaskStages.NEW;
-                break;
-            case "IN_PROGRESS":
-                this.taskStatus = TaskStages.IN_PROGRESS;
-                break;
-            case "DONE":
-                this.taskStatus = TaskStages.DONE;
-                break;
-        }
+    public void setTaskStatus(TaskStages taskStatus) {
+                this.taskStatus = taskStatus;
     }
 
     @Override
