@@ -9,93 +9,8 @@ import java.util.*;
 
 public class ControlManager {
     Scanner scanner = new Scanner(System.in);
-    static HashMap<String, Task> tasksStorage = new HashMap<>();
+    public static HashMap<String, Task> tasksStorage = new HashMap<>();
     int taskId = 0;
-    int epicId = 0;
-    int subTaskId = 0;
-
-    public void getControlOptions() {
-
-        Scanner scanner = new Scanner(System.in);
-        int item;
-        String taskKey;
-        String parentKey;
-
-        while (true) {
-            System.out.println("Тип действий с записями");
-            item = scanner.nextInt();
-
-            switch (item) {
-                case 1:
-                    System.out.println("Создание объекта.");
-                    taskAdd();
-                    System.out.println(tasksStorage); // TODO
-                    break;
-                case 2:
-                    System.out.println("Обновление объекта.");
-
-                    System.out.println("Task Key");
-                    taskKey = scanner.next();
-
-                    if (taskKey.charAt(0) == 's') {
-                        System.out.println("Parent Key");
-                        parentKey = scanner.next();
-                        taskUpdate(taskKey, parentKey);
-                    }
-                    else {
-                        taskUpdate(taskKey);
-                    }
-                    break;
-                case 3:
-                    System.out.println("Получение по идентификатору.");
-                    System.out.println("Task Key");
-                    taskKey = scanner.next();
-                    taskRetrieve(taskKey);
-
-                    System.out.println(taskRetrieve(taskKey));     // TODO
-
-                    break;
-                case 4:
-                    System.out.println("Получение списка всех задач.");
-                    collectAllTasks();
-                    System.out.println(Arrays.toString(collectAllTasks())); // TODO   
-                    break;
-                case 5:
-                    System.out.println("Получение списка всех подзадач определённого эпика.");
-                    System.out.println("Введите ключ");
-                    taskKey = scanner.next();
-                    collectEpicSubtasks(taskKey);
-
-                    System.out.println(collectEpicSubtasks(taskKey)); // TODO
-
-                    break;
-                case 6:
-                    System.out.println("Удаление по идентификатору.");
-                    System.out.println("Введите ключ задачи");
-                    taskKey = scanner.next();
-
-                    if (taskKey.charAt(0) == 's') {
-                        System.out.println("Parent Key");
-                        parentKey = scanner.next();
-                        taskDelete(taskKey, parentKey);
-                    }
-                    else {
-                        taskDelete(taskKey);
-                    }
-                    break;
-                case 7:
-                    System.out.println(tasksStorage); // TODO   
-                    System.out.println("Удаление всех задач.");
-                    tasksClear();
-
-                    System.out.println(tasksStorage); // TODO   
-
-                    break;
-                case 0:
-                    return;
-            }
-        }
-    }
 
     public void taskAdd() {
         System.out.println("title");
@@ -259,12 +174,12 @@ public class ControlManager {
                 id = "t." + taskId;
                 break;
             case "w":  // epicMode // TODO   
-                epicId++;
-                id = "e." + epicId;
+                taskId++;
+                id = "e." + taskId;
                 break;
             case "e": // subTaskMode  // TODO
-                subTaskId++;
-                id = "sub." + subTaskId;
+                taskId++;
+                id = "sub." + taskId;
                 break;
         }
 
