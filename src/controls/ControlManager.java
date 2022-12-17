@@ -19,7 +19,7 @@ public class ControlManager {
         Scanner scanner = new Scanner(System.in);
         int item;
         String taskKey;
-        String subTaskKey;
+        String parentKey;
 
         while (true) {
             System.out.println("Тип действий с записями");
@@ -39,7 +39,7 @@ public class ControlManager {
 
                     if (taskKey.charAt(0) == 's') {
                         System.out.println("Parent Key");
-                        String parentKey = scanner.next();
+                        parentKey = scanner.next();
                         taskUpdate(taskKey, parentKey);
                     }
                     else {
@@ -76,8 +76,7 @@ public class ControlManager {
 
                     if (taskKey.charAt(0) == 's') {
                         System.out.println("Parent Key");
-                        String parentKey = scanner.next();
-                        // TODO    очистить эпик
+                        parentKey = scanner.next();
                         taskDelete(taskKey, parentKey);
                     }
                     else {
@@ -167,7 +166,6 @@ public class ControlManager {
                 System.out.println(tasksStorage); // TODO
                 break;
         }
-
     }
 
     public String taskRetrieve(String taskKey) {
@@ -181,23 +179,23 @@ public class ControlManager {
     }
 
     public ArrayList<String>[] collectAllTasks() {
-         ArrayList<String> listOfTasks = new ArrayList<>();
-         ArrayList<String> listOfEpics = new ArrayList<>();
-         ArrayList<String> listOfSubTasks = new ArrayList<>();
+        ArrayList<String> listOfTasks = new ArrayList<>();
+        ArrayList<String> listOfEpics = new ArrayList<>();
+        ArrayList<String> listOfSubTasks = new ArrayList<>();
 
-         for (String i : tasksStorage.keySet()) {
-             if (i.startsWith("t")) {
-                 listOfTasks.add(taskRetrieve(i));
-             }
-             else if (i.startsWith("e")) {
-                 listOfEpics.add(taskRetrieve(i));
-             }
-             if (i.startsWith("s")) {
-                 listOfSubTasks.add(taskRetrieve(i));
-             }
-         }
+        for (String i : tasksStorage.keySet()) {
+            if (i.startsWith("t")) {
+                listOfTasks.add(taskRetrieve(i));
+            }
+            else if (i.startsWith("e")) {
+                listOfEpics.add(taskRetrieve(i));
+            }
+            if (i.startsWith("s")) {
+                listOfSubTasks.add(taskRetrieve(i));
+            }
+        }
 
-         return new ArrayList[]{listOfTasks, listOfEpics, listOfSubTasks};
+        return new ArrayList[]{listOfTasks, listOfEpics, listOfSubTasks};
     }
 
     public ArrayList<String> collectEpicSubtasks(String taskKey) {
@@ -212,7 +210,7 @@ public class ControlManager {
         return localTasksList;
     }
 
-    public void taskDelete (String ...args) {
+    public void taskDelete(String... args) {
         String taskKey = args[0];
         String keyChunk = taskKey.substring(0, 1);
 

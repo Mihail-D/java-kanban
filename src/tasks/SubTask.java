@@ -14,4 +14,3 @@ public class SubTask extends Task {
                 "parentId='" + parentId + '\'' + " " + super.toString() + '}';
     }
 }
-

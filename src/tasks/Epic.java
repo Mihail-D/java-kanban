@@ -20,5 +20,3 @@ public class Epic extends Task {
                 '}';
     }
 }
-
-// "Epic {" + super.toString() + " relatedSubTask=" + relatedSubTask + "}";
