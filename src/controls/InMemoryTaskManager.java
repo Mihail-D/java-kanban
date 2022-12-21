@@ -7,7 +7,7 @@ import tasks.TaskStages;
 
 import java.util.*;
 
-public class InMemoryTaskManager implements ControlManager {
+public class InMemoryTaskManager implements TaskManager {
     Scanner scanner = new Scanner(System.in);
     public static HashMap<String, Task> tasksStorage = new HashMap<>();
     public static List<Task> historyStorage = new ArrayList<>();

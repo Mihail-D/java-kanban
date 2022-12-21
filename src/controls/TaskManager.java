@@ -5,7 +5,7 @@ import tasks.Task;
 import java.util.ArrayList;
 import java.util.List;
 
-public interface ControlManager {
+public interface TaskManager {
 
     void taskAdd();
 
