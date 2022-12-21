@@ -1,4 +1,4 @@
-import controls.ControlManager;
+import controls.InMemoryTaskManager;
 
 import java.util.Arrays;
 import java.util.Scanner;
@@ -10,7 +10,7 @@ public class Main {
     }
 
     public static void getControlOptions() {
-        ControlManager controlManager = new ControlManager();
+        InMemoryTaskManager taskManager = new InMemoryTaskManager();
         Scanner scanner = new Scanner(System.in);
         int item;
         String taskKey;
@@ -23,8 +23,8 @@ public class Main {
             switch (item) {
                 case 1:
                     System.out.println("Создание объекта.");
-                    controlManager.taskAdd();
-                    System.out.println(ControlManager.tasksStorage); // TODO
+                    taskManager.taskAdd();
+                    //System.out.println(InMemoryTaskManager.tasksStorage); // TODO
                     break;
                 case 2:
                     System.out.println("Обновление объекта.");
@@ -35,33 +35,33 @@ public class Main {
                     if (taskKey.charAt(0) == 's') {
                         System.out.println("Parent Key");
                         parentKey = scanner.next();
-                        controlManager.taskUpdate(taskKey, parentKey);
+                        taskManager.taskUpdate(taskKey, parentKey);
                     }
                     else {
-                        controlManager.taskUpdate(taskKey);
+                        taskManager.taskUpdate(taskKey);
                     }
                     break;
                 case 3:
                     System.out.println("Получение по идентификатору.");
                     System.out.println("Task Key");
                     taskKey = scanner.next();
-                    controlManager.taskRetrieve(taskKey);
+                    taskManager.taskRetrieve(taskKey);
 
-                    System.out.println(controlManager.taskRetrieve(taskKey));               // TODO
+                   // System.out.println(taskManager.taskRetrieve(taskKey));               // TODO
 
                     break;
                 case 4:
                     System.out.println("Получение списка всех задач.");
-                    controlManager.collectAllTasks();
-                    System.out.println(Arrays.toString(controlManager.collectAllTasks())); // TODO
+                    taskManager.collectAllTasks();
+                    //System.out.println(Arrays.toString(taskManager.collectAllTasks())); // TODO
                     break;
                 case 5:
                     System.out.println("Получение списка всех подзадач определённого эпика.");
                     System.out.println("Введите ключ");
                     taskKey = scanner.next();
-                    controlManager.collectEpicSubtasks(taskKey);
+                    taskManager.collectEpicSubtasks(taskKey);
 
-                    System.out.println(controlManager.collectEpicSubtasks(taskKey));        // TODO
+                   // System.out.println(taskManager.collectEpicSubtasks(taskKey));        // TODO
 
                     break;
                 case 6:
@@ -72,20 +72,26 @@ public class Main {
                     if (taskKey.charAt(0) == 's') {
                         System.out.println("Parent Key");
                         parentKey = scanner.next();
-                        controlManager.taskDelete(taskKey, parentKey);
+                        taskManager.taskDelete(taskKey, parentKey);
                     }
                     else {
-                        controlManager.taskDelete(taskKey);
+                        taskManager.taskDelete(taskKey);
                     }
                     break;
                 case 7:
-                    System.out.println(ControlManager.tasksStorage);               // TODO
+                   // System.out.println(InMemoryTaskManager.tasksStorage);               // TODO
                     System.out.println("Удаление всех задач.");
-                    controlManager.tasksClear();
+                    taskManager.tasksClear();
 
-                    System.out.println(ControlManager.tasksStorage);                // TODO
+                    //System.out.println(InMemoryTaskManager.tasksStorage);                // TODO
 
                     break;
+                case 8:
+                    System.out.println("10 последних задач.");
+                    taskManager.getHistory();
+                    System.out.println(taskManager.getHistory()); // TODO                       
+                    break;
+
                 case 0:
                     return;
             }
