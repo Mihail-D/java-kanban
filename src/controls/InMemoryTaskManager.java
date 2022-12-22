@@ -48,7 +48,7 @@ public class InMemoryTaskManager implements TaskManager {
                 ));
                 break;
         }
-        System.out.println(tasksStorage); // TODO   
+        System.out.println(tasksStorage); // TODO
     }
 
     @Override

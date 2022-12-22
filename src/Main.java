@@ -27,7 +27,7 @@ public class Main {
                 case 1:
                     System.out.println("Создание объекта.");
                     taskManager.taskAdd();
-                    //System.out.println(InMemoryTaskManager.tasksStorage); // TODO
+                    System.out.println(InMemoryTaskManager.tasksStorage); // TODO
                     break;
                 case 2:
                     System.out.println("Обновление объекта.");
@@ -50,7 +50,7 @@ public class Main {
                     taskKey = scanner.next();
                     taskManager.taskRetrieve(taskKey);
 
-                   // System.out.println(taskManager.taskRetrieve(taskKey));               // TODO
+                    System.out.println(taskManager.taskRetrieve(taskKey));               // TODO
 
                     break;
                 case 4:
@@ -64,7 +64,7 @@ public class Main {
                     taskKey = scanner.next();
                     taskManager.collectEpicSubtasks(taskKey);
 
-                   // System.out.println(taskManager.collectEpicSubtasks(taskKey));        // TODO
+                    System.out.println(taskManager.collectEpicSubtasks(taskKey));        // TODO
 
                     break;
                 case 6:
@@ -82,11 +82,11 @@ public class Main {
                     }
                     break;
                 case 7:
-                   // System.out.println(InMemoryTaskManager.tasksStorage);               // TODO
+                    System.out.println(InMemoryTaskManager.tasksStorage);               // TODO
                     System.out.println("Удаление всех задач.");
                     taskManager.tasksClear();
 
-                    //System.out.println(InMemoryTaskManager.tasksStorage);                // TODO
+                    System.out.println(InMemoryTaskManager.tasksStorage);                // TODO
 
                     break;
                 case 8:
