@@ -4,12 +4,14 @@ public class Task {
     String taskTitle;
     private String taskDescription;
     private String taskId;
+    private boolean isViewed;
     private TaskStages taskStatus;
 
-    public Task(String taskTitle, String taskDescription, String taskId, TaskStages taskStatus) {
+    public Task(String taskTitle, String taskDescription, String taskId, boolean isViewed, TaskStages taskStatus) {
         this.taskTitle = taskTitle;
         this.taskDescription = taskDescription;
         this.taskId = taskId;
+        this.isViewed = isViewed;
         this.taskStatus = taskStatus;
     }
 
@@ -22,6 +24,10 @@ public class Task {
     public String getTaskId() {
         return taskId;
     }
+
+    public boolean getViewedStatus() {
+        return isViewed;
+    }
     public TaskStages getTaskStatus() {
         return taskStatus;
     }
@@ -32,8 +38,13 @@ public class Task {
     public void setTaskDescription(String taskDescription) {
         this.taskDescription = taskDescription;
     }
+
+    public void setViewed() {
+        isViewed = true;
+    }
+
     public void setTaskStatus(TaskStages taskStatus) {
-                this.taskStatus = taskStatus;
+        this.taskStatus = taskStatus;
     }
 
     @Override
@@ -70,7 +81,6 @@ public class Task {
     public String toString() {
         return " MainTask { Title='" + taskTitle + '\'' +
                 ", Description='" + taskDescription + '\'' +
-                ", Id=" + taskId +
-                ", Status='" + taskStatus;
+                ", Id=" + taskId + ", isViewed=" + isViewed + ", Status='" + taskStatus;
     }
 }

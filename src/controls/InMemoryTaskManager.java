@@ -7,48 +7,55 @@ import tasks.TaskStages;
 
 import java.util.*;
 
-public class ControlManager {
+import static controls.InMemoryHistoryManager.historyStorage;
+
+public class InMemoryTaskManager implements TaskManager {
+    HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
+
     Scanner scanner = new Scanner(System.in);
     public static HashMap<String, Task> tasksStorage = new HashMap<>();
     int taskId = 0;
 
+    @Override
     public void taskAdd() {
-        System.out.println("title");
         String taskTitle = scanner.next();
-        System.out.println("description");
         String taskDescription = scanner.next();
         TaskStages taskStatus = TaskStages.NEW;
-        System.out.println("task type");
         String mode = scanner.next();
         String taskId = getId(mode);
+        boolean isViewed = false;
 
         switch (mode) {
-            case "q": // "taskMode" // TODO
-                tasksStorage.put(taskId, new Task(taskTitle, taskDescription, taskId, taskStatus));
+            case "taskMode":
+                InMemoryTaskManager.tasksStorage.put(taskId, new Task(taskTitle, taskDescription, taskId,
+                        isViewed, taskStatus
+                ));
                 break;
-            case "w": // "epicMode" // TODO
-                tasksStorage.put(taskId, new Epic(taskTitle, taskDescription, taskId, taskStatus, new HashMap<>()));
+            case "epicMode":
+                InMemoryTaskManager.tasksStorage.put(taskId, new Epic(taskTitle, taskDescription, taskId,
+                        isViewed, taskStatus, new HashMap<>()
+                ));
                 break;
-            case "e": // "subTaskMode" // TODO
-                System.out.println("parent ID");
+            case "subTaskMode":
                 String parentId = scanner.next();
-                Epic parentTask = (Epic) tasksStorage.get(parentId);
+                Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(parentId);
                 parentTask.relatedSubTask.put(taskId, String.valueOf(taskStatus));
                 setEpicStatus(parentId);
-                tasksStorage.put(taskId, new SubTask(taskTitle, taskDescription, taskId, taskStatus, parentId));
+                InMemoryTaskManager.tasksStorage.put(taskId, new SubTask(taskTitle, taskDescription, taskId,
+                        isViewed, taskStatus, parentId
+                ));
                 break;
         }
     }
 
+    @Override
     public void taskUpdate(String... args) {
         String taskKey = args[0];
         Task task = tasksStorage.get(taskKey);
 
-        System.out.println("title");
         String title = scanner.next();
         task.setTaskTitle(title);
 
-        System.out.println("description");
         String taskDescription = scanner.next();
         task.setTaskDescription(taskDescription);
 
@@ -56,21 +63,17 @@ public class ControlManager {
 
         switch (keyChunk) {
             case "t":
-                System.out.println("status");
                 String taskStatus = scanner.next();
                 task.setTaskStatus(TaskStages.valueOf(taskStatus));
                 tasksStorage.put(taskKey, task);
-                System.out.println(tasksStorage); // TODO
                 break;
             case "e":
                 setEpicStatus(taskKey);
-                System.out.println(tasksStorage); // TODO
                 break;
             case "s":
                 String parentKey = args[1];
                 Epic parentTask = (Epic) tasksStorage.get(parentKey);
 
-                System.out.println("status");
                 taskStatus = scanner.next();
                 task.setTaskStatus(TaskStages.valueOf(taskStatus));
 
@@ -78,21 +81,24 @@ public class ControlManager {
 
                 tasksStorage.put(taskKey, task);
                 setEpicStatus(parentKey);
-                System.out.println(tasksStorage); // TODO
                 break;
         }
     }
 
+    @Override
     public String taskRetrieve(String taskKey) {
         Task task = tasksStorage.get(taskKey);
         String taskTitle = task.getTaskTitle() + ",";
         String taskDescription = task.getTaskDescription() + ",";
         taskKey = task.getTaskId() + ",";
         String taskStatus = String.valueOf(task.getTaskStatus());
+        fillHistoryStorage(task);
+        inMemoryHistoryManager.add(task);
 
         return taskTitle + taskDescription + taskKey + taskStatus;
     }
 
+    @Override
     public ArrayList<String>[] collectAllTasks() {
         ArrayList<String> listOfTasks = new ArrayList<>();
         ArrayList<String> listOfEpics = new ArrayList<>();
@@ -113,6 +119,7 @@ public class ControlManager {
         return new ArrayList[]{listOfTasks, listOfEpics, listOfSubTasks};
     }
 
+    @Override
     public ArrayList<String> collectEpicSubtasks(String taskKey) {
         ArrayList<String> localTasksList = new ArrayList<>();
         Epic epicTask = (Epic) tasksStorage.get(taskKey);
@@ -125,6 +132,7 @@ public class ControlManager {
         return localTasksList;
     }
 
+    @Override
     public void taskDelete(String... args) {
         String taskKey = args[0];
         String keyChunk = taskKey.substring(0, 1);
@@ -132,7 +140,6 @@ public class ControlManager {
         switch (keyChunk) {
             case "t":
                 tasksStorage.remove(taskKey);
-                System.out.println(tasksStorage); // TODO
                 break;
             case "e":
                 Epic epicTask = (Epic) tasksStorage.get(taskKey);
@@ -144,7 +151,6 @@ public class ControlManager {
 
                 tasksStorage.remove(taskKey);
 
-                System.out.println(tasksStorage); // TODO
                 break;
             case "s":
                 String parentKey = args[1];
@@ -153,31 +159,28 @@ public class ControlManager {
                 relatedSubTasks.remove(taskKey);
                 setEpicStatus(parentKey);
                 tasksStorage.remove(taskKey);
-
-                System.out.println(tasksStorage); // TODO
                 break;
         }
     }
 
+    @Override
     public void tasksClear() {
         tasksStorage.clear();
     }
 
-    // TODO                                         SERVICE METHODS
-
-    private String getId(String taskMode) {
+    String getId(String taskMode) {
         String id = null;
 
         switch (taskMode) {
-            case "q": // taskMode // TODO   
+            case "taskMode":
                 taskId++;
                 id = "t." + taskId;
                 break;
-            case "w":  // epicMode // TODO   
+            case "epicMode":
                 taskId++;
                 id = "e." + taskId;
                 break;
-            case "e": // subTaskMode  // TODO
+            case "subTaskMode":
                 taskId++;
                 id = "sub." + taskId;
                 break;
@@ -201,6 +204,11 @@ public class ControlManager {
 
         epicTask.setTaskStatus(status);
     }
+
+    public void fillHistoryStorage(Task task) {
+        if (historyStorage.size() == 10) {
+            historyStorage.remove(0);
+        }
+        historyStorage.add(task);
+    }
 }
-
-
