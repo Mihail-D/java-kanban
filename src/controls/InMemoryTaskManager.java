@@ -14,34 +14,29 @@ public class InMemoryTaskManager implements TaskManager {
 
     Scanner scanner = new Scanner(System.in);
     public static HashMap<String, Task> tasksStorage = new HashMap<>();
-    //public static List<Task> historyStorage = new ArrayList<>();
     int taskId = 0;
 
     @Override
     public void taskAdd() {
-        System.out.println("title");
         String taskTitle = scanner.next();
-        System.out.println("description");
         String taskDescription = scanner.next();
         TaskStages taskStatus = TaskStages.NEW;
-        System.out.println("task type");
         String mode = scanner.next();
         String taskId = getId(mode);
         boolean isViewed = false;
 
         switch (mode) {
-            case "q": // "taskMode" // TODO
+            case "taskMode":
                 InMemoryTaskManager.tasksStorage.put(taskId, new Task(taskTitle, taskDescription, taskId,
                         isViewed, taskStatus
                 ));
                 break;
-            case "w": // "epicMode" // TODO
+            case "epicMode":
                 InMemoryTaskManager.tasksStorage.put(taskId, new Epic(taskTitle, taskDescription, taskId,
                         isViewed, taskStatus, new HashMap<>()
                 ));
                 break;
-            case "e": // "subTaskMode" // TODO
-                System.out.println("parent ID");
+            case "subTaskMode":
                 String parentId = scanner.next();
                 Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(parentId);
                 parentTask.relatedSubTask.put(taskId, String.valueOf(taskStatus));
@@ -51,7 +46,6 @@ public class InMemoryTaskManager implements TaskManager {
                 ));
                 break;
         }
-        System.out.println(tasksStorage); // TODO
     }
 
     @Override
@@ -59,11 +53,9 @@ public class InMemoryTaskManager implements TaskManager {
         String taskKey = args[0];
         Task task = tasksStorage.get(taskKey);
 
-        System.out.println("title");
         String title = scanner.next();
         task.setTaskTitle(title);
 
-        System.out.println("description");
         String taskDescription = scanner.next();
         task.setTaskDescription(taskDescription);
 
@@ -71,21 +63,17 @@ public class InMemoryTaskManager implements TaskManager {
 
         switch (keyChunk) {
             case "t":
-                System.out.println("status");
                 String taskStatus = scanner.next();
                 task.setTaskStatus(TaskStages.valueOf(taskStatus));
                 tasksStorage.put(taskKey, task);
-                System.out.println(tasksStorage); // TODO
                 break;
             case "e":
                 setEpicStatus(taskKey);
-                System.out.println(tasksStorage); // TODO
                 break;
             case "s":
                 String parentKey = args[1];
                 Epic parentTask = (Epic) tasksStorage.get(parentKey);
 
-                System.out.println("status");
                 taskStatus = scanner.next();
                 task.setTaskStatus(TaskStages.valueOf(taskStatus));
 
@@ -93,7 +81,6 @@ public class InMemoryTaskManager implements TaskManager {
 
                 tasksStorage.put(taskKey, task);
                 setEpicStatus(parentKey);
-                System.out.println(tasksStorage); // TODO
                 break;
         }
     }
@@ -153,7 +140,6 @@ public class InMemoryTaskManager implements TaskManager {
         switch (keyChunk) {
             case "t":
                 tasksStorage.remove(taskKey);
-                System.out.println(tasksStorage); // TODO
                 break;
             case "e":
                 Epic epicTask = (Epic) tasksStorage.get(taskKey);
@@ -165,7 +151,6 @@ public class InMemoryTaskManager implements TaskManager {
 
                 tasksStorage.remove(taskKey);
 
-                System.out.println(tasksStorage); // TODO
                 break;
             case "s":
                 String parentKey = args[1];
@@ -174,8 +159,6 @@ public class InMemoryTaskManager implements TaskManager {
                 relatedSubTasks.remove(taskKey);
                 setEpicStatus(parentKey);
                 tasksStorage.remove(taskKey);
-
-                System.out.println(tasksStorage); // TODO
                 break;
         }
     }
@@ -185,21 +168,19 @@ public class InMemoryTaskManager implements TaskManager {
         tasksStorage.clear();
     }
 
-    // TODO                                         SERVICE METHODS
-
     String getId(String taskMode) {
         String id = null;
 
         switch (taskMode) {
-            case "q": // taskMode // TODO
+            case "taskMode":
                 taskId++;
                 id = "t." + taskId;
                 break;
-            case "w":  // epicMode // TODO
+            case "epicMode":
                 taskId++;
                 id = "e." + taskId;
                 break;
-            case "e": // subTaskMode  // TODO
+            case "subTaskMode":
                 taskId++;
                 id = "sub." + taskId;
                 break;
