@@ -1,16 +1,55 @@
 package controls;
 
 import tasks.Epic;
+import tasks.SubTask;
 import tasks.Task;
 import tasks.TaskStages;
 
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
+    InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
     Scanner scanner = new Scanner(System.in);
     public static HashMap<String, Task> tasksStorage = new HashMap<>();
     public static List<Task> historyStorage = new ArrayList<>();
     int taskId = 0;
+
+    @Override
+    public void taskAdd() {
+        System.out.println("title");
+        String taskTitle = scanner.next();
+        System.out.println("description");
+        String taskDescription = scanner.next();
+        TaskStages taskStatus = TaskStages.NEW;
+        System.out.println("task type");
+        String mode = scanner.next();
+        String taskId = getId(mode);
+        boolean isViewed = false;
+
+        switch (mode) {
+            case "q": // "taskMode" // TODO
+                InMemoryTaskManager.tasksStorage.put(taskId, new Task(taskTitle, taskDescription, taskId,
+                        isViewed, taskStatus
+                ));
+                break;
+            case "w": // "epicMode" // TODO
+                InMemoryTaskManager.tasksStorage.put(taskId, new Epic(taskTitle, taskDescription, taskId,
+                        isViewed, taskStatus, new HashMap<>()
+                ));
+                break;
+            case "e": // "subTaskMode" // TODO
+                System.out.println("parent ID");
+                String parentId = scanner.next();
+                Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(parentId);
+                parentTask.relatedSubTask.put(taskId, String.valueOf(taskStatus));
+                setEpicStatus(parentId);
+                InMemoryTaskManager.tasksStorage.put(taskId, new SubTask(taskTitle, taskDescription, taskId,
+                        isViewed, taskStatus, parentId
+                ));
+                break;
+        }
+        System.out.println(tasksStorage); // TODO   
+    }
 
     @Override
     public void taskUpdate(String... args) {
@@ -64,6 +103,7 @@ public class InMemoryTaskManager implements TaskManager {
         taskKey = task.getTaskId() + ",";
         String taskStatus = String.valueOf(task.getTaskStatus());
         fillHistoryStorage(task);
+        inMemoryHistoryManager.add(task);
 
         return taskTitle + taskDescription + taskKey + taskStatus;
     }
@@ -141,7 +181,6 @@ public class InMemoryTaskManager implements TaskManager {
     public void tasksClear() {
         tasksStorage.clear();
     }
-
 
     // TODO                                         SERVICE METHODS
 

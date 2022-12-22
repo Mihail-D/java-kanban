@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 public interface TaskManager {
 
+    void taskAdd();
+
     void taskUpdate(String... args);
 
     String taskRetrieve(String taskKey);

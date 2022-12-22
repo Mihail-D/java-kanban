@@ -26,7 +26,7 @@ public class Main {
             switch (item) {
                 case 1:
                     System.out.println("Создание объекта.");
-                    inMemoryHistoryManager.taskAdd();
+                    taskManager.taskAdd();
                     //System.out.println(InMemoryTaskManager.tasksStorage); // TODO
                     break;
                 case 2:
