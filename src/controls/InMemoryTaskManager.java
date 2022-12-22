@@ -1,7 +1,6 @@
 package controls;
 
 import tasks.Epic;
-import tasks.SubTask;
 import tasks.Task;
 import tasks.TaskStages;
 
@@ -12,35 +11,6 @@ public class InMemoryTaskManager implements TaskManager {
     public static HashMap<String, Task> tasksStorage = new HashMap<>();
     public static List<Task> historyStorage = new ArrayList<>();
     int taskId = 0;
-
-    @Override
-    public void taskAdd() {
-        System.out.println("title");
-        String taskTitle = scanner.next();
-        System.out.println("description");
-        String taskDescription = scanner.next();
-        TaskStages taskStatus = TaskStages.NEW;
-        System.out.println("task type");
-        String mode = scanner.next();
-        String taskId = getId(mode);
-
-        switch (mode) {
-            case "q": // "taskMode" // TODO
-                tasksStorage.put(taskId, new Task(taskTitle, taskDescription, taskId, taskStatus));
-                break;
-            case "w": // "epicMode" // TODO
-                tasksStorage.put(taskId, new Epic(taskTitle, taskDescription, taskId, taskStatus, new HashMap<>()));
-                break;
-            case "e": // "subTaskMode" // TODO
-                System.out.println("parent ID");
-                String parentId = scanner.next();
-                Epic parentTask = (Epic) tasksStorage.get(parentId);
-                parentTask.relatedSubTask.put(taskId, String.valueOf(taskStatus));
-                setEpicStatus(parentId);
-                tasksStorage.put(taskId, new SubTask(taskTitle, taskDescription, taskId, taskStatus, parentId));
-                break;
-        }
-    }
 
     @Override
     public void taskUpdate(String... args) {
@@ -172,14 +142,10 @@ public class InMemoryTaskManager implements TaskManager {
         tasksStorage.clear();
     }
 
-    @Override
-    public List<Task> getHistory() {
-        return historyStorage;
-    }
 
     // TODO                                         SERVICE METHODS
 
-    private String getId(String taskMode) {
+    String getId(String taskMode) {
         String id = null;
 
         switch (taskMode) {

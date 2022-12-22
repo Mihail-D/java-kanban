@@ -1,13 +1,8 @@
 package controls;
 
-import tasks.Task;
-
 import java.util.ArrayList;
-import java.util.List;
 
 public interface TaskManager {
-
-    void taskAdd();
 
     void taskUpdate(String... args);
 
@@ -20,8 +15,6 @@ public interface TaskManager {
     void taskDelete(String... args);
 
     void tasksClear();
-
-    List<Task> getHistory();
 }
 
 

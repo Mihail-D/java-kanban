@@ -1,3 +1,4 @@
+import controls.InMemoryHistoryManager;
 import controls.InMemoryTaskManager;
 
 import java.util.Arrays;
@@ -11,6 +12,8 @@ public class Main {
 
     public static void getControlOptions() {
         InMemoryTaskManager taskManager = new InMemoryTaskManager();
+        InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
+
         Scanner scanner = new Scanner(System.in);
         int item;
         String taskKey;
@@ -23,7 +26,7 @@ public class Main {
             switch (item) {
                 case 1:
                     System.out.println("Создание объекта.");
-                    taskManager.taskAdd();
+                    inMemoryHistoryManager.taskAdd();
                     //System.out.println(InMemoryTaskManager.tasksStorage); // TODO
                     break;
                 case 2:
@@ -53,7 +56,7 @@ public class Main {
                 case 4:
                     System.out.println("Получение списка всех задач.");
                     taskManager.collectAllTasks();
-                    //System.out.println(Arrays.toString(taskManager.collectAllTasks())); // TODO
+                    System.out.println(Arrays.toString(taskManager.collectAllTasks())); // TODO
                     break;
                 case 5:
                     System.out.println("Получение списка всех подзадач определённого эпика.");
@@ -88,8 +91,8 @@ public class Main {
                     break;
                 case 8:
                     System.out.println("10 последних задач.");
-                    taskManager.getHistory();
-                    System.out.println(taskManager.getHistory()); // TODO                       
+                    inMemoryHistoryManager.getHistory();
+                    System.out.println(inMemoryHistoryManager.getHistory()); // TODO
                     break;
 
                 case 0:
