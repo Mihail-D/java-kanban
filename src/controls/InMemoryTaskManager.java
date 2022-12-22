@@ -7,11 +7,14 @@ import tasks.TaskStages;
 
 import java.util.*;
 
+import static controls.InMemoryHistoryManager.historyStorage;
+
 public class InMemoryTaskManager implements TaskManager {
-    InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
+    HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
+
     Scanner scanner = new Scanner(System.in);
     public static HashMap<String, Task> tasksStorage = new HashMap<>();
-    public static List<Task> historyStorage = new ArrayList<>();
+    //public static List<Task> historyStorage = new ArrayList<>();
     int taskId = 0;
 
     @Override
