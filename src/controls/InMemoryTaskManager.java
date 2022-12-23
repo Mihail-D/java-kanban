@@ -42,6 +42,7 @@ public class InMemoryTaskManager implements TaskManager {
                 ));
                 break;
             case "subTaskMode":
+                System.out.println("Parent ID"); // TODO
                 String parentId = scanner.next();
                 Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(parentId);
                 parentTask.relatedSubTask.put(taskId, String.valueOf(taskStatus));
@@ -93,13 +94,10 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public String taskRetrieve(String taskKey) {
         Task task = tasksStorage.get(taskKey);
-        String taskTitle = task.getTaskTitle() + ",";
-        String taskDescription = task.getTaskDescription() + ",";
-        taskKey = task.getTaskId() + ",";
-        String taskStatus = String.valueOf(task.getTaskStatus());
+        getTaskFormattedData(taskKey);
         inMemoryHistoryManager.add(task);
 
-        return taskTitle + taskDescription + taskKey + taskStatus;
+        return getTaskFormattedData(taskKey);
     }
 
     @Override
@@ -110,13 +108,13 @@ public class InMemoryTaskManager implements TaskManager {
 
         for (String i : tasksStorage.keySet()) {
             if (i.startsWith("t")) {
-                listOfTasks.add(taskRetrieve(i));
+                listOfTasks.add(getTaskFormattedData(i));
             }
             else if (i.startsWith("e")) {
-                listOfEpics.add(taskRetrieve(i));
+                listOfEpics.add(getTaskFormattedData(i));
             }
             if (i.startsWith("s")) {
-                listOfSubTasks.add(taskRetrieve(i));
+                listOfSubTasks.add(getTaskFormattedData(i));
             }
         }
 
@@ -130,7 +128,7 @@ public class InMemoryTaskManager implements TaskManager {
         HashMap<String, String> relatedSubTasks = epicTask.relatedSubTask;
 
         for (String i : relatedSubTasks.keySet()) {
-            localTasksList.add(taskRetrieve(i));
+            localTasksList.add(getTaskFormattedData(i));
         }
 
         return localTasksList;
@@ -207,5 +205,15 @@ public class InMemoryTaskManager implements TaskManager {
         }
 
         epicTask.setTaskStatus(status);
+    }
+
+    public String getTaskFormattedData(String taskKey) {
+        Task task = tasksStorage.get(taskKey);
+        String taskTitle = task.getTaskTitle() + ",";
+        String taskDescription = task.getTaskDescription() + ",";
+        taskKey = task.getTaskId() + ",";
+        String taskStatus = String.valueOf(task.getTaskStatus());
+
+        return taskTitle + taskDescription + taskKey + taskStatus;
     }
 }
