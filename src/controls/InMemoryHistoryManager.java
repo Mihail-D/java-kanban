@@ -9,7 +9,6 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     public List<Task> historyStorage = new ArrayList<>();
 
-
     @Override
     public void add(Task task) {
         task.setViewed();
@@ -20,7 +19,6 @@ public class InMemoryHistoryManager implements HistoryManager {
     public List<Task> getHistory() {
         return historyStorage;
     }
-
 
     public void fillHistoryStorage(Task task) {
         if (historyStorage.size() == 10) {

@@ -1,6 +1,7 @@
 package tasks;
 
 public class Task {
+
     String taskTitle;
     private String taskDescription;
     private String taskId;
@@ -18,9 +19,11 @@ public class Task {
     public String getTaskTitle() {
         return taskTitle;
     }
+
     public String getTaskDescription() {
         return taskDescription;
     }
+
     public String getTaskId() {
         return taskId;
     }
@@ -32,6 +35,7 @@ public class Task {
     public void setTaskTitle(String taskTitle) {
         this.taskTitle = taskTitle;
     }
+
     public void setTaskDescription(String taskDescription) {
         this.taskDescription = taskDescription;
     }
@@ -80,6 +84,6 @@ public class Task {
     public String toString() {
         return " MainTask { Title='" + taskTitle + '\'' +
                 ", Description='" + taskDescription + '\'' +
-                ", Id=" + taskId + ", isViewed=" + isViewed + ", Status='" + taskStatus;
+                ", Id=" + taskId + ", isViewed=" + isViewed + ", Status='" + taskStatus + "***";
     }
 }

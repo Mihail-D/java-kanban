@@ -6,8 +6,12 @@ import tasks.Task;
 import tasks.TaskStages;
 
 import java.util.*;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toCollection;
 
 public class InMemoryTaskManager implements TaskManager {
+
     HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
 
     public static HashMap<String, Task> tasksStorage = new HashMap<>();
@@ -99,7 +103,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<String>[] collectAllTasks() {
+    public ArrayList<ArrayList<String>> collectAllTasks() {
         ArrayList<String> listOfTasks = new ArrayList<>();
         ArrayList<String> listOfEpics = new ArrayList<>();
         ArrayList<String> listOfSubTasks = new ArrayList<>();
@@ -116,7 +120,7 @@ public class InMemoryTaskManager implements TaskManager {
             }
         }
 
-        return new ArrayList[]{listOfTasks, listOfEpics, listOfSubTasks};
+        return Stream.of(listOfTasks, listOfEpics, listOfSubTasks).collect(toCollection(ArrayList::new));
     }
 
     @Override

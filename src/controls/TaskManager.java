@@ -1,6 +1,7 @@
 package controls;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public interface TaskManager {
 
@@ -10,9 +11,9 @@ public interface TaskManager {
 
     String taskRetrieve(String taskKey);
 
-    ArrayList<String>[] collectAllTasks();
+    List<ArrayList<String>> collectAllTasks();
 
-    ArrayList<String> collectEpicSubtasks(String taskKey);
+    List<String> collectEpicSubtasks(String taskKey);
 
     void taskDelete(String... args);
 

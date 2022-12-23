@@ -1,6 +1,7 @@
 package controls;
 
 public class Managers {
+
     private static TaskManager taskManager = new InMemoryTaskManager();
     private static HistoryManager historyManager = new InMemoryHistoryManager();
 
