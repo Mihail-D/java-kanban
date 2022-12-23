@@ -69,6 +69,7 @@ public class Task {
         }
         return getTaskStatus() == task.getTaskStatus();
     }
+
     @Override
     public int hashCode() {
         int result = getTaskTitle().hashCode();
@@ -77,6 +78,7 @@ public class Task {
         result = 31 * result + getTaskStatus().hashCode();
         return result;
     }
+
     @Override
     public String toString() {
         return " MainTask { Title='" + taskTitle + '\'' +

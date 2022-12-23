@@ -10,6 +10,7 @@ public class SubTask extends Task {
         super(taskTitle, taskDescription, taskId, isViewed, taskStatus);
         this.parentId = parentId;
     }
+
     @Override
     public String toString() {
         return "SubTask {" +
