@@ -7,13 +7,11 @@ import tasks.TaskStages;
 
 import java.util.*;
 
-import static controls.InMemoryHistoryManager.historyStorage;
-
 public class InMemoryTaskManager implements TaskManager {
     HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
 
-    Scanner scanner = new Scanner(System.in);
     public static HashMap<String, Task> tasksStorage = new HashMap<>();
+    Scanner scanner = new Scanner(System.in);
     int taskId = 0;
 
     @Override
@@ -206,9 +204,10 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     public void fillHistoryStorage(Task task) {
-        if (historyStorage.size() == 10) {
-            historyStorage.remove(0);
+        if (inMemoryHistoryManager.getHistory().size() == 10) {
+            inMemoryHistoryManager.getHistory().remove(0);
         }
-        historyStorage.add(task);
+        inMemoryHistoryManager.getHistory().add(task);
+
     }
 }
