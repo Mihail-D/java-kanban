@@ -22,7 +22,6 @@ public class Main {
 
             switch (item) {
                 case 1:
-                    System.out.println("tasksStorage " + InMemoryTaskManager.tasksStorage); // TODO
                     taskManager.taskAdd();
                     System.out.println("tasksStorage " + InMemoryTaskManager.tasksStorage); // TODO
                     break;
@@ -38,7 +37,7 @@ public class Main {
                     }
                     break;
                 case 3:
-                    System.out.println("history " + Managers.getDefaultHistory().getHistory()); // TODO
+                    System.out.println("task key"); // TODO
                     taskKey = scanner.next();
                     taskManager.taskRetrieve(taskKey);
                     System.out.println("history " + Managers.getDefaultHistory().getHistory()); // TODO

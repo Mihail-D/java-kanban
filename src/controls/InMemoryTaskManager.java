@@ -16,9 +16,12 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void taskAdd() {
+        System.out.println("taskTitle"); // TODO
         String taskTitle = scanner.next();
+        System.out.println("taskDescription"); // TODO
         String taskDescription = scanner.next();
         TaskStages taskStatus = TaskStages.NEW;
+        System.out.println("mode"); // TODO
         String mode = scanner.next();
         String taskId = getId(mode);
         boolean isViewed = false;
@@ -90,7 +93,6 @@ public class InMemoryTaskManager implements TaskManager {
         String taskDescription = task.getTaskDescription() + ",";
         taskKey = task.getTaskId() + ",";
         String taskStatus = String.valueOf(task.getTaskStatus());
-        fillHistoryStorage(task);
         inMemoryHistoryManager.add(task);
 
         return taskTitle + taskDescription + taskKey + taskStatus;
@@ -201,13 +203,5 @@ public class InMemoryTaskManager implements TaskManager {
         }
 
         epicTask.setTaskStatus(status);
-    }
-
-    public void fillHistoryStorage(Task task) {
-        if (inMemoryHistoryManager.getHistory().size() == 10) {
-            inMemoryHistoryManager.getHistory().remove(0);
-        }
-        inMemoryHistoryManager.getHistory().add(task);
-
     }
 }
