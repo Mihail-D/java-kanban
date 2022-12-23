@@ -1,5 +1,6 @@
 import controls.*;
 
+
 import java.util.Scanner;
 
 public class Main {
@@ -22,9 +23,11 @@ public class Main {
 
             switch (item) {
                 case 1:
+
                     System.out.println("tasksStorage " + InMemoryTaskManager.tasksStorage); // TODO
                     taskManager.taskAdd();
                     System.out.println("tasksStorage " + InMemoryTaskManager.tasksStorage); // TODO
+
                     break;
                 case 2:
                     taskKey = scanner.next();
@@ -38,10 +41,12 @@ public class Main {
                     }
                     break;
                 case 3:
+
                     System.out.println("history " + Managers.getDefaultHistory().getHistory()); // TODO
                     taskKey = scanner.next();
                     taskManager.taskRetrieve(taskKey);
                     System.out.println("history " + Managers.getDefaultHistory().getHistory()); // TODO
+
                     break;
                 case 4:
                     taskManager.collectAllTasks();
@@ -66,7 +71,9 @@ public class Main {
                     break;
                 case 8:
                     inMemoryHistoryManager.getHistory();
+
                     System.out.println("history " + Managers.getDefaultHistory().getHistory()); // TODO
+
                     break;
 
                 case 0:
