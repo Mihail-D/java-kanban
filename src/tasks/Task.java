@@ -25,9 +25,6 @@ public class Task {
         return taskId;
     }
 
-    public boolean getViewedStatus() {
-        return isViewed;
-    }
     public TaskStages getTaskStatus() {
         return taskStatus;
     }
