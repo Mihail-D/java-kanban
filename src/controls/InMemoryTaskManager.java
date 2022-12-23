@@ -20,12 +20,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void taskAdd() {
-        System.out.println("taskTitle"); // TODO
         String taskTitle = scanner.next();
-        System.out.println("taskDescription"); // TODO
         String taskDescription = scanner.next();
         TaskStages taskStatus = TaskStages.NEW;
-        System.out.println("mode"); // TODO
         String mode = scanner.next();
         String taskId = getId(mode);
         boolean isViewed = false;
@@ -42,7 +39,6 @@ public class InMemoryTaskManager implements TaskManager {
                 ));
                 break;
             case "subTaskMode":
-                System.out.println("Parent ID"); // TODO
                 String parentId = scanner.next();
                 Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(parentId);
                 parentTask.relatedSubTask.put(taskId, String.valueOf(taskStatus));
