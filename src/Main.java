@@ -14,27 +14,61 @@ public class Main {
 
         Scanner scanner = new Scanner(System.in);
         int item;
+        String taskTitle;
+        String taskDescription;
         String taskKey;
         String parentKey;
+        String mode;
+        String taskStatus;
 
         while (true) {
             item = scanner.nextInt();
 
             switch (item) {
                 case 1:
-                    taskManager.taskAdd();
+                    System.out.println("taskTitle"); // TODO
+                    taskTitle = scanner.next();
+                    System.out.println("taskDescription"); // TODO
+                    taskDescription = scanner.next();
+                    System.out.println("taskMode"); // TODO
+                    mode = scanner.next();
+
+                    if (mode.equals("taskMode") || mode.equals("epicMode")) {
+                        taskManager.taskAdd(taskTitle, taskDescription, mode);
+                    }
+                    else if (mode.equals("subTaskMode")) {
+                        System.out.println("Parent Key"); // TODO
+                        parentKey = scanner.next();
+                        taskManager.taskAdd(taskTitle, taskDescription, mode, parentKey);
+                    }
+                    System.out.println(InMemoryTaskManager.tasksStorage); // TODO
                     break;
                 case 2:
+                    System.out.println("taskKey"); // TODO
                     taskKey = scanner.next();
+                    System.out.println("taskTitle"); // TODO
+                    taskTitle = scanner.next();
+                    System.out.println("taskDescription"); // TODO
+                    taskDescription = scanner.next();
 
                     if (taskKey.charAt(0) == 's') {
+                        System.out.println("parentKey"); // TODO
                         parentKey = scanner.next();
-                        taskManager.taskUpdate(taskKey, parentKey);
+                        System.out.println("taskStatus"); // TODO
+                        taskStatus = scanner.next();
+                        taskManager.taskUpdate(taskKey, taskTitle, taskDescription, taskStatus, parentKey);
                     }
-                    else {
-                        taskManager.taskUpdate(taskKey);
+                    else if (taskKey.charAt(0) == 't') {
+                        System.out.println("taskStatus"); // TODO
+                        taskStatus = scanner.next();
+                        taskManager.taskUpdate(taskKey, taskTitle, taskDescription, taskStatus);
                     }
+                    else if (taskKey.charAt(0) == 'e') {
+                        taskManager.taskUpdate(taskKey, taskTitle, taskDescription);
+                    }
+                    System.out.println(InMemoryTaskManager.tasksStorage); // TODO
                     break;
+
                 case 3:
                     taskKey = scanner.next();
                     taskManager.taskRetrieve(taskKey);

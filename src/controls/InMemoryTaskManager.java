@@ -15,36 +15,31 @@ public class InMemoryTaskManager implements TaskManager {
     HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
 
     public static HashMap<String, Task> tasksStorage = new HashMap<>();
-    Scanner scanner = new Scanner(System.in);
     int taskId = 0;
 
     @Override
-    public void taskAdd() {
-        String taskTitle = scanner.next();
-        String taskDescription = scanner.next();
+    public void taskAdd(String... args) {
         TaskStages taskStatus = TaskStages.NEW;
-        String mode = scanner.next();
-        String taskId = getId(mode);
+        String taskId = getId(args[2]);
         boolean isViewed = false;
 
-        switch (mode) {
+        switch (args[2]) {
             case "taskMode":
-                InMemoryTaskManager.tasksStorage.put(taskId, new Task(taskTitle, taskDescription, taskId,
+                InMemoryTaskManager.tasksStorage.put(taskId, new Task(args[0], args[1], taskId,
                         isViewed, taskStatus
                 ));
                 break;
             case "epicMode":
-                InMemoryTaskManager.tasksStorage.put(taskId, new Epic(taskTitle, taskDescription, taskId,
+                InMemoryTaskManager.tasksStorage.put(taskId, new Epic(args[0], args[1], taskId,
                         isViewed, taskStatus, new HashMap<>()
                 ));
                 break;
             case "subTaskMode":
-                String parentId = scanner.next();
-                Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(parentId);
+                Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(args[3]);
                 parentTask.relatedSubTask.put(taskId, String.valueOf(taskStatus));
-                setEpicStatus(parentId);
-                InMemoryTaskManager.tasksStorage.put(taskId, new SubTask(taskTitle, taskDescription, taskId,
-                        isViewed, taskStatus, parentId
+                setEpicStatus(args[3]);
+                InMemoryTaskManager.tasksStorage.put(taskId, new SubTask(args[0], args[1], taskId,
+                        isViewed, taskStatus, args[3]
                 ));
                 break;
         }
@@ -55,31 +50,27 @@ public class InMemoryTaskManager implements TaskManager {
         String taskKey = args[0];
         Task task = tasksStorage.get(taskKey);
 
-        String title = scanner.next();
-        task.setTaskTitle(title);
+        task.setTaskTitle(args[1]);
 
-        String taskDescription = scanner.next();
-        task.setTaskDescription(taskDescription);
+        task.setTaskDescription(args[2]);
 
         String keyChunk = taskKey.substring(0, 1);
 
         switch (keyChunk) {
             case "t":
-                String taskStatus = scanner.next();
-                task.setTaskStatus(TaskStages.valueOf(taskStatus));
+                task.setTaskStatus(TaskStages.valueOf(args[3]));
                 tasksStorage.put(taskKey, task);
                 break;
             case "e":
                 setEpicStatus(taskKey);
                 break;
             case "s":
-                String parentKey = args[1];
+                String parentKey = args[4];
                 Epic parentTask = (Epic) tasksStorage.get(parentKey);
 
-                taskStatus = scanner.next();
-                task.setTaskStatus(TaskStages.valueOf(taskStatus));
+                task.setTaskStatus(TaskStages.valueOf(args[3]));
 
-                parentTask.relatedSubTask.put(taskKey, taskStatus);
+                parentTask.relatedSubTask.put(taskKey, args[3]);
 
                 tasksStorage.put(taskKey, task);
                 setEpicStatus(parentKey);
