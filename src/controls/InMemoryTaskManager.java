@@ -150,11 +150,15 @@ public class InMemoryTaskManager implements TaskManager {
                 tasksStorage.remove(taskKey);
                 break;
         }
+
+        // TODO  remove(int id);
     }
 
     @Override
     public void tasksClear() {
         tasksStorage.clear();
+
+        // TODO  clear all entire history
     }
 
     String getId(String taskMode) {
