@@ -1,6 +1,9 @@
 import controls.*;
+import tasks.Task;
 
 import java.util.Scanner;
+
+import static tasks.TaskStages.NEW;
 
 public class Main {
 
@@ -70,6 +73,7 @@ public class Main {
                     break;
 
                 case 3:
+                    System.out.println("taskKey"); // TODO
                     taskKey = scanner.next();
                     taskManager.taskRetrieve(taskKey);
                     break;
@@ -95,7 +99,18 @@ public class Main {
                     taskManager.tasksClear();
                     break;
                 case 8:
+                   /* if (inMemoryHistoryManager.historyStorage.size() == 0) {
+                        inMemoryHistoryManager.historyStorage.addLast(new Task("drg", "gzr", "t.1", true, NEW));
+                        inMemoryHistoryManager.historyStorage.addLast(new Task("drg", "gzr", "t.2", true, NEW));
+                        inMemoryHistoryManager.historyStorage.addLast(new Task("drg", "gzr", "t.3", true, NEW));
+                        inMemoryHistoryManager.historyStorage.addLast(new Task("drg", "gzr", "t.4", true, NEW));
+                        inMemoryHistoryManager.historyStorage.addLast(new Task("drg", "gzr", "t.5", true, NEW));
+                    }*/
+
                     inMemoryHistoryManager.getHistory();
+                    System.out.println("historyStorage size from Main " + InMemoryHistoryManager.historyStorage.size()); // TODO
+                    System.out.println("historyRegister size from Main " + InMemoryHistoryManager.historyRegister); // TODO
+                    System.out.println("historyReport from Main " + InMemoryHistoryManager.historyReport); // TODO
                     break;
 
                 case 0:
