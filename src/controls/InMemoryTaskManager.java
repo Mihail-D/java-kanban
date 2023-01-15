@@ -82,7 +82,9 @@ public class InMemoryTaskManager implements TaskManager {
     public String taskRetrieve(String taskKey) {
         Task task = tasksStorage.get(taskKey);
         getTaskFormattedData(taskKey);
+        System.out.println("taskRetrieve in " + InMemoryHistoryManager.historyStorage.getSize()); // TODO
         inMemoryHistoryManager.add(task);
+        System.out.println("taskRetrieve out " + InMemoryHistoryManager.historyStorage.getSize()); // TODO
 
         return getTaskFormattedData(taskKey);
     }
@@ -129,6 +131,7 @@ public class InMemoryTaskManager implements TaskManager {
         switch (keyChunk) {
             case "t":
                 tasksStorage.remove(taskKey);
+                inMemoryHistoryManager.remove(taskKey);
                 break;
             case "e":
                 Epic epicTask = (Epic) tasksStorage.get(taskKey);
@@ -136,9 +139,11 @@ public class InMemoryTaskManager implements TaskManager {
 
                 for (String i : relatedSubTasks.keySet()) {
                     tasksStorage.remove(i);
+                    inMemoryHistoryManager.remove(i);
                 }
 
                 tasksStorage.remove(taskKey);
+                inMemoryHistoryManager.remove(taskKey);
 
                 break;
             case "s":
@@ -148,10 +153,11 @@ public class InMemoryTaskManager implements TaskManager {
                 relatedSubTasks.remove(taskKey);
                 setEpicStatus(parentKey);
                 tasksStorage.remove(taskKey);
+                inMemoryHistoryManager.remove(taskKey);
                 break;
         }
 
-        // TODO  remove(int id);
+
     }
 
     @Override
