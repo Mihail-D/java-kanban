@@ -60,11 +60,13 @@ public class InMemoryHistoryManager implements HistoryManager {
             }
             historyStorage.size++;
             historyRegister.put(task.getTaskId(), element);
+
         }
 
         void removeNode(Node node) {
             if (node != null) {
                 historyRegister.remove(node.getTask().getTaskId());
+                historyReport.remove(node.getTask());
                 System.out.println(node.getTask().getTaskId()); // TODO
 
                 Node prev = node.getPrev();
