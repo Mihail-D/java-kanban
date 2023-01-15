@@ -6,87 +6,104 @@ import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
-    public static CustomLinkedList<Task> historyStorage = new CustomLinkedList<>();
-    public static Map<String, Node<Task>> historyRegister = new HashMap<>();
+    public static CustomLinkedList historyStorage = new CustomLinkedList();
+    public static Map<String, Node> historyRegister = new HashMap<>();
     public static List<Task> historyReport = new ArrayList<>();
 
     @Override
     public void add(Task task) {
-        //removeNode();
-        task.setViewed();
-        historyStorage.addLast(task);
-        historyRegister.put(task.getTaskId(), historyStorage.getLast());
-        System.out.println("historyStorage size from fillHistoryStorage() " + historyStorage.size()); // TODO
-
+        historyStorage.linkLast(task);
+        historyStorage.size++;
     }
 
     @Override
-    public void getHistory() {
-        Node<Task> current = historyStorage.head;
-        if (historyStorage.head == null) {
-            System.out.println("Список пуст.");
-            return;
-        }
-        while (current != null) {
-            historyReport.add(current.data);
-            current = current.next;
-        }
+    public void remove(String taskId) {
+        historyStorage.removeNode(historyStorage.getNode(taskId));
+        historyStorage.size--;
     }
 
     @Override
-    public void removeNode(Node<Task> node) {
-        Node<Task> current = historyStorage.head;
-        if (historyStorage.head == null) {
-            System.out.println("Список пуст.");
-            return;
-        }
-        while (current != null) {
-            historyReport.add(current.data);
-            current = current.next;
-        }
+    public List<Task> getHistory() {
+        return historyStorage.getTasks();
     }
 
-// ************************************************************************************
+    public static class CustomLinkedList {
 
-    public static class CustomLinkedList<T> {
+        private Node head;
+        private Node tail;
+        private int size;
 
-        private Node<T> head;
-        private Node<T> tail;
-        private int size = 0;
+        public int getSize() {
+            return size;
+        }
 
-        public void addLast(T element) {
+        void linkLast(Task task) {
+            Node element = new Node();
+            element.setTask(task);
 
-            final Node<T> oldTail = tail;
-            final Node<T> newNode = new Node<>(oldTail, element, null);
-            tail = newNode;
-            if (oldTail == null) {
-                head = newNode;
+            if (historyRegister.containsKey(task.getTaskId())) {
+                removeNode(historyRegister.get(task.getTaskId()));
+            }
+
+            if (head == null) {
+                tail = element;
+                head = element;
+                element.setNext(null);
+                element.setPrev(null);
             }
             else {
-                oldTail.next = newNode;
+                element.setPrev(tail);
+                element.setNext(null);
+                tail.setNext(element);
+                tail = element;
             }
-            size++;
+
+            historyRegister.put(task.getTaskId(), element);
         }
 
-        public Node<T> getLast() {
+        void removeNode(Node node) {
+            if (node != null) {
+                historyRegister.remove(node.getTask().getTaskId());
+                Node prev = node.getPrev();
+                Node next = node.getNext();
 
-            final Node<T> currentTail = tail;
-            if (currentTail == null) {
-                throw new NoSuchElementException();
+                if (head == node) {
+                    head = node.getNext();
+                }
+                if (tail == node) {
+                    tail = node.getPrev();
+                }
+
+                if (prev != null) {
+                    prev.setNext(next);
+                }
+
+                if (next != null) {
+                    next.setPrev(prev);
+                }
             }
-            return tail;
         }
 
-        public void removeHistoryRecord(Node<Task> node) {
-            Node<Task> predecessor = node.prev;
-            Node<Task> successor = node.next;
-
-            predecessor.setNext(successor);
-            successor.setPrev(predecessor);
+        List<Task> getTasks() {
+            Node element = head;
+            while (element != null) {
+                historyReport.add(element.getTask());
+                element = element.getNext();
+            }
+            return historyReport;
         }
 
-        public int size() {
-            return this.size;
+        Node getNode(String taskId) {
+            return historyRegister.get(taskId);
+        }
+
+        @Override                                              // TODO
+        public String toString() {
+            return "CustomLinkedList{" +
+                    "head=" + head +
+                    ", tail=" + tail +
+                    ", size=" + size +
+                    '}';
         }
     }
 }

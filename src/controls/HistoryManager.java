@@ -2,13 +2,15 @@ package controls;
 
 import tasks.Task;
 
+import java.util.List;
+
 public interface HistoryManager {
 
     void add(Task task);
 
-    void getHistory();
+    void remove(String taskId);
 
-    void removeNode(Node<Task> node);
+    List<Task> getHistory();
 
-    //void fillHistoryStorage(Task task);
+
 }
