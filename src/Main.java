@@ -1,9 +1,6 @@
 import controls.*;
-import tasks.Task;
 
 import java.util.Scanner;
-
-import static tasks.TaskStages.NEW;
 
 public class Main {
 
@@ -120,6 +117,7 @@ public class Main {
 
                     inMemoryHistoryManager.getHistory();
                     System.out.println("historyReport from Main " + InMemoryHistoryManager.historyReport); // TODO
+                    System.out.println("historyReport from Main " + InMemoryHistoryManager.historyRegister); // TODO
                     System.out.println("historyStorage size from Main " + InMemoryHistoryManager.historyStorage.getSize()); // TODO
                     break;
 

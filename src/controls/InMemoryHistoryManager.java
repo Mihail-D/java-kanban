@@ -11,19 +11,27 @@ public class InMemoryHistoryManager implements HistoryManager {
     public static List<Task> historyReport = new ArrayList<>();
 
     @Override
-    public void add(Task task) {
+    public void addHistory(Task task) {
         historyStorage.linkLast(task);
     }
 
     @Override
-    public void remove(String taskId) {
+    public void removeHistory(String taskId) {
         historyStorage.removeNode(historyStorage.getNode(taskId));
+    }
+
+    public void clearHistoryStorage() {
+        for (String i : historyRegister.keySet()) {
+            historyStorage.removeNode(historyStorage.getNode(i));
+        }
     }
 
     @Override
     public List<Task> getHistory() {
         return historyStorage.getTasks();
     }
+
+
 
     public static class CustomLinkedList {
 
@@ -90,6 +98,9 @@ public class InMemoryHistoryManager implements HistoryManager {
             historyStorage.size--;
         }
 
+
+
+
         List<Task> getTasks() {
             Node element = head;
             while (element != null) {
@@ -103,13 +114,5 @@ public class InMemoryHistoryManager implements HistoryManager {
             return historyRegister.get(taskId);
         }
 
-        @Override                                              // TODO
-        public String toString() {
-            return "CustomLinkedList{" +
-                    "head=" + head +
-                    ", tail=" + tail +
-                    ", size=" + size +
-                    '}';
-        }
     }
 }
