@@ -5,7 +5,7 @@ import java.util.List;
 
 public interface TaskManager {
 
-    void taskAdd(String ...args);
+    void taskAdd(String... args);
 
     void taskUpdate(String... args);
 
