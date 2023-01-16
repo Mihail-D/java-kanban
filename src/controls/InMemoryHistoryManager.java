@@ -68,8 +68,8 @@ public class InMemoryHistoryManager implements HistoryManager {
 
         void removeNode(Node node) {
             if (node != null) {
-                historyRegister.remove(node.getTask().getTaskId());
-                //historyReport.remove(node.getTask()); // TODO
+
+                historyReport.removeIf(i -> i.equals(node.getTask()));
 
                 Node prev = node.getPrev();
                 Node next = node.getNext();
@@ -93,6 +93,9 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
 
         List<Task> getTasks() {
+            System.out.println("in historyRegister from removeNode " + InMemoryHistoryManager.historyRegister); // TODO
+            System.out.println("in historyStorage size from removeNode " + InMemoryHistoryManager.historyStorage.getSize()); // TODO
+            System.out.println("in historyReport from removeNode " + InMemoryHistoryManager.historyReport); // TODO
 
             Node element = head;
             while (element != null) {
@@ -101,6 +104,11 @@ public class InMemoryHistoryManager implements HistoryManager {
                 }
                 element = element.getNext();
             }
+
+            System.out.println("out historyRegister from removeNode " + InMemoryHistoryManager.historyRegister); // TODO
+            System.out.println("out historyStorage size from removeNode " + InMemoryHistoryManager.historyStorage.getSize()); // TODO
+            System.out.println("out historyReport from removeNode " + InMemoryHistoryManager.historyReport); // TODO
+
             return historyReport;
         }
 

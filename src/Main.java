@@ -82,8 +82,6 @@ public class Main {
                     taskManager.collectEpicSubtasks(taskKey);
                     break;
                 case 6:
-                    System.out.println("historyReport from Main " + InMemoryHistoryManager.historyReport); // TODO
-                    System.out.println("historyStorage size from Main " + InMemoryHistoryManager.historyStorage.getSize()); // TODO
                     System.out.println("taskKey"); // TODO
 
                     taskKey = scanner.next();
@@ -107,14 +105,6 @@ public class Main {
                     taskManager.tasksClear();
                     break;
                 case 8:
-                   /* if (inMemoryHistoryManager.historyStorage.size() == 0) {
-                        inMemoryHistoryManager.historyStorage.addLast(new Task("drg", "gzr", "t.1", true, NEW));
-                        inMemoryHistoryManager.historyStorage.addLast(new Task("drg", "gzr", "t.2", true, NEW));
-                        inMemoryHistoryManager.historyStorage.addLast(new Task("drg", "gzr", "t.3", true, NEW));
-                        inMemoryHistoryManager.historyStorage.addLast(new Task("drg", "gzr", "t.4", true, NEW));
-                        inMemoryHistoryManager.historyStorage.addLast(new Task("drg", "gzr", "t.5", true, NEW));
-                    }*/
-
                     inMemoryHistoryManager.getHistory();
                     System.out.println("historyRegister from Main " + InMemoryHistoryManager.historyRegister); // TODO
                     System.out.println("historyStorage size from Main " + InMemoryHistoryManager.historyStorage.getSize()); // TODO
