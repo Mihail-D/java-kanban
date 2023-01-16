@@ -116,9 +116,9 @@ public class Main {
                     }*/
 
                     inMemoryHistoryManager.getHistory();
-                    System.out.println("historyReport from Main " + InMemoryHistoryManager.historyReport); // TODO
-                    System.out.println("historyReport from Main " + InMemoryHistoryManager.historyRegister); // TODO
+                    System.out.println("historyRegister from Main " + InMemoryHistoryManager.historyRegister); // TODO
                     System.out.println("historyStorage size from Main " + InMemoryHistoryManager.historyStorage.getSize()); // TODO
+                    System.out.println("historyReport from Main " + InMemoryHistoryManager.historyReport); // TODO
                     break;
 
                 case 0:

@@ -31,8 +31,6 @@ public class InMemoryHistoryManager implements HistoryManager {
         return historyStorage.getTasks();
     }
 
-
-
     public static class CustomLinkedList {
 
         private Node head;
@@ -48,9 +46,6 @@ public class InMemoryHistoryManager implements HistoryManager {
             element.setTask(task);
 
             if (historyRegister.containsKey(task.getTaskId())) {
-                System.out.println(task.getTaskId()); // TODO
-                System.out.println(historyRegister); // TODO
-
                 removeNode(historyRegister.get(task.getTaskId()));
             }
 
@@ -74,8 +69,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         void removeNode(Node node) {
             if (node != null) {
                 historyRegister.remove(node.getTask().getTaskId());
-                historyReport.remove(node.getTask());
-                System.out.println(node.getTask().getTaskId()); // TODO
+                //historyReport.remove(node.getTask()); // TODO
 
                 Node prev = node.getPrev();
                 Node next = node.getNext();
@@ -98,13 +92,13 @@ public class InMemoryHistoryManager implements HistoryManager {
             historyStorage.size--;
         }
 
-
-
-
         List<Task> getTasks() {
+
             Node element = head;
             while (element != null) {
-                historyReport.add(element.getTask());
+                if (!historyReport.contains(element.getTask())) {
+                    historyReport.add(element.getTask());
+                }
                 element = element.getNext();
             }
             return historyReport;

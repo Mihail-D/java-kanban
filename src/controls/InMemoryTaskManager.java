@@ -78,14 +78,12 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    @Override                                                 // TODO
+    @Override
     public String taskRetrieve(String taskKey) {
         Task task = tasksStorage.get(taskKey);
         getTaskFormattedData(taskKey);
-        System.out.println("taskRetrieve in " + InMemoryHistoryManager.historyStorage.getSize()); // TODO
         inMemoryHistoryManager.addHistory(task);
-        System.out.println("taskRetrieve out " + InMemoryHistoryManager.historyStorage.getSize()); // TODO
-
+        task.setViewed();
         return getTaskFormattedData(taskKey);
     }
 
@@ -156,10 +154,7 @@ public class InMemoryTaskManager implements TaskManager {
                 inMemoryHistoryManager.removeHistory(taskKey);
                 break;
         }
-
-
     }
-
 
     public void tasksClear() {
         tasksStorage.clear();
