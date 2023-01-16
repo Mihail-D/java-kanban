@@ -3,6 +3,7 @@ package controls;
 import tasks.Task;
 
 class Node {
+
     private Task task;
     private Node prev;
     private Node next;
