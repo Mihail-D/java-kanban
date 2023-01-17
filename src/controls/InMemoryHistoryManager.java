@@ -92,7 +92,7 @@ public class InMemoryHistoryManager implements HistoryManager {
                     next.setPrev(prev);
                 }
             }
-            historyStorage.size--;
+            size--;
         }
 
         List<Task> getTasks() {
