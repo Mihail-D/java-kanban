@@ -19,6 +19,7 @@ public class InMemoryTaskManager implements TaskManager {
     HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
 
     public static HashMap<String, Task> tasksStorage = new HashMap<>();
+    public static String PATH = "./src/data";
     int taskId = getInitNumber();
 
     public void taskAdd(String... args) {
@@ -207,8 +208,8 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     public int getInitNumber() {
-        File file = new File("dataStorage.csv");
-        int max = Integer.MIN_VALUE;
+        File file = new File(PATH + File.separator + "dataStorage.csv");
+        int max = 0;
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
