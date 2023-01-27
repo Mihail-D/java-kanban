@@ -1,7 +1,6 @@
 package controls;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,7 +11,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         String path = "./src/data";
 
         Files.createDirectories(Paths.get(path));
-        Files.createFile(Path.of(path + File.separator + "dataStorage.csv"));
-        Files.createFile(Path.of(path + File.separator + "historyStorage.csv"));
+        File dataStorage = new File(path + File.separator + "dataStorage.csv");
+        dataStorage.createNewFile();
+        File historyStorage = new File(path + File.separator + "historyStorage.csv");
+        historyStorage.createNewFile();
     }
+
 }

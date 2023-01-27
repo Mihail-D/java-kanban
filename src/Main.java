@@ -13,6 +13,8 @@ public class Main {
         InMemoryTaskManager taskManager = new InMemoryTaskManager();
         InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
         FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager();
+        
+        fileBackedTasksManager.getInitNumber(); // TODO
 
         Scanner scanner = new Scanner(System.in);
         int item;
@@ -39,6 +41,8 @@ public class Main {
                         parentKey = scanner.next();
                         taskManager.taskAdd(taskTitle, taskDescription, mode, parentKey);
                     }
+                    System.out.println(InMemoryTaskManager.tasksStorage); // TODO
+
                     break;
                 case 2:
                     taskKey = scanner.next();

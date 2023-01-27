@@ -5,6 +5,10 @@ import tasks.SubTask;
 import tasks.Task;
 import tasks.TaskStages;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -15,9 +19,8 @@ public class InMemoryTaskManager implements TaskManager {
     HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
 
     public static HashMap<String, Task> tasksStorage = new HashMap<>();
-    int taskId = 0;
+    int taskId = getInitNumber();
 
-    @Override
     public void taskAdd(String... args) {
         TaskStages taskStatus = TaskStages.NEW;
         String taskId = getId(args[2]);
@@ -45,7 +48,6 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    @Override
     public void taskUpdate(String... args) {
         String taskKey = args[0];
         Task task = tasksStorage.get(taskKey);
@@ -78,7 +80,6 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    @Override
     public String taskRetrieve(String taskKey) {
         Task task = tasksStorage.get(taskKey);
         getTaskFormattedData(taskKey);
@@ -87,7 +88,6 @@ public class InMemoryTaskManager implements TaskManager {
         return getTaskFormattedData(taskKey);
     }
 
-    @Override
     public ArrayList<ArrayList<String>> collectAllTasks() {
         ArrayList<String> listOfTasks = new ArrayList<>();
         ArrayList<String> listOfEpics = new ArrayList<>();
@@ -108,7 +108,6 @@ public class InMemoryTaskManager implements TaskManager {
         return Stream.of(listOfTasks, listOfEpics, listOfSubTasks).collect(toCollection(ArrayList::new));
     }
 
-    @Override
     public ArrayList<String> collectEpicSubtasks(String taskKey) {
         ArrayList<String> localTasksList = new ArrayList<>();
         Epic epicTask = (Epic) tasksStorage.get(taskKey);
@@ -121,7 +120,6 @@ public class InMemoryTaskManager implements TaskManager {
         return localTasksList;
     }
 
-    @Override
     public void taskDelete(String... args) {
         String taskKey = args[0];
         String keyChunk = taskKey.substring(0, 1);
@@ -206,5 +204,24 @@ public class InMemoryTaskManager implements TaskManager {
         String taskStatus = String.valueOf(task.getTaskStatus());
 
         return taskTitle + taskDescription + taskKey + taskStatus;
+    }
+
+    public int getInitNumber() {
+        File file = new File("dataStorage.csv");
+        int max = Integer.MIN_VALUE;
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] arr = line.split(",");
+                int number = Integer.parseInt(arr[0].substring(2));
+                if (number > max) {
+                    max = number;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return max;
     }
 }
