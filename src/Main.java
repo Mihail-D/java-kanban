@@ -1,16 +1,18 @@
 import controls.*;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         getControlOptions();
     }
 
-    public static void getControlOptions() {
+    public static void getControlOptions() throws IOException {
         InMemoryTaskManager taskManager = new InMemoryTaskManager();
         InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
+        FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager();
 
         Scanner scanner = new Scanner(System.in);
         int item;
