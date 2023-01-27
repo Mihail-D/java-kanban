@@ -15,7 +15,8 @@ public class Main {
         FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager();
         
         fileBackedTasksManager.getInitNumber(); // TODO
-        fileBackedTasksManager.restoreTasks(); // TODO   
+        fileBackedTasksManager.restoreTasks(); // TODO
+        fileBackedTasksManager.restoreHistory(); // TODO
 
         Scanner scanner = new Scanner(System.in);
         int item;

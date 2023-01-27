@@ -43,4 +43,28 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     }
 
+    public void restoreHistory() {
+        File file = new File(PATH + File.separator + "historyStorage.csv");
+
+        if (file.exists() && !file.isDirectory()) {
+
+            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    String[] tokens = line.split(",");
+                    Task task = new Task(tokens[1], tokens[2], tokens[0], Boolean.parseBoolean(tokens[3]),
+                            TaskStages.valueOf(tokens[4])
+                    );
+                    InMemoryHistoryManager.historyStorage.linkLast(task);
+
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println("from restoreHistory (historyStorage.getSize) " + InMemoryHistoryManager.historyStorage.getSize()); // TODO
+        System.out.println("from restoreHistory (historyRegister) " + InMemoryHistoryManager.historyRegister); // TODO   
+
+    }
+
 }
