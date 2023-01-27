@@ -21,6 +21,7 @@ public class InMemoryTaskManager implements TaskManager {
     public static HashMap<String, Task> tasksStorage = new HashMap<>();
     public static String PATH = "./src/data";
     int taskId = getInitNumber();
+    String taskContent;
 
     public void taskAdd(String... args) {
         TaskStages taskStatus = TaskStages.NEW;
@@ -32,11 +33,13 @@ public class InMemoryTaskManager implements TaskManager {
                 InMemoryTaskManager.tasksStorage.put(taskId, new Task(args[0], args[1], taskId,
                         isViewed, taskStatus
                 ));
+                taskContent = getTaskFormattedData(taskId);
                 break;
             case "epicMode":
                 InMemoryTaskManager.tasksStorage.put(taskId, new Epic(args[0], args[1], taskId,
                         isViewed, taskStatus, new HashMap<>()
                 ));
+                taskContent = getTaskFormattedData(taskId);
                 break;
             case "subTaskMode":
                 Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(args[3]);
@@ -45,6 +48,9 @@ public class InMemoryTaskManager implements TaskManager {
                 InMemoryTaskManager.tasksStorage.put(taskId, new SubTask(args[0], args[1], taskId,
                         isViewed, taskStatus, args[3]
                 ));
+                taskContent = getTaskFormattedData(taskId) + args[3];
+                System.out.println(taskContent); // TODO
+
                 break;
         }
     }
@@ -202,9 +208,10 @@ public class InMemoryTaskManager implements TaskManager {
         String taskTitle = task.getTaskTitle() + ",";
         String taskDescription = task.getTaskDescription() + ",";
         taskKey = task.getTaskId() + ",";
-        String taskStatus = String.valueOf(task.getTaskStatus());
+        String taskStatus = task.getTaskStatus() + ",";
+        String isViewed = task.isViewed() + ",";
 
-        return taskTitle + taskDescription + taskKey + taskStatus;
+        return taskKey + taskTitle + taskDescription + isViewed + taskStatus;
     }
 
     public int getInitNumber() {

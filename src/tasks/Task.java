@@ -44,6 +44,10 @@ public class Task {
         isViewed = true;
     }
 
+    public boolean isViewed() {
+        return isViewed;
+    }
+
     public void setTaskStatus(TaskStages taskStatus) {
         this.taskStatus = taskStatus;
     }

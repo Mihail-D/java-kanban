@@ -20,6 +20,21 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         historyStorage.createNewFile();
     }
 
+    @Override
+    public void taskAdd(String... args) {
+        super.taskAdd(args);
+        saveTask();
+    }
+
+
+
+
+
+
+
+
+    //  *********************************************************************************
+
     public void restoreTasks() {
         File file = new File(PATH + File.separator + "dataStorage.csv");
 
@@ -65,6 +80,17 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         System.out.println("from restoreHistory (historyStorage.getSize) " + InMemoryHistoryManager.historyStorage.getSize()); // TODO
         System.out.println("from restoreHistory (historyRegister) " + InMemoryHistoryManager.historyRegister); // TODO   
 
+    }
+
+    public void saveTask() {
+        try {
+            String filename = PATH + File.separator +  "dataStorage.csv";
+            FileWriter fw = new FileWriter(filename, true);
+            fw.write(super.taskContent + "\n");
+            fw.close();
+        } catch (IOException e) {
+            System.err.println("IOException: " + e.getMessage());
+        }
     }
 
 }

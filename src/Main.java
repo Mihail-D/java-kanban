@@ -32,16 +32,21 @@ public class Main {
 
             switch (item) {
                 case 1:
+                    System.out.println("taskTitle"); // TODO
                     taskTitle = scanner.next();
+                    System.out.println("taskDescription"); // TODO
                     taskDescription = scanner.next();
+                    System.out.println("mode taskMode epicMode subTaskMode"); // TODO
                     mode = scanner.next();
 
                     if (mode.equals("taskMode") || mode.equals("epicMode")) {
-                        taskManager.taskAdd(taskTitle, taskDescription, mode);
+                        fileBackedTasksManager.taskAdd(taskTitle, taskDescription, mode);
                     }
                     else if (mode.equals("subTaskMode")) {
+                        System.out.println("parentKey"); // TODO
+
                         parentKey = scanner.next();
-                        taskManager.taskAdd(taskTitle, taskDescription, mode, parentKey);
+                        fileBackedTasksManager.taskAdd(taskTitle, taskDescription, mode, parentKey);
                     }
                     System.out.println(InMemoryTaskManager.tasksStorage); // TODO
 
