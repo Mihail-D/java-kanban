@@ -29,6 +29,7 @@ public class Main {
         String taskStatus;
 
         while (true) {
+            System.out.println("MENU"); // TODO
             item = scanner.nextInt();
 
             switch (item) {

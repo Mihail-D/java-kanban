@@ -172,11 +172,21 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     public void lineEdit(String lineOld, String lineNew) throws IOException {
         List<String> fileContent = new ArrayList<>(Files.readAllLines(
                 Path.of(PATH + File.separator + "dataStorage.csv"), StandardCharsets.UTF_8));
+        String[] tokens = lineOld.split(",");
 
         for (int i = 0; i < fileContent.size(); i++) {
             if (fileContent.get(i).equals(lineOld)) {
                 fileContent.set(i, lineNew);
                 break;
+            }
+            if (tokens.length == 6) {
+                String parentKey = tokens[tokens.length - 1];
+                String parentContent = super.getTaskFormattedData(parentKey);
+                for (int j = 0; j < fileContent.size(); j++) {
+                    if (fileContent.get(j).startsWith(parentKey)) {
+                        fileContent.set(j, parentContent);
+                    }
+                }
             }
         }
 
