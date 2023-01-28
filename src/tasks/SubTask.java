@@ -14,6 +14,6 @@ public class SubTask extends Task {
 
     @Override
     public String toString() {
-        return "SubTask " + "ParentId='" + parentId + " " + super.toString() + "\n";
+        return "SubTask " + "ParentId = " + parentId + " " + super.toString() + "\n";
     }
 }

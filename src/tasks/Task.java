@@ -86,8 +86,8 @@ public class Task {
 
     @Override
     public String toString() {
-        return " MainTask Title='" + taskTitle + '\'' +
-                ", Description='" + taskDescription + '\'' +
-                ", Id=" + taskId + ", isViewed=" + isViewed + ", Status='" + taskStatus + "***" + "\n";
+        return " MainTask Title = " + taskTitle +
+                " Description = " + taskDescription +
+                " Id = " + taskId + " isViewed = " + isViewed + " Status = " + taskStatus + "***" + "\n";
     }
 }
