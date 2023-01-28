@@ -16,7 +16,7 @@ public class Main {
         
         fileBackedTasksManager.getInitNumber(); // TODO
         fileBackedTasksManager.restoreTasks(); // TODO
-        //fileBackedTasksManager.restoreHistory(); // TODO
+        fileBackedTasksManager.restoreHistory(); // TODO
 
         Scanner scanner = new Scanner(System.in);
         int item;
@@ -71,6 +71,7 @@ public class Main {
                     break;
 
                 case 3:
+                    System.out.println("taskKey"); // TODO
                     taskKey = scanner.next();
                     taskManager.taskRetrieve(taskKey);
                     break;

@@ -4,6 +4,7 @@ import tasks.Epic;
 import tasks.SubTask;
 import tasks.Task;
 import tasks.TaskStages;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -25,6 +26,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     public void taskAdd(String... args) {
         super.taskAdd(args);
         saveTask();
+    }
+
+    public String taskRetrieve(String taskKey) {
+        super.taskRetrieve(taskKey);
+        // TODO   
     }
 
     //  *********************************************************************************
@@ -72,18 +78,39 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     public void restoreHistory() {
         File file = new File(PATH + File.separator + "historyStorage.csv");
+        Task task = null;
 
         if (file.exists() && !file.isDirectory()) {
 
             try (BufferedReader br = new BufferedReader(new FileReader(file))) {
                 String line;
-                while ((line = br.readLine()) != null) {
-                    String[] tokens = line.split(",");
-                    Task task = new Task(tokens[1], tokens[2], tokens[0], Boolean.parseBoolean(tokens[3]),
-                            TaskStages.valueOf(tokens[4])
-                    );
-                    InMemoryHistoryManager.historyStorage.linkLast(task);
 
+                while ((line = br.readLine()) != null) {
+                    if (line.trim().isEmpty()) {
+                        continue;
+                    }
+                    String[] tokens = line.split(",");
+
+                    if (tokens[0].charAt(0) == 't') {
+                        task = new Task(tokens[1], tokens[2], tokens[0], Boolean.parseBoolean(tokens[3]),
+                                TaskStages.valueOf(tokens[4])
+                        );
+                    }
+                    else if (tokens[0].charAt(0) == 'e') {
+                        task = new Epic(tokens[1], tokens[2], tokens[0], Boolean.parseBoolean(tokens[3]),
+                                TaskStages.valueOf(tokens[4]), new HashMap<>()
+                        );
+                    }
+                    else if (tokens[0].charAt(0) == 's') {
+                        task = new SubTask(tokens[1], tokens[2], tokens[0], Boolean.parseBoolean(tokens[3]),
+                                TaskStages.valueOf(tokens[4]), tokens[5]
+                        );
+                        Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(tokens[5]);
+                        parentTask.relatedSubTask.put(tokens[0], String.valueOf(TaskStages.valueOf(tokens[4])));
+                        setEpicStatus(tokens[5]);
+                    }
+
+                    InMemoryHistoryManager.historyStorage.linkLast(task);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
