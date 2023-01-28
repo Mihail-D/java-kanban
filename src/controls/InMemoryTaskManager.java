@@ -221,10 +221,10 @@ public class InMemoryTaskManager implements TaskManager {
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = br.readLine()) != null) {
-                String[] arr = line.split(",");
                 if (line.trim().isEmpty()) {
                     continue;
                 }
+                String[] arr = line.split(",");
                 int number = Integer.parseInt(arr[0].substring(2));
                 if (number > max) {
                     max = number;
