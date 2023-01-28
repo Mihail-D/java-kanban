@@ -40,6 +40,14 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return InMemoryTaskManager.taskContent;
     }
 
+    public void taskEdit(String... args) throws IOException {  // TODO
+        String oldData = super.getTaskFormattedData(args[0]);
+        super.taskUpdate(args);
+        String newData = super.getTaskFormattedData(args[0]);
+        lineEdit(oldData, newData);
+
+    }
+
     //  *********************************************************************************
     public void restoreTasks() {
         File file = new File(PATH + File.separator + "dataStorage.csv");

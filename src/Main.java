@@ -17,7 +17,7 @@ public class Main {
         fileBackedTasksManager.getInitNumber(); // TODO
         fileBackedTasksManager.restoreTasks(); // TODO
         fileBackedTasksManager.restoreHistory(); // TODO
-        fileBackedTasksManager.lineEdit("t.6,sf,dg,false,NEW", "t.6,sf,dg,false,DONE");
+        fileBackedTasksManager.lineEdit("t.24,sf,sdrf,false,NEW", "t.24,sf,sdr,false,DONE");
 
         Scanner scanner = new Scanner(System.in);
         int item;
@@ -53,21 +53,30 @@ public class Main {
 
                     break;
                 case 2:
+                    System.out.println("taskKey"); // TODO
                     taskKey = scanner.next();
+
+                    System.out.println("taskTitle"); // TODO
                     taskTitle = scanner.next();
+
+                    System.out.println("taskDescription"); // TODO
                     taskDescription = scanner.next();
 
                     if (taskKey.charAt(0) == 's') {
+                        System.out.println("parentKey"); // TODO
                         parentKey = scanner.next();
+
+                        System.out.println("taskStatus"); // TODO
                         taskStatus = scanner.next();
-                        taskManager.taskUpdate(taskKey, taskTitle, taskDescription, taskStatus, parentKey);
+                        fileBackedTasksManager.taskEdit(taskKey, taskTitle, taskDescription, taskStatus, parentKey);
                     }
                     else if (taskKey.charAt(0) == 't') {
+                        System.out.println("taskStatus"); // TODO
                         taskStatus = scanner.next();
-                        taskManager.taskUpdate(taskKey, taskTitle, taskDescription, taskStatus);
+                        fileBackedTasksManager.taskEdit(taskKey, taskTitle, taskDescription, taskStatus);
                     }
                     else if (taskKey.charAt(0) == 'e') {
-                        taskManager.taskUpdate(taskKey, taskTitle, taskDescription);
+                        fileBackedTasksManager.taskEdit(taskKey, taskTitle, taskDescription);
                     }
                     break;
 

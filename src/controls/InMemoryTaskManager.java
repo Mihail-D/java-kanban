@@ -210,7 +210,8 @@ public class InMemoryTaskManager implements TaskManager {
         String result;
         if (task.getClass() == SubTask.class) {
             result =
-                    taskKey + taskTitle + taskDescription + isViewed + taskStatus + "," + ((SubTask) task).getParentId();
+                    taskKey + taskTitle + taskDescription + isViewed + taskStatus
+                            + "," + ((SubTask) task).getParentId();
         }
         else {
             result = taskKey + taskTitle + taskDescription + isViewed + taskStatus;
