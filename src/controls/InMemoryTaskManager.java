@@ -33,13 +33,11 @@ public class InMemoryTaskManager implements TaskManager {
                 InMemoryTaskManager.tasksStorage.put(taskId, new Task(args[0], args[1], taskId,
                         isViewed, taskStatus
                 ));
-                taskContent = getTaskFormattedData(taskId);
                 break;
             case "epicMode":
                 InMemoryTaskManager.tasksStorage.put(taskId, new Epic(args[0], args[1], taskId,
                         isViewed, taskStatus, new HashMap<>()
                 ));
-                taskContent = getTaskFormattedData(taskId);
                 break;
             case "subTaskMode":
                 Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(args[3]);
@@ -48,11 +46,10 @@ public class InMemoryTaskManager implements TaskManager {
                 InMemoryTaskManager.tasksStorage.put(taskId, new SubTask(args[0], args[1], taskId,
                         isViewed, taskStatus, args[3]
                 ));
-                taskContent = getTaskFormattedData(taskId) + "," + args[3];
                 System.out.println(taskContent); // TODO
-
                 break;
         }
+        taskContent = getTaskFormattedData(taskId);
     }
 
     public void taskUpdate(String... args) {
