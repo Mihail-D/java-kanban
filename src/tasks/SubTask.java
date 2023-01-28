@@ -4,6 +4,10 @@ public class SubTask extends Task {
 
     String parentId;
 
+    public String getParentId() {
+        return parentId;
+    }
+
     public SubTask(
             String taskTitle, String taskDescription, String taskId, boolean isViewed,
             TaskStages taskStatus, String parentId

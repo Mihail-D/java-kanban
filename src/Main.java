@@ -17,6 +17,7 @@ public class Main {
         fileBackedTasksManager.getInitNumber(); // TODO
         fileBackedTasksManager.restoreTasks(); // TODO
         fileBackedTasksManager.restoreHistory(); // TODO
+        fileBackedTasksManager.lineEdit("t.6,sf,dg,false,NEW", "t.6,sf,dg,false,DONE");
 
         Scanner scanner = new Scanner(System.in);
         int item;

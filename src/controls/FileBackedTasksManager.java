@@ -6,9 +6,13 @@ import tasks.Task;
 import tasks.TaskStages;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
 
@@ -155,6 +159,20 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         } catch (IOException e) {
             System.err.println("IOException: " + e.getMessage());
         }
+    }
+
+    public void lineEdit(String lineOld, String lineNew) throws IOException {
+        List<String> fileContent = new ArrayList<>(Files.readAllLines(
+                Path.of(PATH + File.separator + "dataStorage.csv"), StandardCharsets.UTF_8));
+
+        for (int i = 0; i < fileContent.size(); i++) {
+            if (fileContent.get(i).equals(lineOld)) {
+                fileContent.set(i, lineNew);
+                break;
+            }
+        }
+
+        Files.write(Path.of(PATH + File.separator + "dataStorage.csv"), fileContent, StandardCharsets.UTF_8);
     }
 
 }

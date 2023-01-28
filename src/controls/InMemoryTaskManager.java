@@ -210,8 +210,16 @@ public class InMemoryTaskManager implements TaskManager {
         taskKey = task.getTaskId() + ",";
         String isViewed = task.isViewed() + ",";
         String taskStatus = String.valueOf(task.getTaskStatus());
+        String result;
+        if (task.getClass() == SubTask.class) {
+            result =
+                    taskKey + taskTitle + taskDescription + isViewed + taskStatus + "," + ((SubTask) task).getParentId();
+        }
+        else {
+            result = taskKey + taskTitle + taskDescription + isViewed + taskStatus;
+        }
 
-        return taskKey + taskTitle + taskDescription + isViewed + taskStatus;
+        return result;
     }
 
     public int getInitNumber() {
