@@ -28,9 +28,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         saveTask();
     }
 
-    public String taskRetrieve(String taskKey) {
+    public String taskGet(String taskKey) {
         super.taskRetrieve(taskKey);
-        // TODO   
+        saveHistory(taskKey);
+        System.out.println(InMemoryTaskManager.taskContent); // TODO
+
+        return InMemoryTaskManager.taskContent;
     }
 
     //  *********************************************************************************
@@ -125,7 +128,29 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         try {
             String filename = PATH + File.separator + "dataStorage.csv";
             FileWriter fw = new FileWriter(filename, true);
-            fw.write(super.taskContent + "\n");
+            fw.write(taskContent + "\n");
+            fw.close();
+        } catch (IOException e) {
+            System.err.println("IOException: " + e.getMessage());
+        }
+    }
+
+    public void saveHistory(String taskKey) {
+        String filename = PATH + File.separator + "historyStorage.csv";
+        int referenceKey = Integer.parseInt(taskKey.substring(2));
+        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
+            String line;
+
+            while ((line = br.readLine()) != null) {
+                String[] tokens = line.split(",");
+
+                if (referenceKey == Integer.parseInt(tokens[0].substring(2))) {
+                    return;
+                }
+            }
+
+            FileWriter fw = new FileWriter(filename, true);
+            fw.write(taskContent + "\n");
             fw.close();
         } catch (IOException e) {
             System.err.println("IOException: " + e.getMessage());

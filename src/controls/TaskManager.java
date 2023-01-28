@@ -9,7 +9,7 @@ public interface TaskManager {
 
     void taskUpdate(String... args);
 
-    String taskRetrieve(String taskKey);
+    void taskRetrieve(String taskKey);
 
     List<ArrayList<String>> collectAllTasks();
 

@@ -21,7 +21,7 @@ public class InMemoryTaskManager implements TaskManager {
     public static HashMap<String, Task> tasksStorage = new HashMap<>();
     public static String PATH = "./src/data";
     int taskId = getInitNumber();
-    String taskContent;
+    public static String taskContent;
 
     public void taskAdd(String... args) {
         TaskStages taskStatus = TaskStages.NEW;
@@ -87,12 +87,12 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    public String taskRetrieve(String taskKey) {
+    public void taskRetrieve(String taskKey) {
         Task task = tasksStorage.get(taskKey);
         getTaskFormattedData(taskKey);
         inMemoryHistoryManager.addHistory(task);
         task.setViewed();
-        return getTaskFormattedData(taskKey);
+        taskContent = getTaskFormattedData(taskKey);
     }
 
     public ArrayList<ArrayList<String>> collectAllTasks() {

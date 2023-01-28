@@ -73,7 +73,7 @@ public class Main {
                 case 3:
                     System.out.println("taskKey"); // TODO
                     taskKey = scanner.next();
-                    taskManager.taskRetrieve(taskKey);
+                    fileBackedTasksManager.taskGet(taskKey);
                     break;
                 case 4:
                     taskManager.collectAllTasks();
