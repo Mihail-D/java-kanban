@@ -32,23 +32,27 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         saveTask();
     }
 
-    public String taskGet(String taskKey) {
+    public String taskGet(String taskKey) throws IOException {
+        String oldData = super.getTaskFormattedData(taskKey);
         super.taskRetrieve(taskKey);
         saveHistory(taskKey);
+        String newData = super.getTaskFormattedData(taskKey);
+        dataStorageOverwrite(oldData, newData);
+
         System.out.println(InMemoryTaskManager.taskContent); // TODO
 
         return InMemoryTaskManager.taskContent;
     }
 
-    public void taskEdit(String... args) throws IOException {  // TODO
+    public void taskEdit(String... args) throws IOException {
         String oldData = super.getTaskFormattedData(args[0]);
         super.taskUpdate(args);
         String newData = super.getTaskFormattedData(args[0]);
-        lineEdit(oldData, newData);
-
+        dataStorageOverwrite(oldData, newData);
     }
 
     //  *********************************************************************************
+
     public void restoreTasks() {
         File file = new File(PATH + File.separator + "dataStorage.csv");
         Task task = null;
@@ -131,7 +135,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 e.printStackTrace();
             }
         }
-        System.out.println("from restoreHistory (historyStorage.getSize) " + InMemoryHistoryManager.historyStorage.getSize()); // TODO
+        //System.out.println("from restoreHistory (historyStorage.getSize) " + InMemoryHistoryManager.historyStorage
+        // .getSize()); // TODO
         System.out.println("from restoreHistory (historyRegister) " + InMemoryHistoryManager.historyRegister); // TODO   
 
     }
@@ -157,7 +162,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 String[] tokens = line.split(",");
 
                 if (referenceKey == Integer.parseInt(tokens[0].substring(2))) {
-                    return;
+                    historyStorageOverwrite(line);
                 }
             }
 
@@ -169,17 +174,18 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    public void lineEdit(String lineOld, String lineNew) throws IOException {
+    public void dataStorageOverwrite(String oldData, String newData) throws IOException {
         List<String> fileContent = new ArrayList<>(Files.readAllLines(
                 Path.of(PATH + File.separator + "dataStorage.csv"), StandardCharsets.UTF_8));
-        String[] tokens = lineOld.split(",");
+        String[] tokens = oldData.split(",");
+        int subtaskLineLength = 6;
 
         for (int i = 0; i < fileContent.size(); i++) {
-            if (fileContent.get(i).equals(lineOld)) {
-                fileContent.set(i, lineNew);
+            if (fileContent.get(i).equals(oldData)) {
+                fileContent.set(i, newData);
                 break;
             }
-            if (tokens.length == 6) {
+            if (tokens.length == subtaskLineLength) {
                 String parentKey = tokens[tokens.length - 1];
                 String parentContent = super.getTaskFormattedData(parentKey);
                 for (int j = 0; j < fileContent.size(); j++) {
@@ -193,4 +199,17 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         Files.write(Path.of(PATH + File.separator + "dataStorage.csv"), fileContent, StandardCharsets.UTF_8);
     }
 
+    public void historyStorageOverwrite(String oldData) throws IOException {
+        List<String> fileContent = new ArrayList<>(Files.readAllLines(
+                Path.of(PATH + File.separator + "historyStorage.csv"), StandardCharsets.UTF_8));
+        String[] tokens = oldData.split(",");
+
+        for (int i = 0; i < fileContent.size(); i++) {
+            if (fileContent.get(i).equals(oldData)) {
+                fileContent.remove(i);
+                break;
+            }
+        }
+        Files.write(Path.of(PATH + File.separator + "historyStorage.csv"), fileContent, StandardCharsets.UTF_8);
+    }
 }

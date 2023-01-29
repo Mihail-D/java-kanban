@@ -14,10 +14,9 @@ public class Main {
         InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
         FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager();
         
-        fileBackedTasksManager.getInitNumber(); // TODO
-        fileBackedTasksManager.restoreTasks(); // TODO
-        fileBackedTasksManager.restoreHistory(); // TODO
-        fileBackedTasksManager.lineEdit("t.24,sf,sdrf,false,NEW", "t.24,sf,sdr,false,DONE");
+        fileBackedTasksManager.getInitNumber();
+        fileBackedTasksManager.restoreTasks();
+        fileBackedTasksManager.restoreHistory();
 
         Scanner scanner = new Scanner(System.in);
         int item;
