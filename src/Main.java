@@ -93,14 +93,17 @@ public class Main {
                     taskManager.collectEpicSubtasks(taskKey);
                     break;
                 case 6:
+                    System.out.println("taskKey"); // TODO
                     taskKey = scanner.next();
 
                     if (taskKey.charAt(0) == 's') {
+                        System.out.println("parentKey"); // TODO
                         parentKey = scanner.next();
-                        taskManager.taskDelete(taskKey, parentKey);
+
+                        fileBackedTasksManager.recordDelete(taskKey, parentKey);
                     }
                     else {
-                        taskManager.taskDelete(taskKey);
+                        fileBackedTasksManager.recordDelete(taskKey);
                     }
                     break;
 

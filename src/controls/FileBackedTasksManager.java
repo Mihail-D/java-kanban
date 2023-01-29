@@ -51,6 +51,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         dataStorageOverwrite(oldData, newData);
     }
 
+    public void recordDelete(String... args) throws IOException {
+        String oldData = super.getTaskFormattedData(args[0]);
+        super.taskDelete(args);
+        dataStorageOverwrite(oldData, "");
+        historyStorageOverwrite(oldData);
+    }
+
     //  *********************************************************************************
 
     public void restoreTasks() {
