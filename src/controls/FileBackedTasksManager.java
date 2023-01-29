@@ -49,7 +49,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         dataStorageOverwrite(oldData, newData);
     }
 
-    public void recordDelete(String... args) throws IOException {
+    public void dataDelete(String... args) throws IOException {
         String oldData = super.getTaskFormattedData(args[0]);
         String taskType = args[0].substring(0, 1);
 
@@ -63,10 +63,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
 
         super.taskDelete(args);
-        // s.2, sdg, sdg, true, NEW, e.1
     }
 
-    //  *********************************************************************************
+    public void dataClear() throws IOException {
+        super.tasksClear();
+        lineErase("complete", "dataStorage.csv");
+        lineErase("complete", "historyStorage.csv");
+    }
 
     public void restoreTasks() {
         File file = new File(PATH + File.separator + "dataStorage.csv");
@@ -177,7 +180,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 String[] tokens = line.split(",");
 
                 if (referenceKey == Integer.parseInt(tokens[0].substring(2))) {
-                    lineErase("partial", "historyStorage.csv", line);
+                    lineErase("single", "historyStorage.csv", line);
                 }
             }
 
@@ -217,12 +220,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     public void lineErase(String... args) throws IOException {
         List<String> fileContent = new ArrayList<>(Files.readAllLines(
                 Path.of(PATH + File.separator + args[1]), StandardCharsets.UTF_8));
-        String[] tokens = args[2].split(",");
 
         if (args[0].equals("complete")) {
             fileContent.clear();
         }
-        else if (args[0].equals("single")) {
+
+        if (args[0].equals("single")) {
+            String[] tokens = args[2].split(",");
             for (int i = 0; i < fileContent.size(); i++) {
                 if (fileContent.get(i).equals(args[2])) {
                     fileContent.remove(i);
@@ -231,6 +235,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             }
         }
         else if (args[0].equals("epic")) {
+            String[] tokens = args[2].split(",");
             Epic task = (Epic) InMemoryTaskManager.tasksStorage.get(tokens[0]);
             Map<String, String> relativeTasks = task.relatedSubTask;
             int subtaskLineLength = 6;

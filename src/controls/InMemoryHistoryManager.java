@@ -16,12 +16,23 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     @Override
-    public void removeHistory(String taskId) {
-        historyStorage.removeNode(historyStorage.getNode(taskId));
+    public void removeHistoryRecord(String taskId) {
+        System.out.println(historyStorage.getSize()); // TODO
+        System.out.println(historyReport.size());     // TODO
+        System.out.println(historyRegister.size());   // TODO
+
+        Node node = historyStorage.getNode(taskId);
+        historyStorage.removeNode(node);
+        historyReport.removeIf(i -> i.equals(node.getTask()));
+        historyRegister.remove(node.getTask().getTaskId());
+
+        System.out.println(historyStorage.getSize());   // TODO
+        System.out.println(historyReport.size());       // TODO
+        System.out.println(historyRegister.size());      // TODO
     }
 
     @Override
-    public void clearHistoryStorage() {
+    public void clearHistoryStorage() {                                       // TODO
         for (String i : historyRegister.keySet()) {
             historyStorage.removeNode(historyStorage.getNode(i));
         }
@@ -70,10 +81,6 @@ public class InMemoryHistoryManager implements HistoryManager {
 
         void removeNode(Node node) {
             if (node != null) {
-
-                historyReport.removeIf(i -> i.equals(node.getTask()));
-                historyRegister.remove(node.getTask().getTaskId());
-
                 Node prev = node.getPrev();
                 Node next = node.getNext();
 

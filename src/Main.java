@@ -100,15 +100,15 @@ public class Main {
                         System.out.println("parentKey"); // TODO
                         parentKey = scanner.next();
 
-                        fileBackedTasksManager.recordDelete(taskKey, parentKey);
+                        fileBackedTasksManager.dataDelete(taskKey, parentKey);
                     }
                     else {
-                        fileBackedTasksManager.recordDelete(taskKey);
+                        fileBackedTasksManager.dataDelete(taskKey);
                     }
                     break;
 
                 case 7:
-                    taskManager.tasksClear();
+                    fileBackedTasksManager.dataClear();
                     break;
                 case 8:
                     inMemoryHistoryManager.getHistory();
