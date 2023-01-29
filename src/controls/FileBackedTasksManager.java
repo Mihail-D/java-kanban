@@ -10,9 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
 
@@ -53,9 +51,19 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     public void recordDelete(String... args) throws IOException {
         String oldData = super.getTaskFormattedData(args[0]);
+        String taskType = args[0].substring(0, 1);
+
+        if (taskType.equals("t") || taskType.equals("s")) {
+            lineErase("single", "dataStorage.csv", oldData);
+            lineErase("single", "historyStorage.csv", oldData);
+        }
+        else if (taskType.equals("e")) {
+            lineErase("epic", "dataStorage.csv", oldData);
+            lineErase("epic", "historyStorage.csv", oldData);
+        }
+
         super.taskDelete(args);
-        dataStorageOverwrite(oldData, "");
-        historyStorageOverwrite(oldData);
+        // s.2, sdg, sdg, true, NEW, e.1
     }
 
     //  *********************************************************************************
@@ -169,7 +177,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 String[] tokens = line.split(",");
 
                 if (referenceKey == Integer.parseInt(tokens[0].substring(2))) {
-                    historyStorageOverwrite(line);
+                    lineErase("partial", "historyStorage.csv", line);
                 }
             }
 
@@ -206,17 +214,41 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         Files.write(Path.of(PATH + File.separator + "dataStorage.csv"), fileContent, StandardCharsets.UTF_8);
     }
 
-    public void historyStorageOverwrite(String oldData) throws IOException {
+    public void lineErase(String... args) throws IOException {
         List<String> fileContent = new ArrayList<>(Files.readAllLines(
-                Path.of(PATH + File.separator + "historyStorage.csv"), StandardCharsets.UTF_8));
-        String[] tokens = oldData.split(",");
+                Path.of(PATH + File.separator + args[1]), StandardCharsets.UTF_8));
+        String[] tokens = args[2].split(",");
 
-        for (int i = 0; i < fileContent.size(); i++) {
-            if (fileContent.get(i).equals(oldData)) {
-                fileContent.remove(i);
-                break;
+        if (args[0].equals("complete")) {
+            fileContent.clear();
+        }
+        else if (args[0].equals("single")) {
+            for (int i = 0; i < fileContent.size(); i++) {
+                if (fileContent.get(i).equals(args[2])) {
+                    fileContent.remove(i);
+                    break;
+                }
             }
         }
-        Files.write(Path.of(PATH + File.separator + "historyStorage.csv"), fileContent, StandardCharsets.UTF_8);
+        else if (args[0].equals("epic")) {
+            Epic task = (Epic) InMemoryTaskManager.tasksStorage.get(tokens[0]);
+            Map<String, String> relativeTasks = task.relatedSubTask;
+            int subtaskLineLength = 6;
+
+            for (String i : new ArrayList<>(fileContent)) {
+                String[] arr = i.split(",");
+                if (arr.length == subtaskLineLength && relativeTasks.containsKey(arr[0])) {
+                    fileContent.remove(i);
+                }
+            }
+
+            for (int i = 0; i < fileContent.size(); i++) {
+                if (fileContent.get(i).equals(args[2])) {
+                    fileContent.remove(i);
+                    break;
+                }
+            }
+        }
+        Files.write(Path.of(PATH + File.separator + args[1]), fileContent, StandardCharsets.UTF_8);
     }
 }
