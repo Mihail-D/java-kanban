@@ -41,13 +41,13 @@ public class Main {
                     mode = scanner.next();
 
                     if (mode.equals("taskMode") || mode.equals("epicMode")) {
-                        fileBackedTasksManager.taskAdd(taskTitle, taskDescription, mode);
+                        fileBackedTasksManager.dataAdd(taskTitle, taskDescription, mode);
                     }
                     else if (mode.equals("subTaskMode")) {
                         System.out.println("parentKey"); // TODO
 
                         parentKey = scanner.next();
-                        fileBackedTasksManager.taskAdd(taskTitle, taskDescription, mode, parentKey);
+                        fileBackedTasksManager.dataAdd(taskTitle, taskDescription, mode, parentKey);
                     }
 
                     break;
@@ -67,22 +67,22 @@ public class Main {
 
                         System.out.println("taskStatus"); // TODO
                         taskStatus = scanner.next();
-                        fileBackedTasksManager.taskEdit(taskKey, taskTitle, taskDescription, taskStatus, parentKey);
+                        fileBackedTasksManager.dataEdit(taskKey, taskTitle, taskDescription, taskStatus, parentKey);
                     }
                     else if (taskKey.charAt(0) == 't') {
                         System.out.println("taskStatus"); // TODO
                         taskStatus = scanner.next();
-                        fileBackedTasksManager.taskEdit(taskKey, taskTitle, taskDescription, taskStatus);
+                        fileBackedTasksManager.dataEdit(taskKey, taskTitle, taskDescription, taskStatus);
                     }
                     else if (taskKey.charAt(0) == 'e') {
-                        fileBackedTasksManager.taskEdit(taskKey, taskTitle, taskDescription);
+                        fileBackedTasksManager.dataEdit(taskKey, taskTitle, taskDescription);
                     }
                     break;
 
                 case 3:
                     System.out.println("taskKey"); // TODO
                     taskKey = scanner.next();
-                    fileBackedTasksManager.taskGet(taskKey);
+                    fileBackedTasksManager.dataGet(taskKey);
                     break;
                 case 4:
                     taskManager.collectAllTasks();

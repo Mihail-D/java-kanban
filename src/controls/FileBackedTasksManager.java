@@ -26,29 +26,27 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private final static int SUBTASK_LINE_LENGTH = 6;
     
-    @Override                          // TODO     RENAME ?
-    public void taskAdd(String... args) {
+    public void dataAdd(String... args) {
         super.taskAdd(args);
         saveTask();
     }
 
-    // TODO     RENAME  ?
-    public String taskGet(String taskKey) throws IOException {
+    public String dataGet(String taskKey) throws IOException {
         String oldData = super.getTaskFormattedData(taskKey);
         super.taskRetrieve(taskKey);
         saveHistory(taskKey);
         String newData = super.getTaskFormattedData(taskKey);
-        dataStorageOverwrite(oldData, newData);
+        lineOverwrite(oldData, newData, "historyStorage.csv");
 
         return InMemoryTaskManager.taskContent;
     }
 
-    // TODO     RENAME
-    public void taskEdit(String... args) throws IOException {
+    public void dataEdit(String... args) throws IOException {
         String oldData = super.getTaskFormattedData(args[0]);
         super.taskUpdate(args);
         String newData = super.getTaskFormattedData(args[0]);
-        dataStorageOverwrite(oldData, newData);
+        lineOverwrite(oldData, newData, "dataStorage.csv");
+        lineOverwrite(oldData, newData, "historyStorage.csv");
     }
 
     public void dataDelete(String... args) throws IOException {
@@ -74,7 +72,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             lineErase("sub", "dataStorage.csv", dataForErase);
             lineErase("sub", "historyStorage.csv", dataForErase);
             assert oldEpicStatus != null;
-            dataStorageOverwrite(oldEpicStatus, super.getTaskFormattedData(parentKey));
+            lineOverwrite(oldEpicStatus, super.getTaskFormattedData(parentKey), "dataStorage.csv");
+            lineOverwrite(oldEpicStatus, super.getTaskFormattedData(parentKey), "historyStorage.csv");
         }
         else if (taskType.equals("e")) {
             lineErase("epic", "dataStorage.csv", dataForErase);
@@ -208,10 +207,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    // TODO     RENAME
-    public void dataStorageOverwrite(String oldData, String newData) throws IOException {
+    public void lineOverwrite(String oldData, String newData, String fileName) throws IOException {
         List<String> fileContent = new ArrayList<>(Files.readAllLines(
-                Path.of(PATH + File.separator + "dataStorage.csv"), StandardCharsets.UTF_8));
+                Path.of(PATH + File.separator + fileName), StandardCharsets.UTF_8));
         String[] tokens = oldData.split(",");
 
         for (int i = 0; i < fileContent.size(); i++) {
@@ -230,7 +228,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             }
         }
 
-        Files.write(Path.of(PATH + File.separator + "dataStorage.csv"), fileContent, StandardCharsets.UTF_8);
+        Files.write(Path.of(PATH + File.separator + fileName), fileContent, StandardCharsets.UTF_8);
     }
 
     public void lineErase(String... args) throws IOException {
