@@ -49,7 +49,6 @@ public class Main {
                         parentKey = scanner.next();
                         fileBackedTasksManager.taskAdd(taskTitle, taskDescription, mode, parentKey);
                     }
-                    System.out.println(InMemoryTaskManager.tasksStorage); // TODO
 
                     break;
                 case 2:
@@ -87,10 +86,15 @@ public class Main {
                     break;
                 case 4:
                     taskManager.collectAllTasks();
+                    System.out.println(taskManager.collectAllTasks()); // TODO
                     break;
                 case 5:
+                    System.out.println("taskKey"); // TODO
                     taskKey = scanner.next();
+
+                    System.out.println(taskManager.collectEpicSubtasks(taskKey)); // TODO
                     taskManager.collectEpicSubtasks(taskKey);
+
                     break;
                 case 6:
                     System.out.println("taskKey"); // TODO
@@ -111,6 +115,7 @@ public class Main {
                     fileBackedTasksManager.dataClear();
                     break;
                 case 8:
+                    System.out.println(inMemoryHistoryManager.getHistory());
                     inMemoryHistoryManager.getHistory();
                     break;
 

@@ -24,12 +24,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         historyStorage.createNewFile();
     }
 
-    @Override
+    @Override                          // TODO     RENAME ?
     public void taskAdd(String... args) {
         super.taskAdd(args);
         saveTask();
     }
 
+    // TODO     RENAME  ?
     public String taskGet(String taskKey) throws IOException {
         String oldData = super.getTaskFormattedData(taskKey);
         super.taskRetrieve(taskKey);
@@ -37,11 +38,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         String newData = super.getTaskFormattedData(taskKey);
         dataStorageOverwrite(oldData, newData);
 
-        System.out.println(InMemoryTaskManager.taskContent); // TODO
-
         return InMemoryTaskManager.taskContent;
     }
 
+    // TODO     RENAME
     public void taskEdit(String... args) throws IOException {
         String oldData = super.getTaskFormattedData(args[0]);
         super.taskUpdate(args);
@@ -109,8 +109,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 e.printStackTrace();
             }
         }
-        System.out.println("from restoreTasks (tasksStorage) \n " + InMemoryTaskManager.tasksStorage); // TODO
-
     }
 
     public void restoreHistory() {
@@ -153,9 +151,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 e.printStackTrace();
             }
         }
-        //System.out.println("from restoreHistory (historyStorage.getSize) " + InMemoryHistoryManager.historyStorage
-        // .getSize()); // TODO
-        System.out.println("from restoreHistory (historyRegister) " + InMemoryHistoryManager.historyRegister); // TODO   
+        System.out.println("historyStorage " + InMemoryHistoryManager.historyStorage.getSize());  // TODO
+        System.out.println("historyRegister " + InMemoryHistoryManager.historyRegister.size());   // TODO
+        System.out.println("historyReport " + InMemoryHistoryManager.historyReport.size());       // TODO
 
     }
 
@@ -192,6 +190,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
+    // TODO     RENAME
     public void dataStorageOverwrite(String oldData, String newData) throws IOException {
         List<String> fileContent = new ArrayList<>(Files.readAllLines(
                 Path.of(PATH + File.separator + "dataStorage.csv"), StandardCharsets.UTF_8));

@@ -88,6 +88,6 @@ public class Task {
     public String toString() {
         return " MainTask Title = " + taskTitle +
                 " Description = " + taskDescription +
-                " Id = " + taskId + " isViewed = " + isViewed + " Status = " + taskStatus + "***" + "\n";
+                " Id = " + taskId + " isViewed = " + isViewed + " Status = " + taskStatus + "***";
     }
 }
