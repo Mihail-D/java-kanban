@@ -24,6 +24,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         historyStorage.createNewFile();
     }
 
+    private final static int SUBTASK_LINE_LENGTH = 6;
+    
     @Override                          // TODO     RENAME ?
     public void taskAdd(String... args) {
         super.taskAdd(args);
@@ -50,19 +52,35 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     public void dataDelete(String... args) throws IOException {
-        String oldData = super.getTaskFormattedData(args[0]);
+        String dataForErase = super.getTaskFormattedData(args[0]);
+        String[] arr = dataForErase.split(",");
+        
+        String parentKey = null;
+        String oldEpicStatus = null;
+        if (arr.length == 6) {
+            parentKey = dataForErase.split(",")[5];
+            oldEpicStatus = super.getTaskFormattedData(args[1]);
+        }
+
         String taskType = args[0].substring(0, 1);
 
-        if (taskType.equals("t") || taskType.equals("s")) {
-            lineErase("single", "dataStorage.csv", oldData);
-            lineErase("single", "historyStorage.csv", oldData);
+        super.taskDelete(args);
+
+        if (taskType.equals("t")) {
+            lineErase("single", "dataStorage.csv", dataForErase);
+            lineErase("single", "historyStorage.csv", dataForErase);
+        }
+        else if (taskType.equals("s")) {                // TODO args[0] key; args[1] parentKey
+            lineErase("sub", "dataStorage.csv", dataForErase);
+            lineErase("sub", "historyStorage.csv", dataForErase);
+            assert oldEpicStatus != null;
+            dataStorageOverwrite(oldEpicStatus, super.getTaskFormattedData(parentKey));
         }
         else if (taskType.equals("e")) {
-            lineErase("epic", "dataStorage.csv", oldData);
-            lineErase("epic", "historyStorage.csv", oldData);
+            lineErase("epic", "dataStorage.csv", dataForErase);
+            lineErase("epic", "historyStorage.csv", dataForErase);
         }
 
-        super.taskDelete(args);
     }
 
     public void dataClear() throws IOException {
@@ -195,14 +213,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         List<String> fileContent = new ArrayList<>(Files.readAllLines(
                 Path.of(PATH + File.separator + "dataStorage.csv"), StandardCharsets.UTF_8));
         String[] tokens = oldData.split(",");
-        int subtaskLineLength = 6;
 
         for (int i = 0; i < fileContent.size(); i++) {
             if (fileContent.get(i).equals(oldData)) {
                 fileContent.set(i, newData);
                 break;
             }
-            if (tokens.length == subtaskLineLength) {
+            if (tokens.length == SUBTASK_LINE_LENGTH) {
                 String parentKey = tokens[tokens.length - 1];
                 String parentContent = super.getTaskFormattedData(parentKey);
                 for (int j = 0; j < fileContent.size(); j++) {
@@ -233,15 +250,27 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 }
             }
         }
+
+        else if (args[0].equals("sub")) {
+            String[] tokens = args[2].split(",");
+            System.out.println(args[2]); // TODO
+
+            for (int i = 0; i < fileContent.size(); i++) {
+                if (fileContent.get(i).equals(args[2])) {
+                    fileContent.remove(i);
+                    break;
+                }
+            }
+        }
+
         else if (args[0].equals("epic")) {
             String[] tokens = args[2].split(",");
             Epic task = (Epic) InMemoryTaskManager.tasksStorage.get(tokens[0]);
             Map<String, String> relativeTasks = task.relatedSubTask;
-            int subtaskLineLength = 6;
 
             for (String i : new ArrayList<>(fileContent)) {
                 String[] arr = i.split(",");
-                if (arr.length == subtaskLineLength && relativeTasks.containsKey(arr[0])) {
+                if (arr.length == SUBTASK_LINE_LENGTH && relativeTasks.containsKey(arr[0])) {
                     fileContent.remove(i);
                 }
             }
