@@ -57,14 +57,26 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         if (taskType.equals("t")) {
             lineErase("single", "dataStorage.csv", dataForErase);
             lineErase("single", "historyStorage.csv", dataForErase);
+            super.taskDelete(args); // TODO   ?????
         }
         else if (taskType.equals("e")) {
             lineErase("epic", "dataStorage.csv", dataForErase);
             lineErase("epic", "historyStorage.csv", dataForErase);
+            super.taskDelete(args); // TODO   ?????
+        }
+        else if (taskType.equals("s")) {
+            String parentKey = dataForErase.split(",")[5];
+            String oldEpicStatus = super.getTaskFormattedData(args[1]);
+            lineErase("sub", "dataStorage.csv", dataForErase);
+            lineErase("sub", "historyStorage.csv", dataForErase);
+            assert oldEpicStatus != null;
+            super.taskDelete(args);    // TODO   ?????
+            lineOverwrite(oldEpicStatus, super.getTaskFormattedData(parentKey), "dataStorage.csv");
+            lineOverwrite(oldEpicStatus, super.getTaskFormattedData(parentKey), "historyStorage.csv");
         }
 
 
-        super.taskDelete(args);
+        //super.taskDelete(args);    // TODO   ?????
     }
 
     public void dataClear() throws IOException {
@@ -230,9 +242,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             }
         }
 
-/*        else if (args[0].equals("sub")) {
+        else if (args[0].equals("sub")) {               // TODO
             String[] tokens = args[2].split(",");
-            System.out.println(args[2]); // TODO
+            System.out.println(args[2]);                 // TODO
 
             for (int i = 0; i < fileContent.size(); i++) {
                 if (fileContent.get(i).equals(args[2])) {
@@ -240,12 +252,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                     break;
                 }
             }
-        }*/
+        }
 
         else if (args[0].equals("epic")) {
             String[] tokens = args[2].split(",");
             Epic task = (Epic) InMemoryTaskManager.tasksStorage.get(tokens[0]);
-            Map<String, String> relativeTasks = task.relatedSubTask;
+            Map<String, String> relativeTasks = task.relatedSubTask;              // TODO  !!!!!
 
             for (String i : new ArrayList<>(fileContent)) {
                 String[] arr = i.split(",");
