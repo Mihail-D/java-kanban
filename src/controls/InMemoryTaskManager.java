@@ -23,10 +23,11 @@ public class InMemoryTaskManager implements TaskManager {
     int taskId = getInitNumber();
     public static String taskContent;
 
-    public void taskAdd(String... args) {
+    public void taskAdd(String... args) { // taskTitle, taskDescription, mode, parentKey
         TaskStages taskStatus = TaskStages.NEW;
         String taskId = getId(args[2]);
         boolean isViewed = false;
+
 
         switch (args[2]) {
             case "taskMode":
@@ -46,7 +47,6 @@ public class InMemoryTaskManager implements TaskManager {
                 InMemoryTaskManager.tasksStorage.put(taskId, new SubTask(args[0], args[1], taskId,
                         isViewed, taskStatus, args[3]
                 ));
-                System.out.println(taskContent); // TODO
                 break;
         }
         taskContent = getTaskFormattedData(taskId);

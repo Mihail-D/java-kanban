@@ -18,9 +18,11 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public void removeHistoryRecord(String taskId) {
         Node node = historyStorage.getNode(taskId);
-        historyStorage.removeNode(node);
-        historyReport.removeIf(i -> i.equals(node.getTask()));
-        historyRegister.remove(node.getTask().getTaskId());
+        if (node != null) {
+            historyStorage.removeNode(node);
+            historyReport.removeIf(i -> i.equals(node.getTask()));
+            historyRegister.remove(node.getTask().getTaskId());
+        }
     }
 
     @Override
