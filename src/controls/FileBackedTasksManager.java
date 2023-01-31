@@ -36,6 +36,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         super.taskRetrieve(taskKey);
         saveHistory(taskKey);
         String newData = super.getTaskFormattedData(taskKey);
+        lineOverwrite(oldData, newData, "dataStorage.csv");
         lineOverwrite(oldData, newData, "historyStorage.csv");
 
         return InMemoryTaskManager.taskContent;
@@ -49,37 +50,21 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         lineOverwrite(oldData, newData, "historyStorage.csv");
     }
 
-    public void dataDelete(String... args) throws IOException {
+    public void dataDelete(String... args) throws IOException {    // args[0], args[1] parentKey
         String dataForErase = super.getTaskFormattedData(args[0]);
-        String[] arr = dataForErase.split(",");
-        
-        String parentKey = null;
-        String oldEpicStatus = null;
-        if (arr.length == 6) {
-            parentKey = dataForErase.split(",")[5];
-            oldEpicStatus = super.getTaskFormattedData(args[1]);
-        }
-
         String taskType = args[0].substring(0, 1);
-
-        super.taskDelete(args);
 
         if (taskType.equals("t")) {
             lineErase("single", "dataStorage.csv", dataForErase);
             lineErase("single", "historyStorage.csv", dataForErase);
-        }
-        else if (taskType.equals("s")) {                // TODO args[0] key; args[1] parentKey
-            lineErase("sub", "dataStorage.csv", dataForErase);
-            lineErase("sub", "historyStorage.csv", dataForErase);
-            assert oldEpicStatus != null;
-            lineOverwrite(oldEpicStatus, super.getTaskFormattedData(parentKey), "dataStorage.csv");
-            lineOverwrite(oldEpicStatus, super.getTaskFormattedData(parentKey), "historyStorage.csv");
         }
         else if (taskType.equals("e")) {
             lineErase("epic", "dataStorage.csv", dataForErase);
             lineErase("epic", "historyStorage.csv", dataForErase);
         }
 
+
+        super.taskDelete(args);
     }
 
     public void dataClear() throws IOException {
@@ -168,10 +153,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 e.printStackTrace();
             }
         }
-        System.out.println("historyStorage " + InMemoryHistoryManager.historyStorage.getSize());  // TODO
-        System.out.println("historyRegister " + InMemoryHistoryManager.historyRegister.size());   // TODO
-        System.out.println("historyReport " + InMemoryHistoryManager.historyReport.size());       // TODO
-
     }
 
     public void saveTask() {
@@ -249,7 +230,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             }
         }
 
-        else if (args[0].equals("sub")) {
+/*        else if (args[0].equals("sub")) {
             String[] tokens = args[2].split(",");
             System.out.println(args[2]); // TODO
 
@@ -259,7 +240,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                     break;
                 }
             }
-        }
+        }*/
 
         else if (args[0].equals("epic")) {
             String[] tokens = args[2].split(",");
