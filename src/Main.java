@@ -1,23 +1,36 @@
 import controls.*;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class Main {
+    static InMemoryTaskManager taskManager;
+    static InMemoryHistoryManager inMemoryHistoryManager;
+    static FileBackedTasksManager fileBackedTasksManager;
 
     public static void main(String[] args) throws IOException {
+        String PATH = "./src/data";
+
+        Files.createDirectories(Paths.get(PATH));
+        File dataStorage = new File(PATH + File.separator + "dataStorage.csv");
+        dataStorage.createNewFile();
+        File historyStorage = new File(PATH + File.separator + "historyStorage.csv");
+        historyStorage.createNewFile();
+
+        fileBackedTasksManager = new FileBackedTasksManager(dataStorage, historyStorage);
+        taskManager = new InMemoryTaskManager();
+        inMemoryHistoryManager = new InMemoryHistoryManager();
+
+        fileBackedTasksManager.restoreTasks();
+        fileBackedTasksManager.restoreHistory();
+
         getControlOptions();
     }
 
     public static void getControlOptions() throws IOException {
-        InMemoryTaskManager taskManager = new InMemoryTaskManager();
-        InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
-        FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager();
-        
-        fileBackedTasksManager.getInitNumber();
-        fileBackedTasksManager.restoreTasks();
-        fileBackedTasksManager.restoreHistory();
-
         Scanner scanner = new Scanner(System.in);
         int item;
         String taskTitle;

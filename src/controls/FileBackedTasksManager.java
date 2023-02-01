@@ -13,19 +13,17 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
+    File dataStorage;
+    File historyStorage;
 
-    public FileBackedTasksManager() throws IOException {
-        String PATH = InMemoryTaskManager.PATH;
-
-        Files.createDirectories(Paths.get(PATH));
-        File dataStorage = new File(PATH + File.separator + "dataStorage.csv");
-        dataStorage.createNewFile();
-        File historyStorage = new File(PATH + File.separator + "historyStorage.csv");
-        historyStorage.createNewFile();
+    public FileBackedTasksManager(File dataStorage, File historyStorage) {
+        this.dataStorage = dataStorage;
+        this.historyStorage = historyStorage;
     }
 
     private final static int SUBTASK_LINE_LENGTH = 6;
-    
+
+
     public void dataAdd(String... args) {
         super.taskAdd(args);
         saveTask();
