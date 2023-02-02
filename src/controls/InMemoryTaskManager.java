@@ -5,6 +5,10 @@ import tasks.SubTask;
 import tasks.Task;
 import tasks.TaskStages;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -15,13 +19,15 @@ public class InMemoryTaskManager implements TaskManager {
     HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
 
     public static HashMap<String, Task> tasksStorage = new HashMap<>();
-    int taskId = 0;
+    public static String PATH = "./src/data";
+    int taskId = getInitNumber();
+    public static String taskContent;
 
-    @Override
-    public void taskAdd(String... args) {
+    public void taskAdd(String... args) { // taskTitle, taskDescription, mode, parentKey
         TaskStages taskStatus = TaskStages.NEW;
         String taskId = getId(args[2]);
         boolean isViewed = false;
+
 
         switch (args[2]) {
             case "taskMode":
@@ -43,9 +49,9 @@ public class InMemoryTaskManager implements TaskManager {
                 ));
                 break;
         }
+        taskContent = getTaskFormattedData(taskId);
     }
 
-    @Override
     public void taskUpdate(String... args) {
         String taskKey = args[0];
         Task task = tasksStorage.get(taskKey);
@@ -78,16 +84,14 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    @Override
-    public String taskRetrieve(String taskKey) {
+    public void taskRetrieve(String taskKey) {
         Task task = tasksStorage.get(taskKey);
         getTaskFormattedData(taskKey);
         inMemoryHistoryManager.addHistory(task);
         task.setViewed();
-        return getTaskFormattedData(taskKey);
+        taskContent = getTaskFormattedData(taskKey);
     }
 
-    @Override
     public ArrayList<ArrayList<String>> collectAllTasks() {
         ArrayList<String> listOfTasks = new ArrayList<>();
         ArrayList<String> listOfEpics = new ArrayList<>();
@@ -108,7 +112,6 @@ public class InMemoryTaskManager implements TaskManager {
         return Stream.of(listOfTasks, listOfEpics, listOfSubTasks).collect(toCollection(ArrayList::new));
     }
 
-    @Override
     public ArrayList<String> collectEpicSubtasks(String taskKey) {
         ArrayList<String> localTasksList = new ArrayList<>();
         Epic epicTask = (Epic) tasksStorage.get(taskKey);
@@ -121,7 +124,6 @@ public class InMemoryTaskManager implements TaskManager {
         return localTasksList;
     }
 
-    @Override
     public void taskDelete(String... args) {
         String taskKey = args[0];
         String keyChunk = taskKey.substring(0, 1);
@@ -129,7 +131,7 @@ public class InMemoryTaskManager implements TaskManager {
         switch (keyChunk) {
             case "t":
                 tasksStorage.remove(taskKey);
-                inMemoryHistoryManager.removeHistory(taskKey);
+                inMemoryHistoryManager.removeHistoryRecord(taskKey);
                 break;
             case "e":
                 Epic epicTask = (Epic) tasksStorage.get(taskKey);
@@ -137,11 +139,11 @@ public class InMemoryTaskManager implements TaskManager {
 
                 for (String i : relatedSubTasks.keySet()) {
                     tasksStorage.remove(i);
-                    inMemoryHistoryManager.removeHistory(i);
+                    inMemoryHistoryManager.removeHistoryRecord(i);
                 }
 
                 tasksStorage.remove(taskKey);
-                inMemoryHistoryManager.removeHistory(taskKey);
+                inMemoryHistoryManager.removeHistoryRecord(taskKey);
 
                 break;
             case "s":
@@ -151,7 +153,7 @@ public class InMemoryTaskManager implements TaskManager {
                 relatedSubTasks.remove(taskKey);
                 setEpicStatus(parentKey);
                 tasksStorage.remove(taskKey);
-                inMemoryHistoryManager.removeHistory(taskKey);
+                inMemoryHistoryManager.removeHistoryRecord(taskKey);
                 break;
         }
     }
@@ -175,7 +177,7 @@ public class InMemoryTaskManager implements TaskManager {
                 break;
             case "subTaskMode":
                 taskId++;
-                id = "sub." + taskId;
+                id = "s." + taskId;
                 break;
         }
 
@@ -203,8 +205,40 @@ public class InMemoryTaskManager implements TaskManager {
         String taskTitle = task.getTaskTitle() + ",";
         String taskDescription = task.getTaskDescription() + ",";
         taskKey = task.getTaskId() + ",";
+        String isViewed = task.isViewed() + ",";
         String taskStatus = String.valueOf(task.getTaskStatus());
+        String result;
+        if (task.getClass() == SubTask.class) {
+            result =
+                    taskKey + taskTitle + taskDescription + isViewed + taskStatus
+                            + "," + ((SubTask) task).getParentId();
+        }
+        else {
+            result = taskKey + taskTitle + taskDescription + isViewed + taskStatus;
+        }
 
-        return taskTitle + taskDescription + taskKey + taskStatus;
+        return result;
+    }
+
+    public int getInitNumber() {
+        File file = new File(PATH + File.separator + "dataFile.csv");
+        int max = 0;
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.trim().isEmpty()) {
+                    continue;
+                }
+                String[] arr = line.split(",");
+                int number = Integer.parseInt(arr[0].substring(2));
+                if (number > max) {
+                    max = number;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return max;
     }
 }

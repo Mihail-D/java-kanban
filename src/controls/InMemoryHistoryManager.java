@@ -16,12 +16,17 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     @Override
-    public void removeHistory(String taskId) {
-        historyStorage.removeNode(historyStorage.getNode(taskId));
+    public void removeHistoryRecord(String taskId) {
+        Node node = historyStorage.getNode(taskId);
+        if (node != null) {
+            historyStorage.removeNode(node);
+            historyReport.removeIf(i -> i.equals(node.getTask()));
+            historyRegister.remove(node.getTask().getTaskId());
+        }
     }
 
     @Override
-    public void clearHistoryStorage() {
+    public void clearHistoryStorage() {                                       // TODO
         for (String i : historyRegister.keySet()) {
             historyStorage.removeNode(historyStorage.getNode(i));
         }
@@ -43,7 +48,7 @@ public class InMemoryHistoryManager implements HistoryManager {
             return size;
         }
 
-        void linkLast(Task task) {
+        public void linkLast(Task task) {
             Node element = new Node();
             element.setTask(task);
 
@@ -68,12 +73,8 @@ public class InMemoryHistoryManager implements HistoryManager {
 
         }
 
-        void removeNode(Node node) {
+        public void removeNode(Node node) {
             if (node != null) {
-
-                historyReport.removeIf(i -> i.equals(node.getTask()));
-                historyRegister.remove(node.getTask().getTaskId());
-
                 Node prev = node.getPrev();
                 Node next = node.getNext();
 
@@ -95,7 +96,7 @@ public class InMemoryHistoryManager implements HistoryManager {
             size--;
         }
 
-        List<Task> getTasks() {
+        public List<Task> getTasks() {
 
             Node element = head;
             while (element != null) {

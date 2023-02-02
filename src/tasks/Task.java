@@ -44,6 +44,10 @@ public class Task {
         isViewed = true;
     }
 
+    public boolean isViewed() {
+        return isViewed;
+    }
+
     public void setTaskStatus(TaskStages taskStatus) {
         this.taskStatus = taskStatus;
     }
@@ -82,8 +86,8 @@ public class Task {
 
     @Override
     public String toString() {
-        return " MainTask { Title='" + taskTitle + '\'' +
-                ", Description='" + taskDescription + '\'' +
-                ", Id=" + taskId + ", isViewed=" + isViewed + ", Status='" + taskStatus + "***";
+        return " MainTask Title = " + taskTitle +
+                " Description = " + taskDescription +
+                " Id = " + taskId + " isViewed = " + isViewed + " Status = " + taskStatus + "***";
     }
 }

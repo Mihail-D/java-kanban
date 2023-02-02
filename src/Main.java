@@ -1,17 +1,37 @@
 import controls.*;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class Main {
 
-    public static void main(String[] args) {
+    static InMemoryTaskManager taskManager;
+    static InMemoryHistoryManager inMemoryHistoryManager;
+    static FileBackedTasksManager fileBackedTasksManager;
+
+    public static void main(String[] args) throws IOException {
+        String PATH = "./src/data";
+
+        Files.createDirectories(Paths.get(PATH));
+        File dataFile = new File(PATH + File.separator + "dataFile.csv");
+        dataFile.createNewFile();
+        File historyFile = new File(PATH + File.separator + "historyFile.csv");
+        historyFile.createNewFile();
+
+        fileBackedTasksManager = new FileBackedTasksManager(dataFile, historyFile);
+        taskManager = new InMemoryTaskManager();
+        inMemoryHistoryManager = new InMemoryHistoryManager();
+
+        fileBackedTasksManager.restoreTasks();
+        fileBackedTasksManager.restoreHistory();
+
         getControlOptions();
     }
 
-    public static void getControlOptions() {
-        InMemoryTaskManager taskManager = new InMemoryTaskManager();
-        InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
-
+    public static void getControlOptions() throws IOException {
         Scanner scanner = new Scanner(System.in);
         int item;
         String taskTitle;
@@ -31,12 +51,13 @@ public class Main {
                     mode = scanner.next();
 
                     if (mode.equals("taskMode") || mode.equals("epicMode")) {
-                        taskManager.taskAdd(taskTitle, taskDescription, mode);
+                        fileBackedTasksManager.dataAdd(taskTitle, taskDescription, mode);
                     }
                     else if (mode.equals("subTaskMode")) {
                         parentKey = scanner.next();
-                        taskManager.taskAdd(taskTitle, taskDescription, mode, parentKey);
+                        fileBackedTasksManager.dataAdd(taskTitle, taskDescription, mode, parentKey);
                     }
+
                     break;
                 case 2:
                     taskKey = scanner.next();
@@ -46,20 +67,20 @@ public class Main {
                     if (taskKey.charAt(0) == 's') {
                         parentKey = scanner.next();
                         taskStatus = scanner.next();
-                        taskManager.taskUpdate(taskKey, taskTitle, taskDescription, taskStatus, parentKey);
+                        fileBackedTasksManager.dataEdit(taskKey, taskTitle, taskDescription, taskStatus, parentKey);
                     }
                     else if (taskKey.charAt(0) == 't') {
                         taskStatus = scanner.next();
-                        taskManager.taskUpdate(taskKey, taskTitle, taskDescription, taskStatus);
+                        fileBackedTasksManager.dataEdit(taskKey, taskTitle, taskDescription, taskStatus);
                     }
                     else if (taskKey.charAt(0) == 'e') {
-                        taskManager.taskUpdate(taskKey, taskTitle, taskDescription);
+                        fileBackedTasksManager.dataEdit(taskKey, taskTitle, taskDescription);
                     }
                     break;
 
                 case 3:
                     taskKey = scanner.next();
-                    taskManager.taskRetrieve(taskKey);
+                    fileBackedTasksManager.dataGet(taskKey);
                     break;
                 case 4:
                     taskManager.collectAllTasks();
@@ -73,17 +94,18 @@ public class Main {
 
                     if (taskKey.charAt(0) == 's') {
                         parentKey = scanner.next();
-                        taskManager.taskDelete(taskKey, parentKey);
+                        fileBackedTasksManager.dataDelete(taskKey, parentKey);
                     }
                     else {
-                        taskManager.taskDelete(taskKey);
+                        fileBackedTasksManager.dataDelete(taskKey);
                     }
                     break;
 
                 case 7:
-                    taskManager.tasksClear();
+                    fileBackedTasksManager.dataClear();
                     break;
                 case 8:
+                    System.out.println(inMemoryHistoryManager.getHistory());
                     inMemoryHistoryManager.getHistory();
                     break;
 

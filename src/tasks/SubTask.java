@@ -12,9 +12,12 @@ public class SubTask extends Task {
         this.parentId = parentId;
     }
 
+    public String getParentId() {
+        return parentId;
+    }
+
     @Override
     public String toString() {
-        return "SubTask {" +
-                "ParentId='" + parentId + '\'' + " " + super.toString() + '}';
+        return "SubTask " + "ParentId = " + parentId + " " + super.toString() + "\n";
     }
 }
