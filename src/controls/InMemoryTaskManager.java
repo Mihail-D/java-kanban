@@ -221,7 +221,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     public int getInitNumber() {
-        File file = new File(PATH + File.separator + "dataStorage.csv");
+        File file = new File(PATH + File.separator + "dataFile.csv");
         int max = 0;
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {

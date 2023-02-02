@@ -15,12 +15,12 @@ public class Main {
         String PATH = "./src/data";
 
         Files.createDirectories(Paths.get(PATH));
-        File dataStorage = new File(PATH + File.separator + "dataStorage.csv");
-        dataStorage.createNewFile();
-        File historyStorage = new File(PATH + File.separator + "historyStorage.csv");
-        historyStorage.createNewFile();
+        File dataFile = new File(PATH + File.separator + "dataFile.csv");
+        dataFile.createNewFile();
+        File historyFile = new File(PATH + File.separator + "historyFile.csv");
+        historyFile.createNewFile();
 
-        fileBackedTasksManager = new FileBackedTasksManager(dataStorage, historyStorage);
+        fileBackedTasksManager = new FileBackedTasksManager(dataFile, historyFile);
         taskManager = new InMemoryTaskManager();
         inMemoryHistoryManager = new InMemoryHistoryManager();
 
