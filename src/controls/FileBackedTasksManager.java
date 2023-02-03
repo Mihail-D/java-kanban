@@ -21,6 +21,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     public FileBackedTasksManager(boolean dataFile, boolean historyFile) {
         this.dataFile = dataFile;
         this.historyFile = historyFile;
+        restoreTasks();
+        restoreHistory();
     }
 
     @Override
@@ -100,7 +102,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         lineErase("complete", "historyFile.csv");
     }
 
-    public void restoreTasks() {
+    private void restoreTasks() {
         File file = new File(PATH + File.separator + "dataFile.csv");
         Task task = null;
         if (file.exists() && !file.isDirectory()) {
@@ -142,7 +144,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    public void restoreHistory() {
+    private void restoreHistory() {
         File file = new File(PATH + File.separator + "historyFile.csv");
         Task task = null;
 
@@ -184,7 +186,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    public void saveTask() {
+    private void saveTask() {
         try {
             String filename = PATH + File.separator + "dataFile.csv";
             FileWriter fw = new FileWriter(filename, true);
@@ -195,7 +197,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    public void saveHistory(@NotNull String taskKey) {
+    private void saveHistory(@NotNull String taskKey) {
         String filename = PATH + File.separator + "historyFile.csv";
         int referenceKey = Integer.parseInt(taskKey.substring(2));
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
@@ -217,7 +219,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    public void lineOverwrite(@NotNull String oldData, String newData, String fileName) throws IOException {
+    private void lineOverwrite(@NotNull String oldData, String newData, String fileName) throws IOException {
         List<String> fileContent = new ArrayList<>(Files.readAllLines(
                 Path.of(PATH + File.separator + fileName), StandardCharsets.UTF_8));
         String[] tokens = oldData.split(",");
@@ -241,7 +243,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         Files.write(Path.of(PATH + File.separator + fileName), fileContent, StandardCharsets.UTF_8);
     }
 
-    public void lineErase(String @NotNull ... args) throws IOException {
+    private void lineErase(String @NotNull ... args) throws IOException {
         List<String> fileContent = new ArrayList<>(Files.readAllLines(
                 Path.of(PATH + File.separator + args[1]), StandardCharsets.UTF_8));
 
