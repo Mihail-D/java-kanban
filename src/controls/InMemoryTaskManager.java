@@ -1,5 +1,6 @@
 package controls;
 
+import org.jetbrains.annotations.NotNull;
 import tasks.Epic;
 import tasks.SubTask;
 import tasks.Task;
@@ -23,7 +24,7 @@ public class InMemoryTaskManager implements TaskManager {
     int taskId = getInitNumber();
     public static String taskContent;
 
-    public void taskAdd(String... args) { // taskTitle, taskDescription, mode, parentKey
+    public void taskAdd(String @NotNull ... args) { // taskTitle, taskDescription, mode, parentKey
         TaskStages taskStatus = TaskStages.NEW;
         String taskId = getId(args[2]);
         boolean isViewed = false;
@@ -52,7 +53,7 @@ public class InMemoryTaskManager implements TaskManager {
         taskContent = getTaskFormattedData(taskId);
     }
 
-    public void taskUpdate(String... args) {
+    public void taskUpdate(String @NotNull ... args) throws IOException {
         String taskKey = args[0];
         Task task = tasksStorage.get(taskKey);
 
@@ -84,12 +85,53 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    public void taskRetrieve(String taskKey) {
+    public String taskRetrieve(String taskKey) throws IOException {
         Task task = tasksStorage.get(taskKey);
         getTaskFormattedData(taskKey);
         inMemoryHistoryManager.addHistory(task);
         task.setViewed();
         taskContent = getTaskFormattedData(taskKey);
+
+        return taskContent;
+    }
+
+    public void taskDelete(String @NotNull ... args) throws IOException {
+        String taskKey = args[0];
+        String keyChunk = taskKey.substring(0, 1);
+
+        switch (keyChunk) {
+            case "t":
+                tasksStorage.remove(taskKey);
+                inMemoryHistoryManager.removeHistoryRecord(taskKey);
+                break;
+            case "e":
+                Epic epicTask = (Epic) tasksStorage.get(taskKey);
+                HashMap<String, String> relatedSubTasks = epicTask.relatedSubTask;
+
+                for (String i : relatedSubTasks.keySet()) {
+                    tasksStorage.remove(i);
+                    inMemoryHistoryManager.removeHistoryRecord(i);
+                }
+
+                tasksStorage.remove(taskKey);
+                inMemoryHistoryManager.removeHistoryRecord(taskKey);
+
+                break;
+            case "s":
+                String parentKey = args[1];
+                epicTask = (Epic) tasksStorage.get(parentKey);
+                relatedSubTasks = epicTask.relatedSubTask;
+                relatedSubTasks.remove(taskKey);
+                setEpicStatus(parentKey);
+                tasksStorage.remove(taskKey);
+                inMemoryHistoryManager.removeHistoryRecord(taskKey);
+                break;
+        }
+    }
+
+    public void tasksClear() throws IOException {
+        tasksStorage.clear();
+        inMemoryHistoryManager.clearHistoryStorage();
     }
 
     public ArrayList<ArrayList<String>> collectAllTasks() {
@@ -124,46 +166,7 @@ public class InMemoryTaskManager implements TaskManager {
         return localTasksList;
     }
 
-    public void taskDelete(String... args) {
-        String taskKey = args[0];
-        String keyChunk = taskKey.substring(0, 1);
-
-        switch (keyChunk) {
-            case "t":
-                tasksStorage.remove(taskKey);
-                inMemoryHistoryManager.removeHistoryRecord(taskKey);
-                break;
-            case "e":
-                Epic epicTask = (Epic) tasksStorage.get(taskKey);
-                HashMap<String, String> relatedSubTasks = epicTask.relatedSubTask;
-
-                for (String i : relatedSubTasks.keySet()) {
-                    tasksStorage.remove(i);
-                    inMemoryHistoryManager.removeHistoryRecord(i);
-                }
-
-                tasksStorage.remove(taskKey);
-                inMemoryHistoryManager.removeHistoryRecord(taskKey);
-
-                break;
-            case "s":
-                String parentKey = args[1];
-                epicTask = (Epic) tasksStorage.get(parentKey);
-                relatedSubTasks = epicTask.relatedSubTask;
-                relatedSubTasks.remove(taskKey);
-                setEpicStatus(parentKey);
-                tasksStorage.remove(taskKey);
-                inMemoryHistoryManager.removeHistoryRecord(taskKey);
-                break;
-        }
-    }
-
-    public void tasksClear() {
-        tasksStorage.clear();
-        inMemoryHistoryManager.clearHistoryStorage();
-    }
-
-    String getId(String taskMode) {
+    String getId(@NotNull String taskMode) {
         String id = null;
 
         switch (taskMode) {

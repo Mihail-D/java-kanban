@@ -7,19 +7,15 @@ import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class Main {
-
     static InMemoryTaskManager taskManager;
     static InMemoryHistoryManager inMemoryHistoryManager;
     static FileBackedTasksManager fileBackedTasksManager;
 
     public static void main(String[] args) throws IOException {
         String PATH = "./src/data";
-
         Files.createDirectories(Paths.get(PATH));
-        File dataFile = new File(PATH + File.separator + "dataFile.csv");
-        dataFile.createNewFile();
-        File historyFile = new File(PATH + File.separator + "historyFile.csv");
-        historyFile.createNewFile();
+        boolean dataFile = new File(PATH + File.separator + "dataFile.csv").createNewFile();
+        boolean historyFile = new File(PATH + File.separator + "historyFile.csv").createNewFile();
 
         fileBackedTasksManager = new FileBackedTasksManager(dataFile, historyFile);
         taskManager = new InMemoryTaskManager();
@@ -42,67 +38,91 @@ public class Main {
         String taskStatus;
 
         while (true) {
+            System.out.println("MENU"); // TODO
             item = scanner.nextInt();
 
             switch (item) {
                 case 1:
+                    System.out.println("taskTitle"); // TODO
                     taskTitle = scanner.next();
+                    System.out.println("taskDescription"); // TODO
                     taskDescription = scanner.next();
+                    System.out.println("mode taskMode epicMode subTaskMode"); // TODO
                     mode = scanner.next();
 
                     if (mode.equals("taskMode") || mode.equals("epicMode")) {
-                        fileBackedTasksManager.dataAdd(taskTitle, taskDescription, mode);
+                        fileBackedTasksManager.taskAdd(taskTitle, taskDescription, mode);
                     }
                     else if (mode.equals("subTaskMode")) {
+                        System.out.println("parentKey"); // TODO
+
                         parentKey = scanner.next();
-                        fileBackedTasksManager.dataAdd(taskTitle, taskDescription, mode, parentKey);
+                        fileBackedTasksManager.taskAdd(taskTitle, taskDescription, mode, parentKey);
                     }
 
                     break;
                 case 2:
+                    System.out.println("taskKey"); // TODO
                     taskKey = scanner.next();
+
+                    System.out.println("taskTitle"); // TODO
                     taskTitle = scanner.next();
+
+                    System.out.println("taskDescription"); // TODO
                     taskDescription = scanner.next();
 
                     if (taskKey.charAt(0) == 's') {
+                        System.out.println("parentKey"); // TODO
                         parentKey = scanner.next();
+
+                        System.out.println("taskStatus"); // TODO
                         taskStatus = scanner.next();
-                        fileBackedTasksManager.dataEdit(taskKey, taskTitle, taskDescription, taskStatus, parentKey);
+                        fileBackedTasksManager.taskUpdate(taskKey, taskTitle, taskDescription, taskStatus, parentKey);
                     }
                     else if (taskKey.charAt(0) == 't') {
+                        System.out.println("taskStatus"); // TODO
                         taskStatus = scanner.next();
-                        fileBackedTasksManager.dataEdit(taskKey, taskTitle, taskDescription, taskStatus);
+                        fileBackedTasksManager.taskUpdate(taskKey, taskTitle, taskDescription, taskStatus);
                     }
                     else if (taskKey.charAt(0) == 'e') {
-                        fileBackedTasksManager.dataEdit(taskKey, taskTitle, taskDescription);
+                        fileBackedTasksManager.taskUpdate(taskKey, taskTitle, taskDescription);
                     }
                     break;
 
                 case 3:
+                    System.out.println("taskKey"); // TODO
                     taskKey = scanner.next();
-                    fileBackedTasksManager.dataGet(taskKey);
+                    fileBackedTasksManager.taskRetrieve(taskKey);
                     break;
                 case 4:
                     taskManager.collectAllTasks();
+                    System.out.println(taskManager.collectAllTasks()); // TODO
                     break;
                 case 5:
+                    System.out.println("taskKey"); // TODO
                     taskKey = scanner.next();
+
+                    System.out.println(taskManager.collectEpicSubtasks(taskKey)); // TODO
                     taskManager.collectEpicSubtasks(taskKey);
+
                     break;
                 case 6:
+                    System.out.println("taskKey"); // TODO
                     taskKey = scanner.next();
 
                     if (taskKey.charAt(0) == 's') {
+                        System.out.println("parentKey"); // TODO
                         parentKey = scanner.next();
-                        fileBackedTasksManager.dataDelete(taskKey, parentKey);
+
+                        fileBackedTasksManager.taskDelete(taskKey, parentKey);
                     }
                     else {
-                        fileBackedTasksManager.dataDelete(taskKey);
+                        fileBackedTasksManager.taskDelete(taskKey);
                     }
                     break;
 
                 case 7:
-                    fileBackedTasksManager.dataClear();
+                    fileBackedTasksManager.tasksClear();
                     break;
                 case 8:
                     System.out.println(inMemoryHistoryManager.getHistory());

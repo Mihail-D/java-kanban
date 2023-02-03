@@ -1,5 +1,6 @@
 package controls;
 
+import org.jetbrains.annotations.NotNull;
 import tasks.Epic;
 import tasks.SubTask;
 import tasks.Task;
@@ -13,16 +14,17 @@ import java.util.*;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
 
-    File dataFile;
-    File historyFile;
+    private boolean dataFile;
+    private boolean historyFile;
     private final static int SUBTASK_LINE_LENGTH = 6;
 
-    public FileBackedTasksManager(File dataFile, File historyFile) {
+    public FileBackedTasksManager(boolean dataFile, boolean historyFile) {
         this.dataFile = dataFile;
         this.historyFile = historyFile;
     }
 
-    public void dataAdd(String... args) {
+    @Override
+    public void taskAdd(String @NotNull ... args) {
         try {
             super.taskAdd(args);
             saveTask();
@@ -31,7 +33,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    public String dataGet(String taskKey) throws IOException {
+    @Override
+    public String taskRetrieve(String taskKey) throws IOException {
         String oldData = super.getTaskFormattedData(taskKey);
         try {
             super.taskRetrieve(taskKey);
@@ -50,7 +53,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return InMemoryTaskManager.taskContent;
     }
 
-    public void dataEdit(String... args) throws IOException {
+    @Override
+    public void taskUpdate(String @NotNull ... args) throws IOException {
         String oldData = super.getTaskFormattedData(args[0]);
         try {
             super.taskUpdate(args);
@@ -62,7 +66,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         lineOverwrite(oldData, newData, "historyFile.csv");
     }
 
-    public void dataDelete(String... args) throws IOException {
+    @Override
+    public void taskDelete(String @NotNull ... args) throws IOException {
         String dataForErase = super.getTaskFormattedData(args[0]);
         String taskType = args[0].substring(0, 1);
 
@@ -88,7 +93,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    public void dataClear() throws IOException {
+    @Override
+    public void tasksClear() throws IOException {
         super.tasksClear();
         lineErase("complete", "dataFile.csv");
         lineErase("complete", "historyFile.csv");
@@ -189,7 +195,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    public void saveHistory(String taskKey) {
+    public void saveHistory(@NotNull String taskKey) {
         String filename = PATH + File.separator + "historyFile.csv";
         int referenceKey = Integer.parseInt(taskKey.substring(2));
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
@@ -211,7 +217,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    public void lineOverwrite(String oldData, String newData, String fileName) throws IOException {
+    public void lineOverwrite(@NotNull String oldData, String newData, String fileName) throws IOException {
         List<String> fileContent = new ArrayList<>(Files.readAllLines(
                 Path.of(PATH + File.separator + fileName), StandardCharsets.UTF_8));
         String[] tokens = oldData.split(",");
@@ -235,7 +241,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         Files.write(Path.of(PATH + File.separator + fileName), fileContent, StandardCharsets.UTF_8);
     }
 
-    public void lineErase(String... args) throws IOException {
+    public void lineErase(String @NotNull ... args) throws IOException {
         List<String> fileContent = new ArrayList<>(Files.readAllLines(
                 Path.of(PATH + File.separator + args[1]), StandardCharsets.UTF_8));
 
