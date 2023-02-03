@@ -31,7 +31,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             super.taskAdd(args);
             saveTask();
         } catch (ManagerSaveException e) {
-            throw new ManagerSaveException("Не удалось создать задачу.");
+            System.out.println("Не удалось создать задачу.");
         }
     }
 
@@ -41,12 +41,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         try {
             super.taskRetrieve(taskKey);
         } catch (ManagerSaveException e) {
-            throw new ManagerSaveException("Не удалось получить данные.");
+            System.out.println("Не удалось получить данные.");
         }
         try {
             saveHistory(taskKey);
         } catch (ManagerSaveException e) {
-            throw new ManagerSaveException("Не удалось сохранить историю.");
+            System.out.println("Не удалось сохранить историю.");
         }
         String newData = super.getTaskFormattedData(taskKey);
         lineOverwrite(oldData, newData, "dataFile.csv");
@@ -61,7 +61,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         try {
             super.taskUpdate(args);
         } catch (ManagerSaveException e) {
-            throw new ManagerSaveException("Не удалось обновить данные.");
+            System.out.println("Не удалось обновить данные.");
         }
         String newData = super.getTaskFormattedData(args[0]);
         lineOverwrite(oldData, newData, "dataFile.csv");
@@ -136,10 +136,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
                     InMemoryTaskManager.tasksStorage.put(tokens[0], task);
                 }
-            } catch (ManagerSaveException | FileNotFoundException e) {
-                throw new ManagerSaveException("Не удалось восстановить данные задач");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            } catch (ManagerSaveException | IOException e) {
+                System.out.println("Не удалось восстановить данные задач");
             }
         }
     }
@@ -181,7 +179,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                     InMemoryHistoryManager.historyStorage.linkLast(task);
                 }
             } catch (ManagerSaveException | IOException e) {
-                throw new ManagerSaveException("Не удалось восстановить данные истории");
+                System.out.println("Не удалось восстановить данные истории");
             }
         }
     }
@@ -193,7 +191,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             fw.write(taskContent + "\n");
             fw.close();
         } catch (ManagerSaveException | IOException e) {
-            throw new ManagerSaveException("Не удалось сохранить данные задач");
+            System.out.println("Не удалось сохранить данные задач");
         }
     }
 
@@ -215,7 +213,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             fw.write(taskContent + "\n");
             fw.close();
         } catch (ManagerSaveException | IOException e) {
-            throw new ManagerSaveException("Не удалось сохранить данные истории");
+            System.out.println("Не удалось сохранить данные истории");
         }
     }
 
