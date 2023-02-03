@@ -1,5 +1,6 @@
 package controls;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,17 +8,17 @@ public interface TaskManager {
 
     void taskAdd(String... args);
 
-    void taskUpdate(String... args);
+    void taskUpdate(String... args) throws IOException;
 
-    void taskRetrieve(String taskKey);
+    String taskRetrieve(String taskKey) throws IOException;
 
     List<ArrayList<String>> collectAllTasks();
 
     List<String> collectEpicSubtasks(String taskKey);
 
-    void taskDelete(String... args);
+    void taskDelete(String... args) throws IOException;
 
-    void tasksClear();
+    void tasksClear() throws IOException;
 }
 
 
