@@ -26,7 +26,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
 
     @Override
-    public void clearHistoryStorage() {                                       // TODO
+    public void clearHistoryStorage() {
         for (String i : historyRegister.keySet()) {
             historyStorage.removeNode(historyStorage.getNode(i));
         }
