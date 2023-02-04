@@ -19,6 +19,7 @@ public interface TaskManager {
     void taskDelete(String... args) throws IOException;
 
     void tasksClear() throws IOException;
+
 }
 
 

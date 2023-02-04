@@ -24,6 +24,7 @@ public class InMemoryTaskManager implements TaskManager {
     int taskId = getInitNumber();
     public static String taskContent;
 
+    @Override
     public void taskAdd(String @NotNull ... args) { // taskTitle, taskDescription, mode, parentKey
         TaskStages taskStatus = TaskStages.NEW;
         String taskId = getId(args[2]);
@@ -53,6 +54,7 @@ public class InMemoryTaskManager implements TaskManager {
         taskContent = getTaskFormattedData(taskId);
     }
 
+    @Override
     public void taskUpdate(String @NotNull ... args) throws IOException {
         String taskKey = args[0];
         Task task = tasksStorage.get(taskKey);
@@ -85,6 +87,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    @Override
     public String taskRetrieve(String taskKey) throws IOException {
         Task task = tasksStorage.get(taskKey);
         getTaskFormattedData(taskKey);
@@ -95,6 +98,7 @@ public class InMemoryTaskManager implements TaskManager {
         return taskContent;
     }
 
+    @Override
     public void taskDelete(String @NotNull ... args) throws IOException {
         String taskKey = args[0];
         String keyChunk = taskKey.substring(0, 1);
@@ -129,11 +133,13 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    @Override
     public void tasksClear() throws IOException {
         tasksStorage.clear();
         inMemoryHistoryManager.clearHistoryStorage();
     }
 
+    @Override
     public ArrayList<ArrayList<String>> collectAllTasks() {
         ArrayList<String> listOfTasks = new ArrayList<>();
         ArrayList<String> listOfEpics = new ArrayList<>();
@@ -154,6 +160,7 @@ public class InMemoryTaskManager implements TaskManager {
         return Stream.of(listOfTasks, listOfEpics, listOfSubTasks).collect(toCollection(ArrayList::new));
     }
 
+    @Override
     public ArrayList<String> collectEpicSubtasks(String taskKey) {
         ArrayList<String> localTasksList = new ArrayList<>();
         Epic epicTask = (Epic) tasksStorage.get(taskKey);
@@ -166,7 +173,8 @@ public class InMemoryTaskManager implements TaskManager {
         return localTasksList;
     }
 
-    String getId(@NotNull String taskMode) {
+
+    public String getId(@NotNull String taskMode) {
         String id = null;
 
         switch (taskMode) {
