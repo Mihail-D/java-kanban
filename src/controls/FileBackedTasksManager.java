@@ -42,7 +42,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         try {
             lineOverwrite(oldData, newData, "dataFile.csv");
             lineOverwrite(oldData, newData, "historyFile.csv");
-        } catch (ManagerSaveException | IOException e) {                          // TODO
+        } catch (ManagerSaveException | IOException e) {
             System.out.println("Не удалось сохранить данные");
         }
 
@@ -58,7 +58,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         try {
             lineOverwrite(oldData, newData, "dataFile.csv");
             lineOverwrite(oldData, newData, "historyFile.csv");
-        } catch (ManagerSaveException | IOException e) {                          // TODO
+        } catch (ManagerSaveException | IOException e) {
             System.out.println("Не удалось сохранить данные");
         }
     }
@@ -86,7 +86,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 lineOverwrite(oldEpicStatus, super.getTaskFormattedData(parentKey), "dataFile.csv");
                 lineOverwrite(oldEpicStatus, super.getTaskFormattedData(parentKey), "historyFile.csv");
             }
-        } catch (ManagerSaveException | IOException e) {                         // TODO
+        } catch (ManagerSaveException | IOException e) {
             System.out.println("Не удалось удалить данные");
         }
 
@@ -99,7 +99,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         try {
             lineErase("complete", "dataFile.csv");
             lineErase("complete", "historyFile.csv");
-        } catch (ManagerSaveException | IOException e) {                          // TODO
+        } catch (ManagerSaveException | IOException e) {
             System.out.println("Не удалось удалить данные");
         }
     }

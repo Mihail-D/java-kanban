@@ -1,13 +1,15 @@
 package controls;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public interface TaskManager {
 
-    void taskAdd(String... args);
+    void taskAdd(String @NotNull ... args);
 
-    void taskUpdate(String... args);
+    void taskUpdate(String @NotNull ... args);
 
     String taskRetrieve(String taskKey);
 
@@ -15,10 +17,9 @@ public interface TaskManager {
 
     List<String> collectEpicSubtasks(String taskKey);
 
-    void taskDelete(String... args);
+    void taskDelete(String @NotNull ... args);
 
     void tasksClear();
-
 }
 
 
