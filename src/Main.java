@@ -24,7 +24,7 @@ public class Main {
         getControlOptions();
     }
 
-    public static void getControlOptions() throws IOException {
+    public static void getControlOptions() {
         Scanner scanner = new Scanner(System.in);
         int item;
         String taskTitle;
