@@ -264,7 +264,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
         else if (args[0].equals("sub")) {
             String[] tokens = args[2].split(",");
-            System.out.println(args[2]);
 
             for (int i = 0; i < fileContent.size(); i++) {
                 if (fileContent.get(i).equals(args[2])) {
