@@ -55,7 +55,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void taskUpdate(String @NotNull ... args) throws IOException {
+    public void taskUpdate(String @NotNull ... args) {
         String taskKey = args[0];
         Task task = tasksStorage.get(taskKey);
 
@@ -88,7 +88,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public String taskRetrieve(String taskKey) throws IOException {
+    public String taskRetrieve(String taskKey) {
         Task task = tasksStorage.get(taskKey);
         getTaskFormattedData(taskKey);
         inMemoryHistoryManager.addHistory(task);
@@ -99,7 +99,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void taskDelete(String @NotNull ... args) throws IOException {
+    public void taskDelete(String @NotNull ... args) {
         String taskKey = args[0];
         String keyChunk = taskKey.substring(0, 1);
 
@@ -134,7 +134,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void tasksClear() throws IOException {
+    public void tasksClear() {
         tasksStorage.clear();
         inMemoryHistoryManager.clearHistoryStorage();
     }

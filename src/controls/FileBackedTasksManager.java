@@ -28,79 +28,80 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     @Override
     public void taskAdd(String @NotNull ... args) {
-        try {
-            super.taskAdd(args);
-            saveTask();
-        } catch (ManagerSaveException e) {
-            System.out.println("Не удалось создать задачу.");
-        }
+        super.taskAdd(args);
+        saveTask();
     }
 
     @Override
-    public String taskRetrieve(String taskKey) throws IOException {
+    public String taskRetrieve(String taskKey) {
         String oldData = super.getTaskFormattedData(taskKey);
-        try {
-            super.taskRetrieve(taskKey);
-        } catch (ManagerSaveException e) {
-            System.out.println("Не удалось получить данные.");
-        }
-        try {
-            saveHistory(taskKey);
-        } catch (ManagerSaveException e) {
-            System.out.println("Не удалось сохранить историю.");
-        }
+        super.taskRetrieve(taskKey);
+        saveHistory(taskKey);
         String newData = super.getTaskFormattedData(taskKey);
-        lineOverwrite(oldData, newData, "dataFile.csv");
-        lineOverwrite(oldData, newData, "historyFile.csv");
+
+        try {
+            lineOverwrite(oldData, newData, "dataFile.csv");
+            lineOverwrite(oldData, newData, "historyFile.csv");
+        } catch (ManagerSaveException | IOException e) {                          // TODO
+            throw new RuntimeException(e);
+        }
 
         return InMemoryTaskManager.taskContent;
     }
 
     @Override
-    public void taskUpdate(String @NotNull ... args) throws IOException {
+    public void taskUpdate(String @NotNull ... args) {
         String oldData = super.getTaskFormattedData(args[0]);
-        try {
-            super.taskUpdate(args);
-        } catch (ManagerSaveException e) {
-            System.out.println("Не удалось обновить данные.");
-        }
+        super.taskUpdate(args);
         String newData = super.getTaskFormattedData(args[0]);
-        lineOverwrite(oldData, newData, "dataFile.csv");
-        lineOverwrite(oldData, newData, "historyFile.csv");
+
+        try {
+            lineOverwrite(oldData, newData, "dataFile.csv");
+            lineOverwrite(oldData, newData, "historyFile.csv");
+        } catch (ManagerSaveException | IOException e) {                          // TODO
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public void taskDelete(String @NotNull ... args) throws IOException {
+    public void taskDelete(String @NotNull ... args) {
         String dataForErase = super.getTaskFormattedData(args[0]);
         String taskType = args[0].substring(0, 1);
 
-        if (taskType.equals("t")) {
-            lineErase("single", "dataFile.csv", dataForErase);
-            lineErase("single", "historyFile.csv", dataForErase);
-            super.taskDelete(args);
+        try {
+            if (taskType.equals("t")) {
+                lineErase("single", "dataFile.csv", dataForErase);
+                lineErase("single", "historyFile.csv", dataForErase);
+            }
+            else if (taskType.equals("e")) {
+                lineErase("epic", "dataFile.csv", dataForErase);
+                lineErase("epic", "historyFile.csv", dataForErase);
+            }
+            else if (taskType.equals("s")) {
+                String parentKey = dataForErase.split(",")[5];
+                String oldEpicStatus = super.getTaskFormattedData(args[1]);
+                lineErase("sub", "dataFile.csv", dataForErase);
+                lineErase("sub", "historyFile.csv", dataForErase);
+                assert oldEpicStatus != null;
+                lineOverwrite(oldEpicStatus, super.getTaskFormattedData(parentKey), "dataFile.csv");
+                lineOverwrite(oldEpicStatus, super.getTaskFormattedData(parentKey), "historyFile.csv");
+            }
+        } catch (ManagerSaveException | IOException e) {                         // TODO
+            throw new RuntimeException(e);
         }
-        else if (taskType.equals("e")) {
-            lineErase("epic", "dataFile.csv", dataForErase);
-            lineErase("epic", "historyFile.csv", dataForErase);
-            super.taskDelete(args);
-        }
-        else if (taskType.equals("s")) {
-            String parentKey = dataForErase.split(",")[5];
-            String oldEpicStatus = super.getTaskFormattedData(args[1]);
-            lineErase("sub", "dataFile.csv", dataForErase);
-            lineErase("sub", "historyFile.csv", dataForErase);
-            assert oldEpicStatus != null;
-            super.taskDelete(args);
-            lineOverwrite(oldEpicStatus, super.getTaskFormattedData(parentKey), "dataFile.csv");
-            lineOverwrite(oldEpicStatus, super.getTaskFormattedData(parentKey), "historyFile.csv");
-        }
+
+        super.taskDelete(args);
     }
 
     @Override
-    public void tasksClear() throws IOException {
+    public void tasksClear() {
         super.tasksClear();
-        lineErase("complete", "dataFile.csv");
-        lineErase("complete", "historyFile.csv");
+        try {
+            lineErase("complete", "dataFile.csv");
+            lineErase("complete", "historyFile.csv");
+        } catch (ManagerSaveException | IOException e) {                          // TODO
+            throw new RuntimeException(e);
+        }
     }
 
     private void restoreTasks() {
@@ -199,6 +200,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     private void saveHistory(@NotNull String taskKey) {
         String filename = PATH + File.separator + "historyFile.csv";
         int referenceKey = Integer.parseInt(taskKey.substring(2));
+
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             String line;
 
