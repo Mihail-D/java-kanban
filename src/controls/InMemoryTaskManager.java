@@ -98,7 +98,6 @@ public class InMemoryTaskManager implements TaskManager {
     public void taskDelete(String @NotNull ... args) {
         String taskKey = args[0];
         Task task = tasksStorage.get(taskKey);
-        //String keyChunk = taskKey.substring(0, 1);
 
         switch (task.getTaskType()) {
             case TASK:
@@ -140,13 +139,13 @@ public class InMemoryTaskManager implements TaskManager {
         ArrayList<String> listOfSubTasks = new ArrayList<>();
 
         for (String i : tasksStorage.keySet()) {
-            if (i.startsWith("t")) {
+            if (tasksStorage.get(i).getTaskType() == TaskTypes.TASK) {
                 listOfTasks.add(getTaskFormattedData(i));
             }
-            else if (i.startsWith("e")) {
+            else if (tasksStorage.get(i).getTaskType() == TaskTypes.EPIC) {
                 listOfEpics.add(getTaskFormattedData(i));
             }
-            if (i.startsWith("s")) {
+            if (tasksStorage.get(i).getTaskType() == TaskTypes.SUB_TASK) {
                 listOfSubTasks.add(getTaskFormattedData(i));
             }
         }

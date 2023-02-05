@@ -10,6 +10,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
+import static tasks.TaskTypes.*;
+
 public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private boolean dataFile;
@@ -116,17 +118,17 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                     }
                     String[] tokens = line.split(",");
 
-                    if (tokens[5].equals("TASK")) {
+                    if (TaskTypes.valueOf(tokens[5]) == TASK) {
                         task = new Task(tokens[1], tokens[2], tokens[0], Boolean.parseBoolean(tokens[3]),
                                 TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5])
                         );
                     }
-                    else if (tokens[5].equals("EPIC")) {
+                    else if (TaskTypes.valueOf(tokens[5]) == EPIC) {
                         task = new Epic(tokens[1], tokens[2], tokens[0], Boolean.parseBoolean(tokens[3]),
                                 TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5]), new HashMap<>()
                         );
                     }
-                    else if (tokens[5].equals("SUB_TASK")) {
+                    else if (TaskTypes.valueOf(tokens[5]) == SUB_TASK) {
                         task = new SubTask(tokens[1], tokens[2], tokens[0], Boolean.parseBoolean(tokens[3]),
                                 TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5]), tokens[6]
                         );
@@ -161,17 +163,17 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                     }
                     String[] tokens = line.split(",");
 
-                    if (tokens[5].equals("TASK")) {
+                    if (TaskTypes.valueOf(tokens[5]) == TASK) {
                         task = new Task(tokens[1], tokens[2], tokens[0], Boolean.parseBoolean(tokens[3]),
                                 TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5])
                         );
                     }
-                    else if (tokens[5].equals("EPIC")) {
+                    else if (TaskTypes.valueOf(tokens[5]) == EPIC) {
                         task = new Epic(tokens[1], tokens[2], tokens[0], Boolean.parseBoolean(tokens[3]),
                                 TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5]), new HashMap<>()
                         );
                     }
-                    else if (tokens[5].equals("SUB_TASK")) {
+                    else if (TaskTypes.valueOf(tokens[5]) == SUB_TASK) {
                         task = new SubTask(tokens[1], tokens[2], tokens[0], Boolean.parseBoolean(tokens[3]),
                                 TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5]), tokens[6]
                         );
