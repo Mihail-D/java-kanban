@@ -30,7 +30,6 @@ public class InMemoryTaskManager implements TaskManager {
         String taskId = getId(args[2]);
         boolean isViewed = false;
 
-
         switch (args[2]) {
             case "taskMode":
                 InMemoryTaskManager.tasksStorage.put(taskId, new Task(args[0], args[1], taskId,
@@ -169,7 +168,6 @@ public class InMemoryTaskManager implements TaskManager {
 
         return localTasksList;
     }
-
 
     public String getId(@NotNull String taskMode) {
         String id = null;
