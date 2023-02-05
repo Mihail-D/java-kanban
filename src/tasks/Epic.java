@@ -8,9 +8,9 @@ public class Epic extends Task {
 
     public Epic(
             String taskTitle, String taskDescription, String taskId, boolean isViewed,
-            TaskStages taskStatus, HashMap<String, String> relatedSubTask
+            TaskStages taskStatus, TaskTypes taskType, HashMap<String, String> relatedSubTask
     ) {
-        super(taskTitle, taskDescription, taskId, isViewed, taskStatus);
+        super(taskTitle, taskDescription, taskId, isViewed, taskStatus, taskType);
         this.relatedSubTask = relatedSubTask;
     }
 

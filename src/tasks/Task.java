@@ -7,13 +7,19 @@ public class Task {
     private String taskId;
     private boolean isViewed;
     private TaskStages taskStatus;
+    private TaskTypes taskType;
 
-    public Task(String taskTitle, String taskDescription, String taskId, boolean isViewed, TaskStages taskStatus) {
+    public Task(String taskTitle, String taskDescription, String taskId, boolean isViewed, TaskStages taskStatus, TaskTypes taskType) {
         this.taskTitle = taskTitle;
         this.taskDescription = taskDescription;
         this.taskId = taskId;
         this.isViewed = isViewed;
         this.taskStatus = taskStatus;
+        this.taskType = taskType;
+    }
+
+    public TaskTypes getTaskType() {
+        return taskType;
     }
 
     public String getTaskTitle() {

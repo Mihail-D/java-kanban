@@ -1,10 +1,7 @@
 package controls;
 
 import org.jetbrains.annotations.NotNull;
-import tasks.Epic;
-import tasks.SubTask;
-import tasks.Task;
-import tasks.TaskStages;
+import tasks.*;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -30,15 +27,15 @@ public class InMemoryTaskManager implements TaskManager {
         String taskId = getId(args[2]);
         boolean isViewed = false;
 
-        switch (args[2]) {
+        switch (args[2]) { // taskTitle, taskDescription, mode, parentKey
             case "taskMode":
                 InMemoryTaskManager.tasksStorage.put(taskId, new Task(args[0], args[1], taskId,
-                        isViewed, taskStatus
+                        isViewed, taskStatus, TaskTypes.TASK
                 ));
                 break;
             case "epicMode":
                 InMemoryTaskManager.tasksStorage.put(taskId, new Epic(args[0], args[1], taskId,
-                        isViewed, taskStatus, new HashMap<>()
+                        isViewed, taskStatus, TaskTypes.EPIC, new HashMap<>()
                 ));
                 break;
             case "subTaskMode":
@@ -46,7 +43,7 @@ public class InMemoryTaskManager implements TaskManager {
                 parentTask.relatedSubTask.put(taskId, String.valueOf(taskStatus));
                 setEpicStatus(args[3]);
                 InMemoryTaskManager.tasksStorage.put(taskId, new SubTask(args[0], args[1], taskId,
-                        isViewed, taskStatus, args[3]
+                        isViewed, taskStatus, TaskTypes.SUB_TASK, args[3]
                 ));
                 break;
         }
@@ -62,17 +59,17 @@ public class InMemoryTaskManager implements TaskManager {
 
         task.setTaskDescription(args[2]);
 
-        String keyChunk = taskKey.substring(0, 1);
+        TaskTypes taskType = task.getTaskType();
 
-        switch (keyChunk) {
-            case "t":
+        switch (taskType) {
+            case TASK:
                 task.setTaskStatus(TaskStages.valueOf(args[3]));
                 tasksStorage.put(taskKey, task);
                 break;
-            case "e":
+            case EPIC:
                 setEpicStatus(taskKey);
                 break;
-            case "s":
+            case SUB_TASK:
                 String parentKey = args[4];
                 Epic parentTask = (Epic) tasksStorage.get(parentKey);
 
@@ -100,13 +97,14 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void taskDelete(String @NotNull ... args) {
         String taskKey = args[0];
-        String keyChunk = taskKey.substring(0, 1);
+        Task task = tasksStorage.get(taskKey);
+        //String keyChunk = taskKey.substring(0, 1);
 
-        switch (keyChunk) {
-            case "t":
+        switch (task.getTaskType()) {
+            case TASK:
                 tasksStorage.remove(taskKey);
                 break;
-            case "e":
+            case EPIC:
                 Epic epicTask = (Epic) tasksStorage.get(taskKey);
                 HashMap<String, String> relatedSubTasks = epicTask.relatedSubTask;
 
@@ -117,7 +115,7 @@ public class InMemoryTaskManager implements TaskManager {
 
                 tasksStorage.remove(taskKey);
                 break;
-            case "s":
+            case SUB_TASK:
                 String parentKey = args[1];
                 epicTask = (Epic) tasksStorage.get(parentKey);
                 relatedSubTasks = epicTask.relatedSubTask;
@@ -212,15 +210,16 @@ public class InMemoryTaskManager implements TaskManager {
         String taskDescription = task.getTaskDescription() + ",";
         taskKey = task.getTaskId() + ",";
         String isViewed = task.isViewed() + ",";
-        String taskStatus = String.valueOf(task.getTaskStatus());
+        String taskStatus = task.getTaskStatus() + ",";
+        String taskType = task.getTaskType() + ",";
         String result;
         if (task.getClass() == SubTask.class) {
             result =
                     taskKey + taskTitle + taskDescription + isViewed + taskStatus
-                            + "," + ((SubTask) task).getParentId();
+                            + taskType + ((SubTask) task).getParentId();
         }
         else {
-            result = taskKey + taskTitle + taskDescription + isViewed + taskStatus;
+            result = taskKey + taskTitle + taskDescription + isViewed + taskStatus + taskType;
         }
 
         return result;
