@@ -106,7 +106,6 @@ public class InMemoryTaskManager implements TaskManager {
         switch (keyChunk) {
             case "t":
                 tasksStorage.remove(taskKey);
-                inMemoryHistoryManager.removeHistoryRecord(taskKey);
                 break;
             case "e":
                 Epic epicTask = (Epic) tasksStorage.get(taskKey);
@@ -118,8 +117,6 @@ public class InMemoryTaskManager implements TaskManager {
                 }
 
                 tasksStorage.remove(taskKey);
-                inMemoryHistoryManager.removeHistoryRecord(taskKey);
-
                 break;
             case "s":
                 String parentKey = args[1];
@@ -128,9 +125,9 @@ public class InMemoryTaskManager implements TaskManager {
                 relatedSubTasks.remove(taskKey);
                 setEpicStatus(parentKey);
                 tasksStorage.remove(taskKey);
-                inMemoryHistoryManager.removeHistoryRecord(taskKey);
                 break;
         }
+        inMemoryHistoryManager.removeHistoryRecord(taskKey);
     }
 
     @Override
