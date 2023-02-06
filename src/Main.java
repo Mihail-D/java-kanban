@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class Main {
+
     static InMemoryTaskManager taskManager;
     static InMemoryHistoryManager inMemoryHistoryManager;
     static FileBackedTasksManager fileBackedTasksManager;
@@ -35,49 +36,33 @@ public class Main {
         String taskStatus;
 
         while (true) {
-            System.out.println("MENU"); // TODO
             item = scanner.nextInt();
 
             switch (item) {
                 case 1:
-                    System.out.println("taskTitle"); // TODO
                     taskTitle = scanner.next();
-                    System.out.println("taskDescription"); // TODO
                     taskDescription = scanner.next();
-                    System.out.println("mode taskMode epicMode subTaskMode"); // TODO
                     mode = scanner.next();
 
                     if (mode.equals("taskMode") || mode.equals("epicMode")) {
                         fileBackedTasksManager.taskAdd(taskTitle, taskDescription, mode);
                     }
                     else if (mode.equals("subTaskMode")) {
-                        System.out.println("parentKey"); // TODO
-
                         parentKey = scanner.next();
                         fileBackedTasksManager.taskAdd(taskTitle, taskDescription, mode, parentKey);
                     }
-
                     break;
                 case 2:
-                    System.out.println("taskKey"); // TODO
                     taskKey = scanner.next();
-
-                    System.out.println("taskTitle"); // TODO
                     taskTitle = scanner.next();
-
-                    System.out.println("taskDescription"); // TODO
                     taskDescription = scanner.next();
 
                     if (taskKey.charAt(0) == 's') {
-                        System.out.println("parentKey"); // TODO
                         parentKey = scanner.next();
-
-                        System.out.println("taskStatus"); // TODO
                         taskStatus = scanner.next();
                         fileBackedTasksManager.taskUpdate(taskKey, taskTitle, taskDescription, taskStatus, parentKey);
                     }
                     else if (taskKey.charAt(0) == 't') {
-                        System.out.println("taskStatus"); // TODO
                         taskStatus = scanner.next();
                         fileBackedTasksManager.taskUpdate(taskKey, taskTitle, taskDescription, taskStatus);
                     }
@@ -85,32 +70,22 @@ public class Main {
                         fileBackedTasksManager.taskUpdate(taskKey, taskTitle, taskDescription);
                     }
                     break;
-
                 case 3:
-                    System.out.println("taskKey"); // TODO
                     taskKey = scanner.next();
                     fileBackedTasksManager.taskRetrieve(taskKey);
                     break;
                 case 4:
                     taskManager.collectAllTasks();
-                    System.out.println(taskManager.collectAllTasks()); // TODO
                     break;
                 case 5:
-                    System.out.println("taskKey"); // TODO
                     taskKey = scanner.next();
-
-                    System.out.println(taskManager.collectEpicSubtasks(taskKey)); // TODO
                     taskManager.collectEpicSubtasks(taskKey);
-
                     break;
                 case 6:
-                    System.out.println("taskKey"); // TODO
                     taskKey = scanner.next();
 
                     if (taskKey.charAt(0) == 's') {
-                        System.out.println("parentKey"); // TODO
                         parentKey = scanner.next();
-
                         fileBackedTasksManager.taskDelete(taskKey, parentKey);
                     }
                     else {
@@ -122,7 +97,6 @@ public class Main {
                     fileBackedTasksManager.tasksClear();
                     break;
                 case 8:
-                    System.out.println(inMemoryHistoryManager.getHistory());
                     inMemoryHistoryManager.getHistory();
                     break;
 
