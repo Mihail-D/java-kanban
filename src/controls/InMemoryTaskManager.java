@@ -16,7 +16,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
 
-    public static HashMap<String, Task> tasksStorage = new HashMap<>();
+    public static HashMap<String, Task> tasksStorage = new LinkedHashMap<>();
     public static String PATH = "./src/data";
     int taskId = getInitNumber();
     public static String taskContent;

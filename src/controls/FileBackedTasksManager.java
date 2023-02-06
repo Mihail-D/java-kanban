@@ -6,7 +6,6 @@ import tasks.*;
 
 import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static tasks.TaskTypes.*;
@@ -21,7 +20,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         this.dataFile = dataFile;
         this.historyFile = historyFile;
         restoreTasks();
-        //restoreHistory();
+        restoreHistory();
     }
 
     @Override
@@ -32,10 +31,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     @Override
     public String taskRetrieve(String taskKey) {
-        String oldData = super.getTaskFormattedData(taskKey);
+        //String oldData = super.getTaskFormattedData(taskKey);
         super.taskRetrieve(taskKey);
         saveTask();
-        String newData = super.getTaskFormattedData(taskKey);
+        //String newData = super.getTaskFormattedData(taskKey);
 
         return InMemoryTaskManager.taskContent;
     }
@@ -155,8 +154,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 final BufferedWriter writer = new BufferedWriter((new FileWriter(
                         PATH + File.separator + "dataFile.csv", UTF_8)))
         ) {
-            List<String> sortedKeys = tasksStorage.keySet().stream().sorted().toList();
-            for (String entry : sortedKeys) {
+
+            for (String entry : tasksStorage.keySet()) {
                 writer.append(getTaskFormattedData(tasksStorage.get(entry).getTaskId()));
                 writer.newLine();
             }
