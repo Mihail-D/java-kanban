@@ -8,7 +8,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     public static CustomLinkedList historyStorage = new CustomLinkedList();
     public static Map<String, Node> historyRegister = new HashMap<>();
-    public static List<Task> historyReport = new LinkedList<>();
+    public static List<Task> historyReport = new ArrayList<>();
 
     @Override
     public void addHistory(Task task) {
