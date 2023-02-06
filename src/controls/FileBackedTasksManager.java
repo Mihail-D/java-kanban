@@ -52,7 +52,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     @Override
     public void tasksClear() {
         super.tasksClear();
-
+        saveTask();
     }
 
     private void restoreTasks() {
