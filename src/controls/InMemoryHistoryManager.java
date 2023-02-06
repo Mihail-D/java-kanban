@@ -7,8 +7,8 @@ import java.util.*;
 public class InMemoryHistoryManager implements HistoryManager {
 
     public static CustomLinkedList historyStorage = new CustomLinkedList();
-    public static Map<String, Node> historyRegister = new LinkedHashMap<>();
-    public static List<Task> historyReport = new ArrayList<>();
+    public static Map<String, Node> historyRegister = new HashMap<>();
+    public static List<Task> historyReport = new LinkedList<>();
 
     @Override
     public void addHistory(Task task) {
@@ -51,7 +51,6 @@ public class InMemoryHistoryManager implements HistoryManager {
         public void linkLast(Task task) {
             Node element = new Node();
             element.setTask(task);
-            System.out.println(task.getTaskId()); // TODO
 
             if (historyRegister.containsKey(task.getTaskId())) {
                 removeNode(historyRegister.get(task.getTaskId()));

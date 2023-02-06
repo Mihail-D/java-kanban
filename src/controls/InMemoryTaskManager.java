@@ -81,6 +81,7 @@ public class InMemoryTaskManager implements TaskManager {
                 setEpicStatus(parentKey);
                 break;
         }
+        taskContent = getTaskFormattedData(taskKey);
     }
 
     @Override
@@ -124,6 +125,7 @@ public class InMemoryTaskManager implements TaskManager {
                 break;
         }
         inMemoryHistoryManager.removeHistoryRecord(taskKey);
+        taskContent = null;
     }
 
     @Override

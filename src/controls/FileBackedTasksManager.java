@@ -31,9 +31,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     @Override
     public String taskRetrieve(String taskKey) {
-        System.out.println(InMemoryHistoryManager.historyRegister); // TODO   
         super.taskRetrieve(taskKey);
-        System.out.println(InMemoryHistoryManager.historyRegister); // TODO
         saveTask();
 
         return InMemoryTaskManager.taskContent;
@@ -41,18 +39,14 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     @Override
     public void taskUpdate(String @NotNull ... args) {
-        String oldData = super.getTaskFormattedData(args[0]);
         super.taskUpdate(args);
-        String newData = super.getTaskFormattedData(args[0]);
-
+        saveTask();
     }
 
     @Override
     public void taskDelete(String @NotNull ... args) {
-        String dataForErase = super.getTaskFormattedData(args[0]);
-        String taskType = dataForErase.split(",")[5];
-
         super.taskDelete(args);
+        saveTask();
     }
 
     @Override
@@ -139,9 +133,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
                     InMemoryHistoryManager.historyStorage.linkLast(task);
                 }
-                System.out.println(InMemoryHistoryManager.historyStorage.getSize()); // TODO
-                System.out.println(InMemoryHistoryManager.historyRegister.size()); // TODO
-
             } catch (ManagerSaveException | IOException e) {
                 System.out.println("Не удалось восстановить данные истории");
             }
@@ -159,25 +150,29 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 writer.append(getTaskFormattedData(tasksStorage.get(entry).getTaskId()));
                 writer.newLine();
             }
-            //writer.append(taskContent);
         } catch (ManagerSaveException | IOException e) {
             System.out.println("Не удалось сохранить данные задач");
         }
-
-
 
         try (
                 final BufferedWriter writer = new BufferedWriter((new FileWriter(
                         PATH + File.separator + "historyFile.csv", UTF_8
                 )))
         ) {
-            List<Task> list = new LinkedList<>(InMemoryHistoryManager.historyStorage.getTasks());
+            Map<String, Node> list = InMemoryHistoryManager.historyRegister;
 
-            for (int i = 0; i < list.size(); i++) {
-                writer.append(getTaskFormattedData(list.get(i).getTaskId()));
-                writer.newLine();
+            for (String i : list.keySet()) {
+                String newData = getTaskFormattedData(list.get(i).getTask().getTaskId());
+
+                if (!newData.equals(taskContent)) {
+                    writer.append(newData);
+                    writer.newLine();
+                }
+
             }
-
+            if (!(taskContent == null)) {
+                writer.append(taskContent);
+            }
 
         } catch (ManagerSaveException | IOException e) {
             System.out.println("Не удалось сохранить данные истории");
