@@ -1,5 +1,6 @@
 package controls;
 
+import exceptions.ManagerLoadException;
 import exceptions.ManagerSaveException;
 import org.jetbrains.annotations.NotNull;
 import tasks.*;
@@ -14,7 +15,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private boolean dataFile;
     private boolean historyFile;
-    private final static int SUBTASK_LINE_LENGTH = 7;
 
     public FileBackedTasksManager(boolean dataFile, boolean historyFile) {
         this.dataFile = dataFile;
@@ -26,13 +26,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     @Override
     public void taskAdd(String @NotNull ... args) {
         super.taskAdd(args);
-        saveTask("newTaskMode");
+        saveTask("newTask");
     }
 
     @Override
     public String taskRetrieve(String taskKey) {
         super.taskRetrieve(taskKey);
-        saveTask("updateTaskMode");
+        saveTask("updateTask");
 
         return InMemoryTaskManager.taskContent;
     }
@@ -40,19 +40,19 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     @Override
     public void taskUpdate(String @NotNull ... args) {
         super.taskUpdate(args);
-        saveTask("updateTaskMode");
+        saveTask("updateTask");
     }
 
     @Override
     public void taskDelete(String @NotNull ... args) {
         super.taskDelete(args);
-        saveTask("updateTaskMode");
+        saveTask("updateTask");
     }
 
     @Override
     public void tasksClear() {
         super.tasksClear();
-        saveTask("deleteTaskMode");
+        saveTask("deleteTask");
     }
 
     private void restoreTasks() {
@@ -91,7 +91,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
                     InMemoryTaskManager.tasksStorage.put(tokens[0], task);
                 }
-            } catch (ManagerSaveException | IOException e) {
+            } catch (ManagerLoadException | IOException e) {
                 System.out.println("Не удалось восстановить данные задач");
             }
         }
@@ -133,7 +133,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
                     InMemoryHistoryManager.historyStorage.linkLast(task);
                 }
-            } catch (ManagerSaveException | IOException e) {
+            } catch (ManagerLoadException | IOException e) {
                 System.out.println("Не удалось восстановить данные истории");
             }
         }
@@ -170,7 +170,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 }
 
             }
-            if (!(taskContent == null) && !(saveMode.equals("newTaskMode") || saveMode.equals("deleteTaskMode"))) {
+            if (!(taskContent == null) && !(saveMode.equals("newTask") || saveMode.equals("deleteTask"))) {
                 writer.append(taskContent);
             }
 
@@ -178,5 +178,4 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             System.out.println("Не удалось сохранить данные истории");
         }
     }
-
 }
