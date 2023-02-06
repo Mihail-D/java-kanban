@@ -26,13 +26,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     @Override
     public void taskAdd(String @NotNull ... args) {
         super.taskAdd(args);
-        saveTask();
+        saveTask("newTaskMode");
     }
 
     @Override
     public String taskRetrieve(String taskKey) {
         super.taskRetrieve(taskKey);
-        saveTask();
+        saveTask("updateTaskMode");
 
         return InMemoryTaskManager.taskContent;
     }
@@ -40,19 +40,19 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     @Override
     public void taskUpdate(String @NotNull ... args) {
         super.taskUpdate(args);
-        saveTask();
+        saveTask("updateTaskMode");
     }
 
     @Override
     public void taskDelete(String @NotNull ... args) {
         super.taskDelete(args);
-        saveTask();
+        saveTask("updateTaskMode");
     }
 
     @Override
     public void tasksClear() {
         super.tasksClear();
-        saveTask();
+        saveTask("deleteTaskMode");
     }
 
     private void restoreTasks() {
@@ -139,7 +139,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    private void saveTask() {
+    private void saveTask(String saveMode) {
 
         try (
                 final BufferedWriter writer = new BufferedWriter((new FileWriter(
@@ -170,7 +170,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 }
 
             }
-            if (!(taskContent == null)) {
+            if (!(taskContent == null) && !(saveMode.equals("newTaskMode") || saveMode.equals("deleteTaskMode"))) {
                 writer.append(taskContent);
             }
 
