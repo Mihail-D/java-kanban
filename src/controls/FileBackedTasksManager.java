@@ -20,8 +20,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     public FileBackedTasksManager(File dataFile, File historyFile) {
         this.dataFile = dataFile;
         this.historyFile = historyFile;
-        restoreTasks();
-        restoreHistory();
+        restoreTasks(dataFile);
+        restoreTasks(historyFile);
     }
 
     @Override
@@ -56,12 +56,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         saveTask("deleteTask");
     }
 
-    private void restoreTasks() {
+    private void restoreTasks(File file) {
         Task task = null;
 
-        if (dataFile.exists() && !dataFile.isDirectory()) {
+        if (file.exists() && !file.isDirectory()) {
 
-            try (BufferedReader br = new BufferedReader(new FileReader(dataFile))) {
+            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
                 String line;
 
                 while ((line = br.readLine()) != null) {
@@ -89,53 +89,15 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                         setEpicStatus(tokens[6]);
                     }
 
-                    InMemoryTaskManager.tasksStorage.put(tokens[0], task);
+                    if (file == dataFile) {
+                        InMemoryTaskManager.tasksStorage.put(tokens[0], task);
+                    }
+                    else {
+                        InMemoryHistoryManager.historyStorage.linkLast(task);
+                    }
                 }
             } catch (ManagerLoadException | FileNotFoundException e) {
                 System.out.println("Не удалось восстановить данные задач");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    private void restoreHistory() {
-        Task task = null;
-
-        if (historyFile.exists() && !historyFile.isDirectory()) {
-
-            try (BufferedReader br = new BufferedReader(new FileReader(historyFile))) {
-                String line;
-
-                while ((line = br.readLine()) != null) {
-                    if (line.trim().isEmpty()) {
-                        continue;
-                    }
-                    String[] tokens = line.split(",");
-
-                    if (TaskTypes.valueOf(tokens[5]) == TASK) {
-                        task = new Task(tokens[1], tokens[2], tokens[0], Boolean.parseBoolean(tokens[3]),
-                                TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5])
-                        );
-                    }
-                    else if (TaskTypes.valueOf(tokens[5]) == EPIC) {
-                        task = new Epic(tokens[1], tokens[2], tokens[0], Boolean.parseBoolean(tokens[3]),
-                                TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5]), new HashMap<>()
-                        );
-                    }
-                    else if (TaskTypes.valueOf(tokens[5]) == SUB_TASK) {
-                        task = new SubTask(tokens[1], tokens[2], tokens[0], Boolean.parseBoolean(tokens[3]),
-                                TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5]), tokens[6]
-                        );
-                        Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(tokens[6]);
-                        parentTask.relatedSubTask.put(tokens[0], String.valueOf(TaskStages.valueOf(tokens[4])));
-                        setEpicStatus(tokens[6]);
-                    }
-
-                    InMemoryHistoryManager.historyStorage.linkLast(task);
-                }
-            } catch (ManagerLoadException | FileNotFoundException e) {
-                System.out.println("Не удалось восстановить данные истории");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
