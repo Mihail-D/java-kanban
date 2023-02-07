@@ -15,8 +15,11 @@ public class Main {
     public static void main(String[] args) throws IOException {
         String PATH = "./src/data";
         Files.createDirectories(Paths.get(PATH));
-        boolean dataFile = new File(PATH + File.separator + "dataFile.csv").createNewFile();
-        boolean historyFile = new File(PATH + File.separator + "historyFile.csv").createNewFile();
+
+        File dataFile = new File(PATH + File.separator + "dataFile.csv");
+        dataFile.createNewFile();
+        File historyFile = new File(PATH + File.separator + "historyFile.csv");
+        historyFile.createNewFile();
 
         fileBackedTasksManager = new FileBackedTasksManager(dataFile, historyFile);
         taskManager = new InMemoryTaskManager();

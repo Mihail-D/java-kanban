@@ -3,10 +3,6 @@ package controls;
 import org.jetbrains.annotations.NotNull;
 import tasks.*;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -17,8 +13,8 @@ public class InMemoryTaskManager implements TaskManager {
     HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
 
     public static HashMap<String, Task> tasksStorage = new LinkedHashMap<>();
-    public static String PATH = "./src/data";
-    int taskId = getInitNumber();
+
+    int taskId = FileBackedTasksManager.getInitNumber();
     public static String taskContent;
 
     @Override
@@ -224,27 +220,5 @@ public class InMemoryTaskManager implements TaskManager {
         }
 
         return result;
-    }
-
-    public int getInitNumber() {
-        File file = new File(PATH + File.separator + "dataFile.csv");
-        int max = 0;
-
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                if (line.trim().isEmpty()) {
-                    continue;
-                }
-                String[] arr = line.split(",");
-                int number = Integer.parseInt(arr[0].substring(2));
-                if (number > max) {
-                    max = number;
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return max;
     }
 }
