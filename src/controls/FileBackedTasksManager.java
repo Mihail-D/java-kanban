@@ -10,7 +10,8 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static tasks.TaskTypes.*;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
-    private static String PATH = "./src/data";
+
+    public static final String PATH = "./src/data";
 
     private File dataFile;
     private File historyFile;
@@ -55,7 +56,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     private void restoreTasks() {
-        File file = new File(PATH + File.separator + "dataFile.csv");
+        file = dataFile;
         Task task = null;
 
         if (file.exists() && !file.isDirectory()) {
@@ -97,7 +98,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     private void restoreHistory() {
-        File file = new File(PATH + File.separator + "historyFile.csv");
+        file = historyFile;
         Task task = null;
 
         if (file.exists() && !file.isDirectory()) {
@@ -178,11 +179,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    public static int getInitNumber() {
+    /*public int getInitNumber() {
         File file = new File(PATH + File.separator + "dataFile.csv");
         int max = 0;
 
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(dataFile))) {
             String line;
             while ((line = br.readLine()) != null) {
                 if (line.trim().isEmpty()) {
@@ -198,5 +199,5 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             e.printStackTrace();
         }
         return max;
-    }
+    }*/
 }
