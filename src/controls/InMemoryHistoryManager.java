@@ -6,8 +6,8 @@ import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
-    static CustomLinkedList historyStorage = new CustomLinkedList();
-    static Map<String, Node> historyRegister = new HashMap<>();
+    private static CustomLinkedList historyStorage = new CustomLinkedList();
+    private static Map<String, Node> historyRegister = new HashMap<>();
     private static List<Task> historyReport = new ArrayList<>();
 
     @Override
@@ -36,6 +36,14 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public List<Task> getHistory() {
         return historyStorage.getTasks();
+    }
+
+    public static Map<String, Node> getHistoryRegister() {
+        return historyRegister;
+    }
+
+    public static CustomLinkedList getHistoryStorage() {
+        return historyStorage;
     }
 
     public static class CustomLinkedList {

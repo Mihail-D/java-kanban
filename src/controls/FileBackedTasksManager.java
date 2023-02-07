@@ -93,7 +93,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                         InMemoryTaskManager.tasksStorage.put(tokens[0], task);
                     }
                     else {
-                        InMemoryHistoryManager.historyStorage.linkLast(task);
+                        InMemoryHistoryManager.getHistoryStorage().linkLast(task);
                     }
                 }
             } catch (ManagerLoadException | FileNotFoundException e) {
@@ -121,7 +121,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         try (
                 final BufferedWriter writer = new BufferedWriter((new FileWriter(historyFile, UTF_8)))
         ) {
-            Map<String, Node> list = InMemoryHistoryManager.historyRegister;
+            Map<String, Node> list = InMemoryHistoryManager.getHistoryRegister();
 
             for (String i : list.keySet()) {
                 String newData = getTaskFormattedData(list.get(i).getTask().getTaskId());
