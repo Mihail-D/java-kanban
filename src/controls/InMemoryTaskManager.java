@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Stream;
+
 import static java.util.stream.Collectors.toCollection;
 
 public class InMemoryTaskManager implements TaskManager {
@@ -246,5 +247,4 @@ public class InMemoryTaskManager implements TaskManager {
         }
         return max;
     }
-
 }

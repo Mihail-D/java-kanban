@@ -12,7 +12,6 @@ import static tasks.TaskTypes.*;
 public class FileBackedTasksManager extends InMemoryTaskManager {
 
     public static final String PATH = "./src/data";
-
     private File dataFile;
     private File historyFile;
 
@@ -178,26 +177,4 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             System.out.println("Не удалось сохранить данные истории");
         }
     }
-
-    /*public int getInitNumber() {
-        File file = new File(PATH + File.separator + "dataFile.csv");
-        int max = 0;
-
-        try (BufferedReader br = new BufferedReader(new FileReader(dataFile))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                if (line.trim().isEmpty()) {
-                    continue;
-                }
-                String[] arr = line.split(",");
-                int number = Integer.parseInt(arr[0].substring(2));
-                if (number > max) {
-                    max = number;
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return max;
-    }*/
 }
