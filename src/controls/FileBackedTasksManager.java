@@ -1,5 +1,7 @@
 package controls;
 
+import exceptions.ManagerLoadException;
+import exceptions.ManagerSaveException;
 import org.jetbrains.annotations.NotNull;
 import tasks.*;
 
@@ -89,8 +91,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
                     InMemoryTaskManager.tasksStorage.put(tokens[0], task);
                 }
-            } catch (IOException e) {
+            } catch (ManagerLoadException | FileNotFoundException e) {
                 System.out.println("Не удалось восстановить данные задач");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         }
     }
@@ -130,8 +134,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
                     InMemoryHistoryManager.historyStorage.linkLast(task);
                 }
-            } catch (IOException e) {
+            } catch (ManagerLoadException | FileNotFoundException e) {
                 System.out.println("Не удалось восстановить данные истории");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         }
     }
@@ -139,8 +145,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     private void saveTask(String saveMode) {
 
         try (
-                final BufferedWriter writer = new BufferedWriter((new FileWriter(
-                        PATH + File.separator + "dataFile.csv", UTF_8)))
+                final BufferedWriter writer = new BufferedWriter((new FileWriter(dataFile, UTF_8)))
         ) {
 
             for (String entry : tasksStorage.keySet()) {
@@ -152,9 +157,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
 
         try (
-                final BufferedWriter writer = new BufferedWriter((new FileWriter(
-                        PATH + File.separator + "historyFile.csv", UTF_8
-                )))
+                final BufferedWriter writer = new BufferedWriter((new FileWriter(historyFile, UTF_8)))
         ) {
             Map<String, Node> list = InMemoryHistoryManager.historyRegister;
 
@@ -171,7 +174,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 writer.append(taskContent);
             }
 
-        } catch (IOException e) {
+        } catch (ManagerSaveException | IOException e) {
             System.out.println("Не удалось сохранить данные истории");
         }
     }
