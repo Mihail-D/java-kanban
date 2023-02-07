@@ -12,8 +12,8 @@ import static tasks.TaskTypes.*;
 public class FileBackedTasksManager extends InMemoryTaskManager {
 
     public static final String PATH = "./src/data";
-    private File dataFile;
-    private File historyFile;
+    private final File dataFile;
+    private final File historyFile;
 
     public FileBackedTasksManager(File dataFile, File historyFile) {
         this.dataFile = dataFile;
@@ -55,12 +55,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     private void restoreTasks() {
-        file = dataFile;
         Task task = null;
 
-        if (file.exists() && !file.isDirectory()) {
+        if (dataFile.exists() && !dataFile.isDirectory()) {
 
-            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            try (BufferedReader br = new BufferedReader(new FileReader(dataFile))) {
                 String line;
 
                 while ((line = br.readLine()) != null) {
@@ -97,12 +96,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     private void restoreHistory() {
-        file = historyFile;
         Task task = null;
 
-        if (file.exists() && !file.isDirectory()) {
+        if (historyFile.exists() && !historyFile.isDirectory()) {
 
-            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            try (BufferedReader br = new BufferedReader(new FileReader(historyFile))) {
                 String line;
 
                 while ((line = br.readLine()) != null) {
