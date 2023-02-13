@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -28,12 +29,12 @@ public class InMemoryTaskManager implements TaskManager {
         switch (mode) {
             case "taskMode":
                 InMemoryTaskManager.tasksStorage.put(taskId, new Task(taskTitle, taskDescription, taskId,
-                        false, TaskStages.NEW, TaskTypes.TASK
+                        false, TaskStages.NEW, TaskTypes.TASK, LocalDateTime.of(2033, 11, 15, 22, 10)
                 ));
                 break;
             case "epicMode":
                 InMemoryTaskManager.tasksStorage.put(taskId, new Epic(taskTitle, taskDescription, taskId,
-                        false, TaskStages.NEW, TaskTypes.EPIC, new HashMap<>()
+                        false, TaskStages.NEW, TaskTypes.EPIC, new HashMap<>(), LocalDateTime.of(2033, 11, 15, 22, 10)
                 ));
                 break;
         }
@@ -48,7 +49,7 @@ public class InMemoryTaskManager implements TaskManager {
         parentTask.relatedSubTask.put(taskId, String.valueOf(TaskStages.NEW));
         setEpicStatus(parentKey);
         InMemoryTaskManager.tasksStorage.put(taskId, new SubTask(taskTitle, taskDescription, taskId,
-                false, TaskStages.NEW, TaskTypes.SUB_TASK, parentKey
+                false, TaskStages.NEW, TaskTypes.SUB_TASK, parentKey, LocalDateTime.of(2033, 11, 15, 22, 10)
         ));
 
         taskContent = getTaskFormattedData(taskId);
@@ -216,15 +217,16 @@ public class InMemoryTaskManager implements TaskManager {
         taskKey = task.getTaskId() + ",";
         String isViewed = task.isViewed() + ",";
         String taskStatus = task.getTaskStatus() + ",";
-        String taskType = String.valueOf(task.getTaskType());
+        String taskType = String.valueOf(task.getTaskType()) + ",";
         String result;
+        LocalDateTime time = task.getStartTime();
         if (task.getClass() == SubTask.class) {
             result =
                     taskKey + taskTitle + taskDescription + isViewed + taskStatus
-                            + taskType + "," + ((SubTask) task).getParentId();
+                            + taskType + ((SubTask) task).getParentId()+ ","  + time;
         }
         else {
-            result = taskKey + taskTitle + taskDescription + isViewed + taskStatus + taskType;
+            result = taskKey + taskTitle + taskDescription + isViewed + taskStatus + taskType + time;
         }
 
         return result;

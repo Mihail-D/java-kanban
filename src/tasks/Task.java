@@ -1,5 +1,7 @@
 package tasks;
 
+import java.time.LocalDateTime;
+
 public class Task {
 
     String taskTitle;
@@ -8,14 +10,19 @@ public class Task {
     private boolean isViewed;
     private TaskStages taskStatus;
     private TaskTypes taskType;
+    private LocalDateTime startTime;
 
-    public Task(String taskTitle, String taskDescription, String taskId, boolean isViewed, TaskStages taskStatus, TaskTypes taskType) {
+    public Task(
+            String taskTitle, String taskDescription, String taskId, boolean isViewed,
+            TaskStages taskStatus, TaskTypes taskType, LocalDateTime startTime
+    ) {
         this.taskTitle = taskTitle;
         this.taskDescription = taskDescription;
         this.taskId = taskId;
         this.isViewed = isViewed;
         this.taskStatus = taskStatus;
         this.taskType = taskType;
+        this.startTime = startTime;
     }
 
     public TaskTypes getTaskType() {
@@ -38,6 +45,10 @@ public class Task {
         return taskStatus;
     }
 
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
     public void setTaskTitle(String taskTitle) {
         this.taskTitle = taskTitle;
     }
@@ -56,6 +67,10 @@ public class Task {
 
     public void setTaskStatus(TaskStages taskStatus) {
         this.taskStatus = taskStatus;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
     }
 
     @Override
