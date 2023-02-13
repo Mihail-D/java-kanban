@@ -25,8 +25,14 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void taskAdd(String @NotNull ... args) {
-        super.taskAdd(args);
+    public void separateTaskAdd(String taskTitle, String taskDescription, String mode) {
+        super.separateTaskAdd(taskTitle, taskDescription, mode);
+        saveTask("newTask");
+    }
+
+    @Override
+    public void subTaskAdd(String taskTitle, String taskDescription, String parentKey) {
+        super.subTaskAdd(taskTitle, taskDescription, parentKey);
         saveTask("newTask");
     }
 

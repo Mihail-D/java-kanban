@@ -48,20 +48,22 @@ public class Main {
                     taskTitle = scanner.next();
                     System.out.println("taskDescription"); // TODO
                     taskDescription = scanner.next();
-                    System.out.println("mode taskMode epicMode subTaskMode"); // TODO
+                    System.out.println("mode taskMode epicMode"); // TODO
                     mode = scanner.next();
+                    fileBackedTasksManager.separateTaskAdd(taskTitle, taskDescription, mode);
+                    break;
+                case 11:
+                    System.out.println("taskTitle"); // TODO
+                    taskTitle = scanner.next();
+                    System.out.println("taskDescription"); // TODO
+                    taskDescription = scanner.next();
 
-                    if (mode.equals("taskMode") || mode.equals("epicMode")) {
-                        fileBackedTasksManager.taskAdd(taskTitle, taskDescription, mode);
-                    }
-                    else if (mode.equals("subTaskMode")) {
-                        System.out.println("parentKey"); // TODO
-
-                        parentKey = scanner.next();
-                        fileBackedTasksManager.taskAdd(taskTitle, taskDescription, mode, parentKey);
-                    }
+                    System.out.println("parentKey"); // TODO
+                    parentKey = scanner.next();
+                    fileBackedTasksManager.subTaskAdd(taskTitle, taskDescription, parentKey);
 
                     break;
+
                 case 2:
                     System.out.println("taskKey"); // TODO
                     taskKey = scanner.next();

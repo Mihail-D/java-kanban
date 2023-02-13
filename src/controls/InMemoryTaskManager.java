@@ -22,31 +22,35 @@ public class InMemoryTaskManager implements TaskManager {
     public static String taskContent;
 
     @Override
-    public void taskAdd(String @NotNull ... args) {
-        TaskStages taskStatus = TaskStages.NEW;
-        String taskId = getId(args[2]);
-        boolean isViewed = false;
+    public void separateTaskAdd(String taskTitle, String taskDescription, String mode) {
+        String taskId = getId(mode);
 
-        switch (args[2]) {
+        switch (mode) {
             case "taskMode":
-                InMemoryTaskManager.tasksStorage.put(taskId, new Task(args[0], args[1], taskId,
-                        isViewed, taskStatus, TaskTypes.TASK
+                InMemoryTaskManager.tasksStorage.put(taskId, new Task(taskTitle, taskDescription, taskId,
+                        false, TaskStages.NEW, TaskTypes.TASK
                 ));
                 break;
             case "epicMode":
-                InMemoryTaskManager.tasksStorage.put(taskId, new Epic(args[0], args[1], taskId,
-                        isViewed, taskStatus, TaskTypes.EPIC, new HashMap<>()
-                ));
-                break;
-            case "subTaskMode":
-                Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(args[3]);
-                parentTask.relatedSubTask.put(taskId, String.valueOf(taskStatus));
-                setEpicStatus(args[3]);
-                InMemoryTaskManager.tasksStorage.put(taskId, new SubTask(args[0], args[1], taskId,
-                        isViewed, taskStatus, TaskTypes.SUB_TASK, args[3]
+                InMemoryTaskManager.tasksStorage.put(taskId, new Epic(taskTitle, taskDescription, taskId,
+                        false, TaskStages.NEW, TaskTypes.EPIC, new HashMap<>()
                 ));
                 break;
         }
+        taskContent = getTaskFormattedData(taskId);
+    }
+
+    @Override
+    public void subTaskAdd(String taskTitle, String taskDescription, String parentKey) {
+        String taskId = getId("subTaskMode");
+
+        Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(parentKey);
+        parentTask.relatedSubTask.put(taskId, String.valueOf(TaskStages.NEW));
+        setEpicStatus(parentKey);
+        InMemoryTaskManager.tasksStorage.put(taskId, new SubTask(taskTitle, taskDescription, taskId,
+                false, TaskStages.NEW, TaskTypes.SUB_TASK, parentKey
+        ));
+
         taskContent = getTaskFormattedData(taskId);
     }
 
