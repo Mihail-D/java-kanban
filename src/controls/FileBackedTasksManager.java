@@ -132,7 +132,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 }
 
             }
-            if (!(taskContent == null) && !(saveMode.equals("newTask") || saveMode.equals("deleteTask"))) {
+            if (taskContent != null && !(saveMode.equals("newTask") || saveMode.equals("deleteTask"))) {
                 writer.append(taskContent);
             }
 
