@@ -26,20 +26,21 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void separateTaskAdd(
-            String taskTitle, String taskDescription, String mode, String startTime,
-            Duration duration
+            String taskTitle, String taskDescription, String mode, String startTime, Duration duration
     ) {
         String taskId = getId(mode);
 
         switch (mode) {
             case "taskMode":
-                InMemoryTaskManager.tasksStorage.put(taskId, new Task(taskTitle, taskDescription, taskId,
-                        false, TaskStages.NEW, TaskTypes.TASK, getLocalDateTime(startTime), duration
+                InMemoryTaskManager.tasksStorage.put(taskId, new Task(taskTitle, taskDescription,
+                        taskId, false, TaskStages.NEW, TaskTypes.TASK,
+                        getLocalDateTime(startTime), duration
                 ));
                 break;
             case "epicMode":
-                InMemoryTaskManager.tasksStorage.put(taskId, new Epic(taskTitle, taskDescription, taskId,
-                        false, TaskStages.NEW, TaskTypes.EPIC, new HashMap<>(), getLocalDateTime(startTime), duration
+                InMemoryTaskManager.tasksStorage.put(taskId, new Epic(taskTitle, taskDescription,
+                        taskId, false, TaskStages.NEW, TaskTypes.EPIC, new HashMap<>(),
+                        getLocalDateTime(startTime), duration
                 ));
                 break;
         }
@@ -48,16 +49,16 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void subTaskAdd(
-            String taskTitle, String taskDescription, String parentKey, String startTime,
-            Duration duration
+            String taskTitle, String taskDescription, String parentKey, String startTime, Duration duration
     ) {
         String taskId = getId("subTaskMode");
 
         Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(parentKey);
         parentTask.relatedSubTask.put(taskId, String.valueOf(TaskStages.NEW));
         setEpicStatus(parentKey);
-        InMemoryTaskManager.tasksStorage.put(taskId, new SubTask(taskTitle, taskDescription, taskId,
-                false, TaskStages.NEW, TaskTypes.SUB_TASK, parentKey, getLocalDateTime(startTime), duration
+        InMemoryTaskManager.tasksStorage.put(taskId, new SubTask(taskTitle, taskDescription,
+                taskId, false, TaskStages.NEW, TaskTypes.SUB_TASK,
+                parentKey, getLocalDateTime(startTime), duration
         ));
 
         taskContent = getTaskFormattedData(taskId);
@@ -104,9 +105,6 @@ public class InMemoryTaskManager implements TaskManager {
         inMemoryHistoryManager.addHistory(task);
         task.setViewed();
         taskContent = getTaskFormattedData(taskKey);
-
-        System.out.println(task.getEndTime()); // TODO
-
         return taskContent;
     }
 
@@ -232,12 +230,13 @@ public class InMemoryTaskManager implements TaskManager {
         Duration duration = task.getDuration();
         String result;
         if (task.getClass() == SubTask.class) {
-            result =
-                    taskKey + taskTitle + taskDescription + isViewed + taskStatus
-                            + taskType + ((SubTask) task).getParentId() + "," + time + "," + duration;
+            result = taskKey + taskTitle + taskDescription + isViewed + taskStatus + taskType
+                    + ((SubTask) task).getParentId() + "," + time
+                    + "," + duration + "," + task.getEndTime();
         }
         else {
-            result = taskKey + taskTitle + taskDescription + isViewed + taskStatus + taskType + time + "," + duration;
+            result = taskKey + taskTitle + taskDescription + isViewed + taskStatus
+                    + taskType + time + "," + duration + "," + task.getEndTime();
         }
 
         return result;
