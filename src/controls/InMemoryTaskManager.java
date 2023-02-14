@@ -14,6 +14,8 @@ import java.util.*;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toCollection;
+import static tasks.TaskStages.DONE;
+import static tasks.TaskStages.NEW;
 
 public class InMemoryTaskManager implements TaskManager {
 
@@ -33,13 +35,13 @@ public class InMemoryTaskManager implements TaskManager {
         switch (mode) {
             case "taskMode":
                 InMemoryTaskManager.tasksStorage.put(taskId, new Task(taskTitle, taskDescription,
-                        taskId, false, TaskStages.NEW, TaskTypes.TASK,
+                        taskId, false, NEW, TaskTypes.TASK,
                         getLocalDateTime(startTime), duration
                 ));
                 break;
             case "epicMode":
                 InMemoryTaskManager.tasksStorage.put(taskId, new Epic(taskTitle, taskDescription,
-                        taskId, false, TaskStages.NEW, TaskTypes.EPIC, new HashMap<>(),
+                        taskId, false, NEW, TaskTypes.EPIC, new LinkedHashMap<>(),
                         getLocalDateTime(startTime), duration
                 ));
                 break;
@@ -52,15 +54,16 @@ public class InMemoryTaskManager implements TaskManager {
             String taskTitle, String taskDescription, String parentKey, String startTime, Duration duration
     ) {
         String taskId = getId("subTaskMode");
-
         Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(parentKey);
-        parentTask.relatedSubTask.put(taskId, String.valueOf(TaskStages.NEW));
         setEpicStatus(parentKey);
-        InMemoryTaskManager.tasksStorage.put(taskId, new SubTask(taskTitle, taskDescription,
-                taskId, false, TaskStages.NEW, TaskTypes.SUB_TASK,
+        SubTask subTask = new SubTask(taskTitle, taskDescription,
+                taskId, false, NEW, TaskTypes.SUB_TASK,
                 parentKey, getLocalDateTime(startTime), duration
-        ));
+        );
 
+        InMemoryTaskManager.tasksStorage.put(taskId, subTask);
+
+        parentTask.relatedSubTask.put(taskId, subTask);
         taskContent = getTaskFormattedData(taskId);
     }
 
@@ -89,7 +92,7 @@ public class InMemoryTaskManager implements TaskManager {
 
                 task.setTaskStatus(TaskStages.valueOf(args[3]));
 
-                parentTask.relatedSubTask.put(taskKey, args[3]);
+                parentTask.relatedSubTask.put(taskKey, (SubTask) task);
 
                 tasksStorage.put(taskKey, task);
                 setEpicStatus(parentKey);
@@ -119,7 +122,7 @@ public class InMemoryTaskManager implements TaskManager {
                 break;
             case EPIC:
                 Epic epicTask = (Epic) tasksStorage.get(taskKey);
-                HashMap<String, String> relatedSubTasks = epicTask.relatedSubTask;
+                LinkedHashMap<String, SubTask> relatedSubTasks = epicTask.relatedSubTask;
 
                 for (String i : relatedSubTasks.keySet()) {
                     tasksStorage.remove(i);
@@ -172,7 +175,7 @@ public class InMemoryTaskManager implements TaskManager {
     public ArrayList<String> collectEpicSubtasks(String taskKey) {
         ArrayList<String> localTasksList = new ArrayList<>();
         Epic epicTask = (Epic) tasksStorage.get(taskKey);
-        HashMap<String, String> relatedSubTasks = epicTask.relatedSubTask;
+        LinkedHashMap<String, SubTask> relatedSubTasks = epicTask.relatedSubTask;
 
         for (String i : relatedSubTasks.keySet()) {
             localTasksList.add(getTaskFormattedData(i));
@@ -206,13 +209,23 @@ public class InMemoryTaskManager implements TaskManager {
         Epic epicTask = (Epic) tasksStorage.get(key);
         TaskStages status = TaskStages.IN_PROGRESS;
 
-        TreeSet<String> set = new TreeSet<>(epicTask.relatedSubTask.values());
+        Set<SubTask> set = new HashSet<>(epicTask.relatedSubTask.values());
 
-        if ((set.size() == 1 && set.contains("NEW")) || set.isEmpty()) {
-            status = TaskStages.NEW;
-        }
-        else if (set.size() == 1 && set.contains("DONE")) {
-            status = TaskStages.DONE;
+        for (SubTask i : set) {
+            if ((set.size() == 1 && i.getTaskStatus() == NEW) || set.isEmpty()) {
+                status = TaskStages.NEW;
+            }
+            else if (set.size() == 1 && i.getTaskStatus() == DONE) {
+                status = TaskStages.DONE;
+            }
+            else if ( set.stream().allMatch(e -> e.getTaskStatus() == NEW )){
+                status = TaskStages.NEW;
+                break;
+            }
+            else if ( set.stream().allMatch(j -> j.getTaskStatus() == DONE )){
+                status = TaskStages.DONE;
+                break;
+            }
         }
 
         epicTask.setTaskStatus(status);
