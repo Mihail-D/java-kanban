@@ -80,8 +80,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                     if (TaskTypes.valueOf(tokens[5]) == TASK) {
                         task = new Task(tokens[1], tokens[2], tokens[0], Boolean.parseBoolean(tokens[3]),
                                 TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5]),
-                                LocalDateTime.parse(tokens[6]),
-                                Long.parseLong(tokens[Integer.parseInt(tokens[7])])
+                                LocalDateTime.parse(tokens[6]), Long.parseLong(tokens[7])
                         );
                     }
                     else if (TaskTypes.valueOf(tokens[5]) == EPIC) {
