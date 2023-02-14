@@ -21,19 +21,19 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     public FileBackedTasksManager(File dataFile, File historyFile) {
         this.dataFile = dataFile;
         this.historyFile = historyFile;
-        restoreTasks(dataFile);
-        restoreTasks(historyFile);
+        //restoreTasks(dataFile);
+        //restoreTasks(historyFile);
     }
 
     @Override
-    public void separateTaskAdd(String taskTitle, String taskDescription, String mode, String time) {
-        super.separateTaskAdd(taskTitle, taskDescription, mode, time);
+    public void separateTaskAdd(String taskTitle, String taskDescription, String mode, String time, long duration) {
+        super.separateTaskAdd(taskTitle, taskDescription, mode, time, duration);
         saveTask("newTask");
     }
 
     @Override
-    public void subTaskAdd(String taskTitle, String taskDescription, String parentKey, String time) {
-        super.subTaskAdd(taskTitle, taskDescription, parentKey, time);
+    public void subTaskAdd(String taskTitle, String taskDescription, String parentKey, String time, long duration) {
+        super.subTaskAdd(taskTitle, taskDescription, parentKey, time, duration);
         saveTask("newTask");
     }
 
@@ -63,7 +63,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         saveTask("deleteTask");
     }
 
-    private void restoreTasks(File file) {
+   /* private void restoreTasks(File file) {
         Task task = null;
 
         if (file.exists() && !file.isDirectory()) {
@@ -80,13 +80,14 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                     if (TaskTypes.valueOf(tokens[5]) == TASK) {
                         task = new Task(tokens[1], tokens[2], tokens[0], Boolean.parseBoolean(tokens[3]),
                                 TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5]),
-                                LocalDateTime.of(2033, 11, 15, 22, 10)
+                                super.getLocalDateTime(tokens[6]),
+                                Long.parseLong(tokens[Integer.parseInt(tokens[7])]), tokens[8]
                         );
                     }
                     else if (TaskTypes.valueOf(tokens[5]) == EPIC) {
                         task = new Epic(tokens[1], tokens[2], tokens[0], Boolean.parseBoolean(tokens[3]),
                                 TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5]), new HashMap<>(),
-                                LocalDateTime.of(2033, 11, 15, 22, 10)
+                                Long.parseLong(tokens[Integer.parseInt(tokens[7])])
                         );
                     }
                     else if (TaskTypes.valueOf(tokens[5]) == SUB_TASK) {
@@ -112,7 +113,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 throw new RuntimeException(e);
             }
         }
-    }
+    }*/
 
     private void saveTask(String saveMode) {
 

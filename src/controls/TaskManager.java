@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface TaskManager {
 
-    void separateTaskAdd(String taskTitle, String taskDescription, String mode, String time);
+    void separateTaskAdd(String taskTitle, String taskDescription, String mode, String time, long duration);
 
-    void subTaskAdd(String taskTitle, String taskDescription, String parentKey, String time);
+    void subTaskAdd(String taskTitle, String taskDescription, String parentKey, String time, long duration);
 
     void taskUpdate(String @NotNull ... args);
 

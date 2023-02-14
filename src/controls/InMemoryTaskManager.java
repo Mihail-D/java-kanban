@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -24,18 +25,22 @@ public class InMemoryTaskManager implements TaskManager {
     public static String taskContent;
 
     @Override
-    public void separateTaskAdd(String taskTitle, String taskDescription, String mode, String time) {
+    public void separateTaskAdd(String taskTitle, String taskDescription, String mode, String startTime, long duration) {
         String taskId = getId(mode);
+
+        // TODO
+        //Duration duration = Duration.between(getLocalDateTime(time), getLocalDateTime("16.02.2023_10:42"));
+        //System.out.println(Duration.ofMinutes(2880));
 
         switch (mode) {
             case "taskMode":
                 InMemoryTaskManager.tasksStorage.put(taskId, new Task(taskTitle, taskDescription, taskId,
-                        false, TaskStages.NEW, TaskTypes.TASK, getLocalDateTime(time)
+                        false, TaskStages.NEW, TaskTypes.TASK, getLocalDateTime(startTime), duration
                 ));
                 break;
             case "epicMode":
                 InMemoryTaskManager.tasksStorage.put(taskId, new Epic(taskTitle, taskDescription, taskId,
-                        false, TaskStages.NEW, TaskTypes.EPIC, new HashMap<>(), getLocalDateTime(time)
+                        false, TaskStages.NEW, TaskTypes.EPIC, getLocalDateTime(startTime), new HashMap<>(), duration
                 ));
                 break;
         }
@@ -43,14 +48,15 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void subTaskAdd(String taskTitle, String taskDescription, String parentKey, String time) {
+    public void subTaskAdd(String taskTitle, String taskDescription, String parentKey, String startTime,
+                           long duration) {
         String taskId = getId("subTaskMode");
 
         Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(parentKey);
         parentTask.relatedSubTask.put(taskId, String.valueOf(TaskStages.NEW));
         setEpicStatus(parentKey);
         InMemoryTaskManager.tasksStorage.put(taskId, new SubTask(taskTitle, taskDescription, taskId,
-                false, TaskStages.NEW, TaskTypes.SUB_TASK, parentKey, getLocalDateTime(time)
+                false, TaskStages.NEW, TaskTypes.SUB_TASK, parentKey, getLocalDateTime(startTime), duration
         ));
 
         taskContent = getTaskFormattedData(taskId);
@@ -218,16 +224,17 @@ public class InMemoryTaskManager implements TaskManager {
         taskKey = task.getTaskId() + ",";
         String isViewed = task.isViewed() + ",";
         String taskStatus = task.getTaskStatus() + ",";
-        String taskType = String.valueOf(task.getTaskType()) + ",";
-        String result;
+        String taskType = task.getTaskType() + ",";
         LocalDateTime time = task.getStartTime();
+        long duration = task.getDuration();
+        String result;
         if (task.getClass() == SubTask.class) {
             result =
                     taskKey + taskTitle + taskDescription + isViewed + taskStatus
-                            + taskType + ((SubTask) task).getParentId()+ ","  + time;
+                            + taskType + ((SubTask) task).getParentId() + "," + time+ "," + duration;
         }
         else {
-            result = taskKey + taskTitle + taskDescription + isViewed + taskStatus + taskType + time;
+            result = taskKey + taskTitle + taskDescription + isViewed + taskStatus + taskType + time + "," + duration;
         }
 
         return result;

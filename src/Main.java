@@ -38,6 +38,7 @@ public class Main {
         String mode;
         String taskStatus;
         String time;
+        String duration;
 
         while (true) {
             System.out.println("MENU"); // TODO
@@ -53,7 +54,9 @@ public class Main {
                     mode = scanner.next();
                     System.out.println("time <14.02.2023_10:42>"); // TODO
                     time = scanner.next();
-                    fileBackedTasksManager.separateTaskAdd(taskTitle, taskDescription, mode, time);
+                    System.out.println("duration"); // TODO
+                    duration = scanner.next();
+                    fileBackedTasksManager.separateTaskAdd(taskTitle, taskDescription, mode, time, Long.parseLong(duration));
                     break;
                 case 11:
                     System.out.println("taskTitle"); // TODO
@@ -64,8 +67,9 @@ public class Main {
                     parentKey = scanner.next();
                     System.out.println("time <14.02.2023_10:42>"); // TODO
                     time = scanner.next();
-                    fileBackedTasksManager.subTaskAdd(taskTitle, taskDescription, parentKey, time);
-
+                    System.out.println("duration"); // TODO
+                    duration = scanner.next();
+                    fileBackedTasksManager.subTaskAdd(taskTitle, taskDescription, parentKey, time, Long.parseLong(duration));
                     break;
 
                 case 2:
