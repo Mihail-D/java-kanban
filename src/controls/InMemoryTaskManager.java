@@ -24,18 +24,18 @@ public class InMemoryTaskManager implements TaskManager {
     public static String taskContent;
 
     @Override
-    public void separateTaskAdd(String taskTitle, String taskDescription, String mode) {
+    public void separateTaskAdd(String taskTitle, String taskDescription, String mode, String time) {
         String taskId = getId(mode);
 
         switch (mode) {
             case "taskMode":
                 InMemoryTaskManager.tasksStorage.put(taskId, new Task(taskTitle, taskDescription, taskId,
-                        false, TaskStages.NEW, TaskTypes.TASK, getLocalDateTime("14.02.2023, 10:42")
+                        false, TaskStages.NEW, TaskTypes.TASK, getLocalDateTime(time)
                 ));
                 break;
             case "epicMode":
                 InMemoryTaskManager.tasksStorage.put(taskId, new Epic(taskTitle, taskDescription, taskId,
-                        false, TaskStages.NEW, TaskTypes.EPIC, new HashMap<>(), getLocalDateTime("14.02.2023, 10:42")
+                        false, TaskStages.NEW, TaskTypes.EPIC, new HashMap<>(), getLocalDateTime(time)
                 ));
                 break;
         }
@@ -43,14 +43,14 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void subTaskAdd(String taskTitle, String taskDescription, String parentKey) {
+    public void subTaskAdd(String taskTitle, String taskDescription, String parentKey, String time) {
         String taskId = getId("subTaskMode");
 
         Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(parentKey);
         parentTask.relatedSubTask.put(taskId, String.valueOf(TaskStages.NEW));
         setEpicStatus(parentKey);
         InMemoryTaskManager.tasksStorage.put(taskId, new SubTask(taskTitle, taskDescription, taskId,
-                false, TaskStages.NEW, TaskTypes.SUB_TASK, parentKey, LocalDateTime.of(2033, 11, 15, 22, 10)
+                false, TaskStages.NEW, TaskTypes.SUB_TASK, parentKey, getLocalDateTime(time)
         ));
 
         taskContent = getTaskFormattedData(taskId);
@@ -256,7 +256,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     public LocalDateTime getLocalDateTime(String time) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
         return LocalDateTime.parse(time, formatter);
     }
 }
