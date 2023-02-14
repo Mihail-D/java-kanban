@@ -64,6 +64,7 @@ public class InMemoryTaskManager implements TaskManager {
         InMemoryTaskManager.tasksStorage.put(taskId, subTask);
 
         parentTask.relatedSubTask.put(taskId, subTask);
+        setEpicStatus(parentKey);
         taskContent = getTaskFormattedData(taskId);
     }
 
@@ -209,20 +210,18 @@ public class InMemoryTaskManager implements TaskManager {
         Epic epicTask = (Epic) tasksStorage.get(key);
         TaskStages status = TaskStages.IN_PROGRESS;
 
+
         Set<SubTask> set = new HashSet<>(epicTask.relatedSubTask.values());
 
+        boolean e = set.stream().allMatch(i -> i.getTaskStatus() == NEW);
+        boolean w = set.stream().allMatch(i -> i.getTaskStatus() == DONE);
+
         for (SubTask i : set) {
-            if ((set.size() == 1 && i.getTaskStatus() == NEW) || set.isEmpty()) {
-                status = TaskStages.NEW;
-            }
-            else if (set.size() == 1 && i.getTaskStatus() == DONE) {
-                status = TaskStages.DONE;
-            }
-            else if ( set.stream().allMatch(e -> e.getTaskStatus() == NEW )){
+            if (e) {
                 status = TaskStages.NEW;
                 break;
             }
-            else if ( set.stream().allMatch(j -> j.getTaskStatus() == DONE )){
+            else if (w) {
                 status = TaskStages.DONE;
                 break;
             }
