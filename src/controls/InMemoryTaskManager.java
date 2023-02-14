@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -29,12 +30,12 @@ public class InMemoryTaskManager implements TaskManager {
         switch (mode) {
             case "taskMode":
                 InMemoryTaskManager.tasksStorage.put(taskId, new Task(taskTitle, taskDescription, taskId,
-                        false, TaskStages.NEW, TaskTypes.TASK, LocalDateTime.of(2033, 11, 15, 22, 10)
+                        false, TaskStages.NEW, TaskTypes.TASK, getLocalDateTime("14.02.2023, 10:42")
                 ));
                 break;
             case "epicMode":
                 InMemoryTaskManager.tasksStorage.put(taskId, new Epic(taskTitle, taskDescription, taskId,
-                        false, TaskStages.NEW, TaskTypes.EPIC, new HashMap<>(), LocalDateTime.of(2033, 11, 15, 22, 10)
+                        false, TaskStages.NEW, TaskTypes.EPIC, new HashMap<>(), getLocalDateTime("14.02.2023, 10:42")
                 ));
                 break;
         }
@@ -252,5 +253,10 @@ public class InMemoryTaskManager implements TaskManager {
             e.printStackTrace();
         }
         return max;
+    }
+
+    public LocalDateTime getLocalDateTime(String time) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm");
+        return LocalDateTime.parse(time, formatter);
     }
 }
