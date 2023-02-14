@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.Scanner;
 
 public class Main {
@@ -56,7 +57,8 @@ public class Main {
                     time = scanner.next();
                     System.out.println("duration"); // TODO
                     duration = scanner.next();
-                    fileBackedTasksManager.separateTaskAdd(taskTitle, taskDescription, mode, time, Long.parseLong(duration));
+                    fileBackedTasksManager.separateTaskAdd(taskTitle, taskDescription, mode, time, Duration.parse(
+                            "PT" + duration + "M"));
                     break;
                 case 11:
                     System.out.println("taskTitle"); // TODO
@@ -69,7 +71,7 @@ public class Main {
                     time = scanner.next();
                     System.out.println("duration"); // TODO
                     duration = scanner.next();
-                    fileBackedTasksManager.subTaskAdd(taskTitle, taskDescription, parentKey, time, Long.parseLong(duration));
+                    fileBackedTasksManager.subTaskAdd(taskTitle, taskDescription, parentKey, time, Duration.parse(duration));
                     break;
 
                 case 2:

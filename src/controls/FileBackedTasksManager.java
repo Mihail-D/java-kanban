@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import tasks.*;
 
 import java.io.*;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -26,13 +27,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void separateTaskAdd(String taskTitle, String taskDescription, String mode, String time, long duration) {
+    public void separateTaskAdd(String taskTitle, String taskDescription, String mode, String time, Duration duration) {
         super.separateTaskAdd(taskTitle, taskDescription, mode, time, duration);
         saveTask("newTask");
     }
 
     @Override
-    public void subTaskAdd(String taskTitle, String taskDescription, String parentKey, String time, long duration) {
+    public void subTaskAdd(String taskTitle, String taskDescription, String parentKey, String time, Duration duration) {
         super.subTaskAdd(taskTitle, taskDescription, parentKey, time, duration);
         saveTask("newTask");
     }
@@ -80,19 +81,19 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                     if (TaskTypes.valueOf(tokens[5]) == TASK) {
                         task = new Task(tokens[1], tokens[2], tokens[0], Boolean.parseBoolean(tokens[3]),
                                 TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5]),
-                                LocalDateTime.parse(tokens[6]), Long.parseLong(tokens[7])
+                                LocalDateTime.parse(tokens[6]), Duration.parse(tokens[7])
                         );
                     }
                     else if (TaskTypes.valueOf(tokens[5]) == EPIC) {
                         task = new Epic(tokens[1], tokens[2], tokens[0], Boolean.parseBoolean(tokens[3]),
                                 TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5]), new HashMap<>(),
-                                LocalDateTime.parse(tokens[6]), Long.parseLong(tokens[7])
+                                LocalDateTime.parse(tokens[6]), Duration.parse(tokens[7])
                         );
                     }
                     else if (TaskTypes.valueOf(tokens[5]) == SUB_TASK) {
                         task = new SubTask(tokens[1], tokens[2], tokens[0], Boolean.parseBoolean(tokens[3]),
                                 TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5]), tokens[6],
-                                LocalDateTime.parse(tokens[7]), Long.parseLong(tokens[8])
+                                LocalDateTime.parse(tokens[7]), Duration.parse(tokens[8])
                         );
                         Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(tokens[6]);
                         parentTask.relatedSubTask.put(tokens[0], String.valueOf(TaskStages.valueOf(tokens[4])));

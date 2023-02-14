@@ -1,5 +1,6 @@
 package tasks;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 
@@ -10,7 +11,7 @@ public class Epic extends Task {
     public Epic(
             String taskTitle, String taskDescription, String taskId, boolean isViewed,
             TaskStages taskStatus, TaskTypes taskType, HashMap<String, String> relatedSubTask,
-            LocalDateTime startTime, long duration
+            LocalDateTime startTime, Duration duration
     ) {
         super(taskTitle, taskDescription, taskId, isViewed, taskStatus, taskType, startTime, duration);
         this.relatedSubTask = relatedSubTask;

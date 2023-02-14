@@ -2,14 +2,15 @@ package controls;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
 public interface TaskManager {
 
-    void separateTaskAdd(String taskTitle, String taskDescription, String mode, String time, long duration);
+    void separateTaskAdd(String taskTitle, String taskDescription, String mode, String time, Duration duration);
 
-    void subTaskAdd(String taskTitle, String taskDescription, String parentKey, String time, long duration);
+    void subTaskAdd(String taskTitle, String taskDescription, String parentKey, String time, Duration duration);
 
     void taskUpdate(String @NotNull ... args);
 

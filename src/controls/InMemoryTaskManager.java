@@ -25,12 +25,11 @@ public class InMemoryTaskManager implements TaskManager {
     public static String taskContent;
 
     @Override
-    public void separateTaskAdd(String taskTitle, String taskDescription, String mode, String startTime, long duration) {
+    public void separateTaskAdd(
+            String taskTitle, String taskDescription, String mode, String startTime,
+            Duration duration
+    ) {
         String taskId = getId(mode);
-
-        // TODO
-        //Duration duration = Duration.between(getLocalDateTime(time), getLocalDateTime("16.02.2023_10:42"));
-        //System.out.println(Duration.ofMinutes(2880));
 
         switch (mode) {
             case "taskMode":
@@ -48,8 +47,10 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void subTaskAdd(String taskTitle, String taskDescription, String parentKey, String startTime,
-                           long duration) {
+    public void subTaskAdd(
+            String taskTitle, String taskDescription, String parentKey, String startTime,
+            Duration duration
+    ) {
         String taskId = getId("subTaskMode");
 
         Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(parentKey);
@@ -103,6 +104,8 @@ public class InMemoryTaskManager implements TaskManager {
         inMemoryHistoryManager.addHistory(task);
         task.setViewed();
         taskContent = getTaskFormattedData(taskKey);
+
+        System.out.println(task.getEndTime()); // TODO
 
         return taskContent;
     }
@@ -226,12 +229,12 @@ public class InMemoryTaskManager implements TaskManager {
         String taskStatus = task.getTaskStatus() + ",";
         String taskType = task.getTaskType() + ",";
         LocalDateTime time = task.getStartTime();
-        long duration = task.getDuration();
+        Duration duration = task.getDuration();
         String result;
         if (task.getClass() == SubTask.class) {
             result =
                     taskKey + taskTitle + taskDescription + isViewed + taskStatus
-                            + taskType + ((SubTask) task).getParentId() + "," + time+ "," + duration;
+                            + taskType + ((SubTask) task).getParentId() + "," + time + "," + duration;
         }
         else {
             result = taskKey + taskTitle + taskDescription + isViewed + taskStatus + taskType + time + "," + duration;
