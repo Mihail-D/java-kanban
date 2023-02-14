@@ -40,7 +40,7 @@ public class InMemoryTaskManager implements TaskManager {
                 break;
             case "epicMode":
                 InMemoryTaskManager.tasksStorage.put(taskId, new Epic(taskTitle, taskDescription, taskId,
-                        false, TaskStages.NEW, TaskTypes.EPIC, getLocalDateTime(startTime), new HashMap<>(), duration
+                        false, TaskStages.NEW, TaskTypes.EPIC, new HashMap<>(), getLocalDateTime(startTime), duration
                 ));
                 break;
         }
