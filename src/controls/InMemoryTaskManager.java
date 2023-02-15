@@ -51,7 +51,8 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void subTaskAdd(
-            String taskTitle, String taskDescription, String parentKey, String startTime, Duration duration
+            String taskTitle, String taskDescription, String parentKey,
+            String startTime, Duration duration
     ) {
         String taskId = getId("subTaskMode");
         Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(parentKey);
@@ -206,8 +207,8 @@ public class InMemoryTaskManager implements TaskManager {
         return id;
     }
 
-    public void setEpicStatus(String key) {
-        Epic epicTask = (Epic) tasksStorage.get(key);
+    public void setEpicStatus(String taskKey) {
+        Epic epicTask = (Epic) tasksStorage.get(taskKey);
         TaskStages status = TaskStages.IN_PROGRESS;
 
         Set<SubTask> set = new HashSet<>(epicTask.relatedSubTask.values());
@@ -233,6 +234,18 @@ public class InMemoryTaskManager implements TaskManager {
         }
 
         epicTask.setTaskStatus(status);
+    }
+
+    public void setEpicStartTime(Epic epicTask) {
+        LocalDateTime startTime = LocalDateTime.now();
+
+        for (SubTask i : epicTask.relatedSubTask.values()) {
+            if (i.getStartTime().isBefore(startTime)) {
+                startTime = i.getStartTime();
+            }
+        }
+
+        epicTask.setStartTime(startTime);
     }
 
     public String getTaskFormattedData(String taskKey) {
