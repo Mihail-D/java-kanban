@@ -11,7 +11,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toCollection;
@@ -138,6 +137,7 @@ public class InMemoryTaskManager implements TaskManager {
                 relatedSubTasks = epicTask.relatedSubTask;
                 relatedSubTasks.remove(taskKey);
                 setEpicStatus(parentKey);
+                setEpicTiming(epicTask);
                 tasksStorage.remove(taskKey);
                 break;
         }
@@ -237,6 +237,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     public void setEpicTiming(Epic epicTask) {
         LocalDateTime startTime = LocalDateTime.now();
+        LocalDateTime endTime = LocalDateTime.now();
         Duration duration = Duration.ZERO;
 
         for (SubTask i : epicTask.relatedSubTask.values()) {
@@ -251,7 +252,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         epicTask.setStartTime(startTime);
         epicTask.setDuration(duration);
-        epicTask.getEndTime(duration);
+        epicTask.getEndTime();
     }
 
     public String getTaskFormattedData(String taskKey) {
@@ -265,17 +266,18 @@ public class InMemoryTaskManager implements TaskManager {
         LocalDateTime time = task.getStartTime();
         Duration duration = task.getDuration();
         String result;
+
         if (task.getClass() == SubTask.class) {
             result = taskKey + taskTitle + taskDescription + isViewed + taskStatus + taskType + ","
                     + ((SubTask) task).getParentId() + "," + time
-                    + "," + duration + "," + task.getEndTime(task.getDuration());
+                    + "," + duration + "," + task.getEndTime();
         }
-        else if (task.getClass() == Epic.class && time == null){
+        else if (task.getClass() == Epic.class && time == null) {
             result = taskKey + taskTitle + taskDescription + isViewed + taskStatus + taskType;
         }
         else {
             result = taskKey + taskTitle + taskDescription + isViewed + taskStatus
-                    + taskType + "," + time + "," + duration + "," + task.getEndTime(task.getDuration());
+                    + taskType + "," + time + "," + duration + "," + task.getEndTime();
         }
 
         return result;

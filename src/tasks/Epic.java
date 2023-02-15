@@ -1,6 +1,5 @@
 package tasks;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 
@@ -14,6 +13,18 @@ public class Epic extends Task {
     ) {
         super(taskTitle, taskDescription, taskId, isViewed, taskStatus, taskType);
         this.relatedSubTask = relatedSubTask;
+    }
+
+    @Override
+    public LocalDateTime getEndTime() {
+        LocalDateTime endTime = LocalDateTime.now();
+
+        for (SubTask i : relatedSubTask.values()) {
+            if (i.getEndTime().isAfter(endTime)) {
+                endTime = i.getEndTime();
+            }
+        }
+        return endTime;
     }
 
     @Override
