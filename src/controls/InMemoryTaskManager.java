@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -250,7 +251,7 @@ public class InMemoryTaskManager implements TaskManager {
             duration = i.getDuration().plus(duration);
         }
 
-        epicTask.setStartTime(startTime);
+        epicTask.setStartTime(startTime.truncatedTo(ChronoUnit.MINUTES));
         epicTask.setDuration(duration);
         epicTask.getEndTime();
     }
