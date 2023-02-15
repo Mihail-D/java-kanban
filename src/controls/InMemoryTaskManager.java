@@ -11,6 +11,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toCollection;
@@ -62,7 +63,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         parentTask.relatedSubTask.put(taskId, subTask);
         setEpicStatus(parentKey);
-        setEpicStartTime(parentTask);
+        setEpicTiming(parentTask);
         taskContent = getTaskFormattedData(taskId);
     }
 
@@ -84,11 +85,12 @@ public class InMemoryTaskManager implements TaskManager {
                 break;
             case EPIC:
                 setEpicStatus(taskKey);
+                setEpicTiming((Epic) task);
                 break;
             case SUB_TASK:
                 String parentKey = args[4];
                 Epic parentTask = (Epic) tasksStorage.get(parentKey);
-
+                setEpicTiming(parentTask);
                 task.setTaskStatus(TaskStages.valueOf(args[3]));
 
                 parentTask.relatedSubTask.put(taskKey, (SubTask) task);
@@ -233,8 +235,9 @@ public class InMemoryTaskManager implements TaskManager {
         epicTask.setTaskStatus(status);
     }
 
-    public void setEpicStartTime(Epic epicTask) {
+    public void setEpicTiming(Epic epicTask) {
         LocalDateTime startTime = LocalDateTime.now();
+        Duration duration = Duration.ZERO;
 
         for (SubTask i : epicTask.relatedSubTask.values()) {
             if (i.getStartTime().isBefore(startTime)) {
@@ -242,7 +245,13 @@ public class InMemoryTaskManager implements TaskManager {
             }
         }
 
+        for (SubTask i : epicTask.relatedSubTask.values()) {
+            duration = i.getDuration().plus(duration);
+        }
+
         epicTask.setStartTime(startTime);
+        epicTask.setDuration(duration);
+        epicTask.getEndTime(duration);
     }
 
     public String getTaskFormattedData(String taskKey) {
@@ -259,14 +268,14 @@ public class InMemoryTaskManager implements TaskManager {
         if (task.getClass() == SubTask.class) {
             result = taskKey + taskTitle + taskDescription + isViewed + taskStatus + taskType + ","
                     + ((SubTask) task).getParentId() + "," + time
-                    + "," + duration + "," + task.getEndTime();
+                    + "," + duration + "," + task.getEndTime(task.getDuration());
         }
         else if (task.getClass() == Epic.class && time == null){
             result = taskKey + taskTitle + taskDescription + isViewed + taskStatus + taskType;
         }
         else {
             result = taskKey + taskTitle + taskDescription + isViewed + taskStatus
-                    + taskType + "," + time + "," + duration + "," + task.getEndTime();
+                    + taskType + "," + time + "," + duration + "," + task.getEndTime(task.getDuration());
         }
 
         return result;
