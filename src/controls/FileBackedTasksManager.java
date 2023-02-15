@@ -27,8 +27,14 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void separateTaskAdd(String taskTitle, String taskDescription, String mode, String time, Duration duration) {
-        super.separateTaskAdd(taskTitle, taskDescription, mode, time, duration);
+    public void taskAdd(String taskTitle, String taskDescription, String time, Duration duration) {
+        super.taskAdd(taskTitle, taskDescription, time, duration);
+        saveTask("newTask");
+    }
+
+    @Override
+    public void epicAdd(String taskTitle, String taskDescription) {
+        super.epicAdd(taskTitle, taskDescription);
         saveTask("newTask");
     }
 
@@ -80,21 +86,25 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
                     if (TaskTypes.valueOf(tokens[5]) == TASK) {
                         task = new Task(tokens[1], tokens[2], tokens[0], Boolean.parseBoolean(tokens[3]),
-                                TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5]),
-                                LocalDateTime.parse(tokens[6]), Duration.parse(tokens[7])
+                                TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5])
                         );
+                        task.setStartTime(LocalDateTime.parse(tokens[6]));
+                        task.setDuration(Duration.parse(tokens[7]));
                     }
-                    else if (TaskTypes.valueOf(tokens[5]) == EPIC) {
+                    else if (TaskTypes.valueOf(tokens[5]) == EPIC) {                                         // TODO
                         task = new Epic(tokens[1], tokens[2], tokens[0], Boolean.parseBoolean(tokens[3]),
-                                TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5]), new LinkedHashMap<>(),
-                                LocalDateTime.parse(tokens[6]), Duration.parse(tokens[7])
+                                TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5]), new LinkedHashMap<>()
                         );
+
+
                     }
                     else if (TaskTypes.valueOf(tokens[5]) == SUB_TASK) {
                         task = new SubTask(tokens[1], tokens[2], tokens[0], Boolean.parseBoolean(tokens[3]),
-                                TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5]), tokens[6],
-                                LocalDateTime.parse(tokens[7]), Duration.parse(tokens[8])
+                                TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5]), tokens[6]
                         );
+                        task.setStartTime(LocalDateTime.parse(tokens[7]));
+                        task.setDuration(Duration.parse(tokens[8]));
+
                         Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(tokens[6]);
                         parentTask.relatedSubTask.put(tokens[0], (SubTask) task);
                         setEpicStatus(tokens[6]);

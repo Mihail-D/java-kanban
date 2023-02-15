@@ -9,9 +9,9 @@ public class SubTask extends Task {
 
     public SubTask(
             String taskTitle, String taskDescription, String taskId, boolean isViewed,
-            TaskStages taskStatus, TaskTypes taskType, String parentId, LocalDateTime startTime, Duration duration
+            TaskStages taskStatus, TaskTypes taskType, String parentId
     ) {
-        super(taskTitle, taskDescription, taskId, isViewed, taskStatus, taskType, startTime, duration);
+        super(taskTitle, taskDescription, taskId, isViewed, taskStatus, taskType);
         this.parentId = parentId;
     }
 

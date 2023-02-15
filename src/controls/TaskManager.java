@@ -8,7 +8,9 @@ import java.util.List;
 
 public interface TaskManager {
 
-    void separateTaskAdd(String taskTitle, String taskDescription, String mode, String time, Duration duration);
+    void taskAdd(String taskTitle, String taskDescription, String startTime, Duration duration);
+
+    void epicAdd(String taskTitle, String taskDescription);
 
     void subTaskAdd(String taskTitle, String taskDescription, String parentKey, String time, Duration duration);
 

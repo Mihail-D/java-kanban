@@ -51,16 +51,45 @@ public class Main {
                     taskTitle = scanner.next();
                     System.out.println("taskDescription"); // TODO
                     taskDescription = scanner.next();
-                    System.out.println("mode taskMode epicMode"); // TODO
+                    System.out.println("mode task epic subtask"); // TODO
                     mode = scanner.next();
-                    System.out.println("time <14.02.2023_10:42>"); // TODO
+
+                    switch (mode) {
+                        case "task":
+                            System.out.println("time <14.02.2023_10:42>"); // TODO
+                            time = scanner.next();
+                            System.out.println("duration"); // TODO
+                            duration = scanner.next();
+                            fileBackedTasksManager.taskAdd(taskTitle, taskDescription, time,
+                                    Duration.parse("PT" + duration + "M")
+                            );
+                            break;
+                        case "epic":
+                            fileBackedTasksManager.epicAdd(taskTitle, taskDescription);
+                            break;
+                        case "subtask":
+                            System.out.println("parentKey"); // TODO
+                            parentKey = scanner.next();
+                            System.out.println("time <14.02.2023_10:42>"); // TODO
+                            time = scanner.next();
+                            System.out.println("duration"); // TODO
+                            duration = scanner.next();
+                            fileBackedTasksManager.subTaskAdd(taskTitle, taskDescription, parentKey,
+                                    time, Duration.parse("PT" + duration + "M")
+                            );
+                            break;
+                    }
+                    break;
+                    /*System.out.println("time <14.02.2023_10:42>"); // TODO
                     time = scanner.next();
                     System.out.println("duration"); // TODO
                     duration = scanner.next();
                     fileBackedTasksManager.separateTaskAdd(taskTitle, taskDescription, mode, time,
-                            Duration.parse("PT" + duration + "M"));
-                    break;
-                case 11:
+                            Duration.parse("PT" + duration + "M")
+                    );
+                    break;*/
+
+/*                case 11:
                     System.out.println("taskTitle"); // TODO
                     taskTitle = scanner.next();
                     System.out.println("taskDescription"); // TODO
@@ -72,7 +101,7 @@ public class Main {
                     System.out.println("duration"); // TODO
                     duration = scanner.next();
                     fileBackedTasksManager.subTaskAdd(taskTitle, taskDescription, parentKey, time, Duration.parse("PT" + duration + "M"));
-                    break;
+                    break;*/
 
                 case 2:
                     System.out.println("taskKey"); // TODO
