@@ -210,18 +210,23 @@ public class InMemoryTaskManager implements TaskManager {
         Epic epicTask = (Epic) tasksStorage.get(key);
         TaskStages status = TaskStages.IN_PROGRESS;
 
-
         Set<SubTask> set = new HashSet<>(epicTask.relatedSubTask.values());
 
-        boolean e = set.stream().allMatch(i -> i.getTaskStatus() == NEW);
-        boolean w = set.stream().allMatch(i -> i.getTaskStatus() == DONE);
+        if (set.isEmpty()) {
+            status = TaskStages.NEW;
+            epicTask.setTaskStatus(status);
+            return;
+        }
+
+        boolean isAllNew = set.stream().allMatch(i -> i.getTaskStatus() == NEW);
+        boolean isAllDone = set.stream().allMatch(i -> i.getTaskStatus() == DONE);
 
         for (SubTask i : set) {
-            if (e) {
+            if (isAllNew || set.isEmpty()) {
                 status = TaskStages.NEW;
                 break;
             }
-            else if (w) {
+            else if (isAllDone) {
                 status = TaskStages.DONE;
                 break;
             }
