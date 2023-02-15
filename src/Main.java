@@ -25,7 +25,7 @@ public class Main {
         fileBackedTasksManager = new FileBackedTasksManager(dataFile, historyFile);
         taskManager = new InMemoryTaskManager();
         inMemoryHistoryManager = new InMemoryHistoryManager();
-
+        taskManager.getPrioritizedTasks(); // TODO   
         getControlOptions();
     }
 

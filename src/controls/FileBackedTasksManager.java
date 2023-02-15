@@ -95,8 +95,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                         task = new Epic(tokens[1], tokens[2], tokens[0], Boolean.parseBoolean(tokens[3]),
                                 TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5]), new LinkedHashMap<>()
                         );
-
-
                     }
                     else if (TaskTypes.valueOf(tokens[5]) == SUB_TASK) {
                         task = new SubTask(tokens[1], tokens[2], tokens[0], Boolean.parseBoolean(tokens[3]),
@@ -117,6 +115,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                         InMemoryHistoryManager.getHistoryStorage().linkLast(task);
                     }
                 }
+
+                InMemoryTaskManager.prioritizedTasks.addAll(InMemoryTaskManager.tasksStorage.values()); // TODO   
+
             } catch (ManagerLoadException | FileNotFoundException e) {
                 System.out.println("Не удалось восстановить данные задач");
             } catch (IOException e) {

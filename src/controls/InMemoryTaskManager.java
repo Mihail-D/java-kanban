@@ -23,6 +23,8 @@ public class InMemoryTaskManager implements TaskManager {
     HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
 
     public static HashMap<String, Task> tasksStorage = new LinkedHashMap<>();
+    public static Set<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime,
+            Comparator.nullsLast(Comparator.naturalOrder())));
     public File file;
     int taskId = getInitNumber();
     public static String taskContent;
@@ -36,8 +38,9 @@ public class InMemoryTaskManager implements TaskManager {
         task.setStartTime(getLocalDateTime(startTime));
         task.setDuration(duration);
         InMemoryTaskManager.tasksStorage.put(taskId, task);
-
         taskContent = getTaskFormattedData(taskId);
+        prioritizedTasks.add(task);                                         // TODO
+        getPrioritizedTasks(); // TODO
     }
 
     @Override
@@ -46,6 +49,8 @@ public class InMemoryTaskManager implements TaskManager {
         Epic epic = new Epic(taskTitle, taskDescription, taskId, false, NEW, TaskTypes.EPIC, new LinkedHashMap<>());
         InMemoryTaskManager.tasksStorage.put(taskId, epic);
         taskContent = getTaskFormattedData(taskId);
+        prioritizedTasks.add(epic);                                         // TODO
+        getPrioritizedTasks(); // TODO
     }
 
     @Override
@@ -60,11 +65,12 @@ public class InMemoryTaskManager implements TaskManager {
         subTask.setStartTime(getLocalDateTime(startTime));
         subTask.setDuration(duration);
         InMemoryTaskManager.tasksStorage.put(taskId, subTask);
-
         parentTask.relatedSubTask.put(taskId, subTask);
         setEpicStatus(parentKey);
         setEpicTiming(parentTask);
         taskContent = getTaskFormattedData(taskId);
+        prioritizedTasks.add(subTask);                                         // TODO
+        getPrioritizedTasks(); // TODO
     }
 
     @Override
@@ -184,6 +190,14 @@ public class InMemoryTaskManager implements TaskManager {
         }
 
         return localTasksList;
+    }
+
+    public Set<Task> getPrioritizedTasks() {                                   // TODO
+        for (Task i : prioritizedTasks) {
+            System.out.println(i.getTaskId() + " " + i.getStartTime());
+        }
+
+        return prioritizedTasks;
     }
 
     public String getId(@NotNull String taskMode) {
@@ -310,4 +324,6 @@ public class InMemoryTaskManager implements TaskManager {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
         return LocalDateTime.parse(time, formatter);
     }
+
+
 }
