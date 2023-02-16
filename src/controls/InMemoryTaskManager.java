@@ -1,5 +1,6 @@
 package controls;
 
+import exceptions.ManagerSaveException;
 import org.jetbrains.annotations.NotNull;
 import tasks.*;
 
@@ -23,8 +24,10 @@ public class InMemoryTaskManager implements TaskManager {
     HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
 
     public static HashMap<String, Task> tasksStorage = new LinkedHashMap<>();
-    public static Set<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime,
-            Comparator.nullsLast(Comparator.naturalOrder())));
+    public static Set<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(
+            Task::getStartTime,
+            Comparator.nullsLast(Comparator.naturalOrder())
+    ));
     public File file;
     int taskId = getInitNumber();
     public static String taskContent;
@@ -34,12 +37,13 @@ public class InMemoryTaskManager implements TaskManager {
             String taskTitle, String taskDescription, String startTime, Duration duration
     ) {
         String taskId = getId("taskMode");
+        timeCrossingCheck(startTime);  // TODO
         Task task = new Task(taskTitle, taskDescription, taskId, false, NEW, TaskTypes.TASK);
-        task.setStartTime(getLocalDateTime(startTime));
         task.setDuration(duration);
+        task.setStartTime(getLocalDateTime(startTime));
         InMemoryTaskManager.tasksStorage.put(taskId, task);
         taskContent = getTaskFormattedData(taskId);
-        prioritizedTasks.add(task);                                         // TODO
+        prioritizedTasks.add(task);
     }
 
     @Override
@@ -48,7 +52,7 @@ public class InMemoryTaskManager implements TaskManager {
         Epic epic = new Epic(taskTitle, taskDescription, taskId, false, NEW, TaskTypes.EPIC, new LinkedHashMap<>());
         InMemoryTaskManager.tasksStorage.put(taskId, epic);
         taskContent = getTaskFormattedData(taskId);
-        prioritizedTasks.add(epic);                                         // TODO
+        prioritizedTasks.add(epic);
     }
 
     @Override
@@ -59,6 +63,7 @@ public class InMemoryTaskManager implements TaskManager {
         String taskId = getId("subTaskMode");
         Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(parentKey);
         setEpicStatus(parentKey);
+        timeCrossingCheck(startTime);                                                     // TODO
         SubTask subTask = new SubTask(taskTitle, taskDescription, taskId, false, NEW, TaskTypes.SUB_TASK, parentKey);
         subTask.setStartTime(getLocalDateTime(startTime));
         subTask.setDuration(duration);
@@ -67,7 +72,7 @@ public class InMemoryTaskManager implements TaskManager {
         setEpicStatus(parentKey);
         setEpicTiming(parentTask);
         taskContent = getTaskFormattedData(taskId);
-        prioritizedTasks.add(subTask);                                         // TODO
+        prioritizedTasks.add(subTask);
     }
 
     @Override
@@ -189,7 +194,7 @@ public class InMemoryTaskManager implements TaskManager {
         return localTasksList;
     }
 
-    public Set<Task> getPrioritizedTasks() {                                   // TODO
+    public Set<Task> getPrioritizedTasks() {             // TODO
         for (Task i : prioritizedTasks) {
             System.out.println(i.getTaskId() + " " + i.getStartTime());
         }
@@ -322,5 +327,11 @@ public class InMemoryTaskManager implements TaskManager {
         return LocalDateTime.parse(time, formatter);
     }
 
-
+    public void timeCrossingCheck(String startTime) {
+        for (Task i : prioritizedTasks) {
+            if (getLocalDateTime(startTime).equals(i.getStartTime())) {
+                throw new ManagerSaveException("Время новой задачи пересекается с ранее созданной");
+            }
+        }
+    }
 }
