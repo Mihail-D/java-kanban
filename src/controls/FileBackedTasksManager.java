@@ -120,13 +120,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                             Epic parentTask = (Epic) InMemoryTaskManager.getTasksStorage().get(tokens[6]);
                             parentTask.relatedSubTask.put(tokens[0], (SubTask) task);
                             setEpicStatus(tokens[6]);
-
-                            // TODO
                             setEpicTiming(parentTask);
                             break;
                     }
 
-                    if (file == dataFile) {
+                    if (file == dataFile) {                                          // TODO
                         InMemoryTaskManager.getTasksStorage().put(tokens[0], task);
                     }
                     else {
@@ -136,10 +134,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
                 InMemoryTaskManager.getPrioritizedTasks().addAll(InMemoryTaskManager.getTasksStorage().values()); // TODO
 
-            } catch (ManagerLoadException | FileNotFoundException e) {
-                System.out.println("Не удалось восстановить данные задач");
+            } catch (FileNotFoundException e) {
+                throw new ManagerLoadException("Не удалось восстановить данные задач");
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException("Не удалось восстановить данные задач");
             }
         }
     }
@@ -170,14 +168,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                     writer.append(newData);
                     writer.newLine();
                 }
-
             }
             if (taskContent != null && !(saveMode.equals("newTask") || saveMode.equals("deleteTask"))) {
                 writer.append(taskContent);
             }
-
-        } catch (ManagerSaveException | IOException e) {
-            System.out.println("Не удалось сохранить данные истории");
+        } catch (IOException e) {
+            throw new ManagerSaveException("Не удалось сохранить данные истории");
         }
     }
 }
