@@ -74,8 +74,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void taskDelete(String @NotNull ... args) {
-        super.taskDelete(args);
+    public void taskDelete(String taskKey) {
+        super.taskDelete(taskKey);
         saveTask("updateTask");
     }
 
@@ -158,7 +158,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 writer.newLine();
             }
         } catch (IOException e) {
-            System.out.println("Не удалось сохранить данные задач");
+            throw new ManagerSaveException("Не удалось сохранить данные задач");
         }
 
         try (

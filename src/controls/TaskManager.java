@@ -29,7 +29,7 @@ public interface TaskManager {
 
     List<String> collectEpicSubtasks(String taskKey);
 
-    void taskDelete(String @NotNull ... args);
+    void taskDelete(String taskKey);
 
     void tasksClear();
 }

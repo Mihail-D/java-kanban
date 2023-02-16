@@ -100,7 +100,8 @@ public class Main {
                         System.out.println("startTime"); // TODO
                         startTime = scanner.next();
                         fileBackedTasksManager.subTaskUpdate(taskKey, taskTitle, taskDescription, taskStatus,
-                                parentKey, startTime);
+                                parentKey, startTime
+                        );
                     }
                     else if (taskKey.charAt(0) == 't') {
                         System.out.println("taskStatus"); // TODO
@@ -135,15 +136,8 @@ public class Main {
                     System.out.println("taskKey"); // TODO
                     taskKey = scanner.next();
 
-                    if (taskKey.charAt(0) == 's') {
-                        System.out.println("parentKey"); // TODO
-                        parentKey = scanner.next();
+                    fileBackedTasksManager.taskDelete(taskKey);
 
-                        fileBackedTasksManager.taskDelete(taskKey, parentKey);
-                    }
-                    else {
-                        fileBackedTasksManager.taskDelete(taskKey);
-                    }
                     break;
 
                 case 7:

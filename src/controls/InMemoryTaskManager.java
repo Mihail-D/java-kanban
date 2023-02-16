@@ -76,7 +76,10 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void taskUpdate(String taskKey, String taskTitle, String taskDescription, String taskStatus, String startTime) {
+    public void taskUpdate(
+            String taskKey, String taskTitle, String taskDescription,
+            String taskStatus, String startTime
+    ) {
         Task task = tasksStorage.get(taskKey);
         task.setTaskTitle(taskTitle);
         task.setTaskDescription(taskDescription);
@@ -134,8 +137,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void taskDelete(String @NotNull ... args) {
-        String taskKey = args[0];
+    public void taskDelete(String taskKey) {
         Task task = tasksStorage.get(taskKey);
 
         switch (task.getTaskType()) {
@@ -154,7 +156,8 @@ public class InMemoryTaskManager implements TaskManager {
                 tasksStorage.remove(taskKey);
                 break;
             case SUB_TASK:
-                String parentKey = args[1];
+                SubTask subTask = (SubTask) tasksStorage.get(taskKey);
+                String parentKey = subTask.getParentId();
                 epicTask = (Epic) tasksStorage.get(parentKey);
                 relatedSubTasks = epicTask.relatedSubTask;
                 relatedSubTasks.remove(taskKey);
@@ -298,16 +301,13 @@ public class InMemoryTaskManager implements TaskManager {
         String result;
 
         if (task.getClass() == SubTask.class) {
-            result = taskKey + taskTitle + taskDescription + isViewed + taskStatus + taskType + ","
-                    + ((SubTask) task).getParentId() + "," + time
-                    + "," + duration + "," + task.getEndTime();
+            result = taskKey + taskTitle + taskDescription + isViewed + taskStatus + taskType + "," + ((SubTask) task).getParentId() + "," + time + "," + duration + "," + task.getEndTime();
         }
         else if (task.getClass() == Epic.class && time == null) {
             result = taskKey + taskTitle + taskDescription + isViewed + taskStatus + taskType;
         }
         else {
-            result = taskKey + taskTitle + taskDescription + isViewed + taskStatus
-                    + taskType + "," + time + "," + duration + "," + task.getEndTime();
+            result = taskKey + taskTitle + taskDescription + isViewed + taskStatus + taskType + "," + time + "," + duration + "," + task.getEndTime();
         }
 
         return result;
