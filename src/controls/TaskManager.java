@@ -14,7 +14,14 @@ public interface TaskManager {
 
     void subTaskAdd(String taskTitle, String taskDescription, String parentKey, String time, Duration duration);
 
-    void taskUpdate(String @NotNull ... args);
+    void taskUpdate(String taskKey, String taskTitle, String taskDescription, String taskStatus, String startTime);
+
+    void epicUpdate(String taskKey, String taskTitle, String taskDescription);
+
+    void subTaskUpdate(
+            String taskKey, String taskTitle, String taskDescription, String taskStatus,
+            String parentKey, String startTime
+    );
 
     String taskRetrieve(String taskKey);
 

@@ -53,8 +53,23 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void taskUpdate(String @NotNull ... args) {
-        super.taskUpdate(args);
+    public void taskUpdate(String taskKey, String taskTitle, String taskDescription, String taskStatus, String startTime){
+        super.taskUpdate(taskKey, taskTitle, taskDescription, taskStatus, startTime);
+        saveTask("updateTask");
+    }
+
+    @Override
+    public void epicUpdate(String taskKey, String taskTitle, String taskDescription) {
+        super.epicUpdate(taskKey, taskTitle, taskDescription);
+        saveTask("updateTask");
+    }
+
+    @Override
+    public void subTaskUpdate(
+            String taskKey, String taskTitle, String taskDescription, String taskStatus,
+            String parentKey, String startTime
+    ) {
+        super.subTaskUpdate(taskKey, taskTitle, taskDescription, taskStatus, parentKey, startTime);
         saveTask("updateTask");
     }
 

@@ -76,37 +76,50 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void taskUpdate(String @NotNull ... args) {
-        String taskKey = args[0];
+    public void taskUpdate(String taskKey, String taskTitle, String taskDescription, String taskStatus, String startTime) {
         Task task = tasksStorage.get(taskKey);
-
-        task.setTaskTitle(args[1]);
-
-        task.setTaskDescription(args[2]);
-
+        task.setTaskTitle(taskTitle);
+        task.setTaskDescription(taskDescription);
         TaskTypes taskType = task.getTaskType();
 
-        switch (taskType) {
-            case TASK:
-                task.setTaskStatus(TaskStages.valueOf(args[3]));
-                tasksStorage.put(taskKey, task);
-                break;
-            case EPIC:
-                setEpicStatus(taskKey);
-                setEpicTiming((Epic) task);
-                break;
-            case SUB_TASK:
-                String parentKey = args[4];
-                Epic parentTask = (Epic) tasksStorage.get(parentKey);
-                setEpicTiming(parentTask);
-                task.setTaskStatus(TaskStages.valueOf(args[3]));
+        task.setTaskStatus(TaskStages.valueOf(taskStatus));
+        tasksStorage.put(taskKey, task);
+        timeCrossingCheck(startTime);                                                     // TODO
+        taskContent = getTaskFormattedData(taskKey);
+    }
 
-                parentTask.relatedSubTask.put(taskKey, (SubTask) task);
+    @Override
+    public void epicUpdate(String taskKey, String taskTitle, String taskDescription) {
+        Epic task = (Epic) tasksStorage.get(taskKey);
+        task.setTaskTitle(taskTitle);
+        task.setTaskDescription(taskDescription);
+        TaskTypes taskType = task.getTaskType();
 
-                tasksStorage.put(taskKey, task);
-                setEpicStatus(parentKey);
-                break;
-        }
+        setEpicStatus(taskKey);
+        setEpicTiming(task);
+
+        taskContent = getTaskFormattedData(taskKey);
+    }
+
+    @Override
+    public void subTaskUpdate(
+            String taskKey, String taskTitle, String taskDescription, String taskStatus,
+            String parentKey, String startTime
+    ) {
+        SubTask task = (SubTask) tasksStorage.get(taskKey);
+        task.setTaskTitle(taskTitle);
+        task.setTaskDescription(taskDescription);
+        TaskTypes taskType = task.getTaskType();
+
+        Epic parentTask = (Epic) tasksStorage.get(parentKey);
+        setEpicTiming(parentTask);
+        task.setTaskStatus(TaskStages.valueOf(taskStatus));
+
+        parentTask.relatedSubTask.put(taskKey, task);
+
+        tasksStorage.put(taskKey, task);
+        setEpicStatus(parentKey);
+        timeCrossingCheck(startTime);                                                     // TODO
         taskContent = getTaskFormattedData(taskKey);
     }
 

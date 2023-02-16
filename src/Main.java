@@ -40,6 +40,7 @@ public class Main {
         String taskStatus;
         String time;
         String duration;
+        String startTime;
 
         while (true) {
             System.out.println("MENU"); // TODO
@@ -96,15 +97,20 @@ public class Main {
 
                         System.out.println("taskStatus"); // TODO
                         taskStatus = scanner.next();
-                        fileBackedTasksManager.taskUpdate(taskKey, taskTitle, taskDescription, taskStatus, parentKey);
+                        System.out.println("startTime"); // TODO
+                        startTime = scanner.next();
+                        fileBackedTasksManager.subTaskUpdate(taskKey, taskTitle, taskDescription, taskStatus,
+                                parentKey, startTime);
                     }
                     else if (taskKey.charAt(0) == 't') {
                         System.out.println("taskStatus"); // TODO
                         taskStatus = scanner.next();
-                        fileBackedTasksManager.taskUpdate(taskKey, taskTitle, taskDescription, taskStatus);
+                        System.out.println("startTime"); // TODO
+                        startTime = scanner.next();
+                        fileBackedTasksManager.taskUpdate(taskKey, taskTitle, taskDescription, taskStatus, startTime);
                     }
                     else if (taskKey.charAt(0) == 'e') {
-                        fileBackedTasksManager.taskUpdate(taskKey, taskTitle, taskDescription);
+                        fileBackedTasksManager.epicUpdate(taskKey, taskTitle, taskDescription);
                     }
                     break;
 
