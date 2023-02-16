@@ -100,6 +100,9 @@ public class Task {
 
         Task task = (Task) o;
 
+        if (isViewed() != task.isViewed()) {
+            return false;
+        }
         if (!getTaskTitle().equals(task.getTaskTitle())) {
             return false;
         }
@@ -109,7 +112,16 @@ public class Task {
         if (!getTaskId().equals(task.getTaskId())) {
             return false;
         }
-        return getTaskStatus() == task.getTaskStatus();
+        if (getTaskStatus() != task.getTaskStatus()) {
+            return false;
+        }
+        if (getTaskType() != task.getTaskType()) {
+            return false;
+        }
+        if (!getStartTime().equals(task.getStartTime())) {
+            return false;
+        }
+        return getDuration().equals(task.getDuration());
     }
 
     @Override
@@ -117,14 +129,20 @@ public class Task {
         int result = getTaskTitle().hashCode();
         result = 31 * result + getTaskDescription().hashCode();
         result = 31 * result + getTaskId().hashCode();
+        result = 31 * result + (isViewed() ? 1 : 0);
         result = 31 * result + getTaskStatus().hashCode();
+        result = 31 * result + getTaskType().hashCode();
+        result = 31 * result + getStartTime().hashCode();
+        result = 31 * result + getDuration().hashCode();
         return result;
     }
 
     @Override
     public String toString() {
-        return " MainTask Title = " + taskTitle +
+     /*   return " MainTask Title = " + taskTitle +
                 " Description = " + taskDescription +
-                " Id = " + taskId + " isViewed = " + isViewed + " Status = " + taskStatus + "***";
+                " Id = " + taskId + " isViewed = " + isViewed + " Status = " + taskStatus + " " + startTime +"***";*/
+
+           return "Id = " + taskId + " " + startTime + " ***";
     }
 }

@@ -25,7 +25,7 @@ public class Main {
         fileBackedTasksManager = new FileBackedTasksManager(dataFile, historyFile);
         taskManager = new InMemoryTaskManager();
         inMemoryHistoryManager = new InMemoryHistoryManager();
-        taskManager.getPrioritizedTasks(); // TODO   
+
         getControlOptions();
     }
 
@@ -147,7 +147,9 @@ public class Main {
                     System.out.println(inMemoryHistoryManager.getHistory());
                     inMemoryHistoryManager.getHistory();
                     break;
-
+                case 9:
+                    taskManager.getPrioritizedTasks();
+                    break;
                 case 0:
                     return;
             }

@@ -106,6 +106,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                         Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(tokens[6]);
                         parentTask.relatedSubTask.put(tokens[0], (SubTask) task);
                         setEpicStatus(tokens[6]);
+
+                        // TODO
+                        setEpicTiming(parentTask);
+                        //parentTask.setStartTime(LocalDateTime.parse(tokens[6]));
+                        //parentTask.setDuration(Duration.parse(tokens[7]));
+
                     }
 
                     if (file == dataFile) {
@@ -116,7 +122,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                     }
                 }
 
-                InMemoryTaskManager.prioritizedTasks.addAll(InMemoryTaskManager.tasksStorage.values()); // TODO   
+                InMemoryTaskManager.prioritizedTasks.addAll(InMemoryTaskManager.tasksStorage.values()); // TODO
 
             } catch (ManagerLoadException | FileNotFoundException e) {
                 System.out.println("Не удалось восстановить данные задач");

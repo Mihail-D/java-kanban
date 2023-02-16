@@ -40,7 +40,6 @@ public class InMemoryTaskManager implements TaskManager {
         InMemoryTaskManager.tasksStorage.put(taskId, task);
         taskContent = getTaskFormattedData(taskId);
         prioritizedTasks.add(task);                                         // TODO
-        getPrioritizedTasks(); // TODO
     }
 
     @Override
@@ -50,7 +49,6 @@ public class InMemoryTaskManager implements TaskManager {
         InMemoryTaskManager.tasksStorage.put(taskId, epic);
         taskContent = getTaskFormattedData(taskId);
         prioritizedTasks.add(epic);                                         // TODO
-        getPrioritizedTasks(); // TODO
     }
 
     @Override
@@ -70,7 +68,6 @@ public class InMemoryTaskManager implements TaskManager {
         setEpicTiming(parentTask);
         taskContent = getTaskFormattedData(taskId);
         prioritizedTasks.add(subTask);                                         // TODO
-        getPrioritizedTasks(); // TODO
     }
 
     @Override
