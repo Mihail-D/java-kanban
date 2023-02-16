@@ -25,9 +25,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     private static HashMap<String, Task> tasksStorage = new LinkedHashMap<>();
     private static Set<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime, Comparator.nullsLast(Comparator.naturalOrder())));
-    //public File file;
     int taskId = getInitNumber();
     public static String taskContent;
+    public File file;
 
     public static HashMap<String, Task> getTasksStorage() {
         return tasksStorage;
@@ -311,13 +311,11 @@ public class InMemoryTaskManager implements TaskManager {
         return result;
     }
 
-    public int getInitNumber() {
+    public int getInitNumber() { // TODO                  откуда тут файл? Это же инмемори
+        file = new File(FileBackedTasksManager.PATH + File.separator + "dataFile.csv");
         int max = 0;
 
-        try (
-                BufferedReader br = new BufferedReader(new FileReader(FileBackedTasksManager
-                        .PATH + File.separator + "dataFile.csv"))
-        ) {
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = br.readLine()) != null) {
                 if (line.trim().isEmpty()) {
