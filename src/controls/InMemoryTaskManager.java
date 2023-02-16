@@ -23,14 +23,18 @@ public class InMemoryTaskManager implements TaskManager {
 
     HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
 
-    public static HashMap<String, Task> tasksStorage = new LinkedHashMap<>();
-    public static Set<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(
+    private static HashMap<String, Task> tasksStorage = new LinkedHashMap<>();
+    private static Set<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(
             Task::getStartTime,
             Comparator.nullsLast(Comparator.naturalOrder())
     ));
     public File file;
     int taskId = getInitNumber();
     public static String taskContent;
+
+    public static HashMap<String, Task> getTasksStorage() {
+        return tasksStorage;
+    }
 
     @Override
     public void taskAdd(
@@ -78,7 +82,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void taskUpdate(
             String taskKey, String taskTitle, String taskDescription,
-            String taskStatus, String startTime
+            String taskStatus, String startTime, Duration duration
     ) {
         Task task = tasksStorage.get(taskKey);
         task.setTaskTitle(taskTitle);
@@ -107,7 +111,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void subTaskUpdate(
             String taskKey, String taskTitle, String taskDescription, String taskStatus,
-            String parentKey, String startTime
+            String parentKey, String startTime, Duration duration
     ) {
         SubTask task = (SubTask) tasksStorage.get(taskKey);
         task.setTaskTitle(taskTitle);
@@ -210,7 +214,7 @@ public class InMemoryTaskManager implements TaskManager {
         return localTasksList;
     }
 
-    public Set<Task> getPrioritizedTasks() {             // TODO
+    public static Set<Task> getPrioritizedTasks() {             // TODO
         for (Task i : prioritizedTasks) {
             System.out.println(i.getTaskId() + " " + i.getStartTime());
         }

@@ -99,8 +99,10 @@ public class Main {
                         taskStatus = scanner.next();
                         System.out.println("startTime"); // TODO
                         startTime = scanner.next();
+                        System.out.println("duration"); // TODO
+                        duration = scanner.next();
                         fileBackedTasksManager.subTaskUpdate(taskKey, taskTitle, taskDescription, taskStatus,
-                                parentKey, startTime
+                                parentKey, startTime, Duration.parse(duration)
                         );
                     }
                     else if (taskKey.charAt(0) == 't') {
@@ -108,7 +110,9 @@ public class Main {
                         taskStatus = scanner.next();
                         System.out.println("startTime"); // TODO
                         startTime = scanner.next();
-                        fileBackedTasksManager.taskUpdate(taskKey, taskTitle, taskDescription, taskStatus, startTime);
+                        System.out.println("duration"); // TODO
+                        duration = scanner.next();
+                        fileBackedTasksManager.taskUpdate(taskKey, taskTitle, taskDescription, taskStatus, startTime, Duration.parse(duration));
                     }
                     else if (taskKey.charAt(0) == 'e') {
                         fileBackedTasksManager.epicUpdate(taskKey, taskTitle, taskDescription);
