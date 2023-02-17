@@ -21,8 +21,12 @@ public class InMemoryTaskManager implements TaskManager {
     HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
 
     private static HashMap<String, Task> tasksStorage = new LinkedHashMap<>();
-    private static Set<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime,
-            Comparator.nullsLast(Comparator.naturalOrder())));
+    private static Set<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(
+            Task::getStartTime,
+            Comparator.nullsLast(Comparator.naturalOrder())
+    ));
+    private static Map<LocalDateTime, Boolean> timeGapsStorage = new HashMap<>(131400);
+
     public int taskId = FileBackedTasksManager.getInitNumber();
     public static String taskContent;
 
@@ -34,22 +38,22 @@ public class InMemoryTaskManager implements TaskManager {
     public void taskAdd(
             String taskTitle, String taskDescription, String startTime, Duration duration
     ) {
-        String taskId = getId(TASK);
-        timeCrossingCheck(startTime);  // TODO
-        Task task = new Task(taskTitle, taskDescription, taskId, false, NEW, TASK);
+        String taskKey = getId(TASK);
+        timeCrossingCheck(startTime, taskKey);  // TODO
+        Task task = new Task(taskTitle, taskDescription, taskKey, false, NEW, TASK);
         task.setDuration(duration);
         task.setStartTime(getLocalDateTime(startTime));
-        InMemoryTaskManager.tasksStorage.put(taskId, task);
-        taskContent = getTaskFormattedData(taskId);
+        InMemoryTaskManager.tasksStorage.put(taskKey, task);
+        taskContent = getTaskFormattedData(taskKey);
         prioritizedTasks.add(task);
     }
 
     @Override
     public void epicAdd(String taskTitle, String taskDescription) {
-        String taskId = getId(EPIC);
-        Epic epic = new Epic(taskTitle, taskDescription, taskId, false, NEW, TaskTypes.EPIC, new LinkedHashMap<>());
-        InMemoryTaskManager.tasksStorage.put(taskId, epic);
-        taskContent = getTaskFormattedData(taskId);
+        String taskKey = getId(EPIC);
+        Epic epic = new Epic(taskTitle, taskDescription, taskKey, false, NEW, TaskTypes.EPIC, new LinkedHashMap<>());
+        InMemoryTaskManager.tasksStorage.put(taskKey, epic);
+        taskContent = getTaskFormattedData(taskKey);
         prioritizedTasks.add(epic);
     }
 
@@ -58,18 +62,18 @@ public class InMemoryTaskManager implements TaskManager {
             String taskTitle, String taskDescription, String parentKey, String startTime,
             Duration duration
     ) {
-        String taskId = getId(SUB_TASK);
+        String taskKey = getId(SUB_TASK);
         Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(parentKey);
         setEpicStatus(parentKey);
-        timeCrossingCheck(startTime);                                                     // TODO
-        SubTask subTask = new SubTask(taskTitle, taskDescription, taskId, false, NEW, TaskTypes.SUB_TASK, parentKey);
+        timeCrossingCheck(startTime, taskKey);                                                     // TODO
+        SubTask subTask = new SubTask(taskTitle, taskDescription, taskKey, false, NEW, TaskTypes.SUB_TASK, parentKey);
         subTask.setStartTime(getLocalDateTime(startTime));
         subTask.setDuration(duration);
-        InMemoryTaskManager.tasksStorage.put(taskId, subTask);
-        parentTask.relatedSubTask.put(taskId, subTask);
+        InMemoryTaskManager.tasksStorage.put(taskKey, subTask);
+        parentTask.relatedSubTask.put(taskKey, subTask);
         setEpicStatus(parentKey);
         setEpicTiming(parentTask);
-        taskContent = getTaskFormattedData(taskId);
+        taskContent = getTaskFormattedData(taskKey);
         prioritizedTasks.add(subTask);
     }
 
@@ -85,7 +89,10 @@ public class InMemoryTaskManager implements TaskManager {
 
         task.setTaskStatus(TaskStages.valueOf(taskStatus));
         tasksStorage.put(taskKey, task);
-        timeCrossingCheck(startTime);                                                     // TODO
+        timeCrossingCheck(startTime, taskKey);                                                     // TODO
+
+        advancedTimeCrossingCheck(task);                                            // TODO
+
         taskContent = getTaskFormattedData(taskKey);
     }
 
@@ -120,7 +127,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         tasksStorage.put(taskKey, task);
         setEpicStatus(parentKey);
-        timeCrossingCheck(startTime);                                                     // TODO
+        timeCrossingCheck(startTime, taskKey);                                                     // TODO
         taskContent = getTaskFormattedData(taskKey);
     }
 
@@ -316,11 +323,32 @@ public class InMemoryTaskManager implements TaskManager {
         return LocalDateTime.parse(time, formatter);
     }
 
-    public void timeCrossingCheck(String startTime) {
+    public void timeCrossingCheck(String startTime, String taskKey) {
         for (Task i : prioritizedTasks) {
+            if (i.getTaskId().equals(taskKey)) {
+                break;
+            }
             if (getLocalDateTime(startTime).equals(i.getStartTime())) {
                 throw new ManagerSaveException("Время новой задачи пересекается с ранее созданной");
             }
         }
+    }
+
+    public void timeGapsStorageFiller() {
+        Duration timeGap = Duration.parse("PT15M");
+        LocalDateTime timeInterval = LocalDateTime.now();
+
+        for (int i = 0; i < 131400; i++) {
+            timeInterval = timeInterval.plus(timeGap);
+            timeGapsStorage.put(timeInterval.truncatedTo(ChronoUnit.MINUTES), true);
+            System.out.println(timeInterval);
+        }
+    }
+
+    public void advancedTimeCrossingCheck(Task task) {
+        long duration = task.getDuration().toMinutes();
+        int periods = (int) Math.ceil((int) (duration / 15)) + 1;
+
+        System.out.println(periods);
     }
 }

@@ -97,22 +97,23 @@ public class Main {
 
                         System.out.println("taskStatus"); // TODO
                         taskStatus = scanner.next();
-                        System.out.println("startTime"); // TODO
+                        System.out.println("time <14.02.2023_10:42>"); // TODO
                         startTime = scanner.next();
                         System.out.println("duration"); // TODO
                         duration = scanner.next();
                         fileBackedTasksManager.subTaskUpdate(taskKey, taskTitle, taskDescription, taskStatus,
-                                parentKey, startTime, Duration.parse(duration)
+                                parentKey, startTime, Duration.parse("PT" + duration + "M")
                         );
                     }
                     else if (taskKey.charAt(0) == 't') {
                         System.out.println("taskStatus"); // TODO
                         taskStatus = scanner.next();
-                        System.out.println("startTime"); // TODO
+                        System.out.println("time <14.02.2023_10:42>"); // TODO
                         startTime = scanner.next();
                         System.out.println("duration"); // TODO
                         duration = scanner.next();
-                        fileBackedTasksManager.taskUpdate(taskKey, taskTitle, taskDescription, taskStatus, startTime, Duration.parse(duration));
+                        fileBackedTasksManager.taskUpdate(taskKey, taskTitle, taskDescription, taskStatus, startTime,
+                                Duration.parse("PT" + duration + "M"));
                     }
                     else if (taskKey.charAt(0) == 'e') {
                         fileBackedTasksManager.epicUpdate(taskKey, taskTitle, taskDescription);
