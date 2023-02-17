@@ -5,10 +5,12 @@ import org.jetbrains.annotations.NotNull;
 import tasks.*;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toCollection;
@@ -91,7 +93,7 @@ public class InMemoryTaskManager implements TaskManager {
         tasksStorage.put(taskKey, task);
         timeCrossingCheck(startTime, taskKey);                                                     // TODO
 
-        advancedTimeCrossingCheck(task);                                            // TODO
+        //advancedTimeCrossingCheck(task);                                            // TODO
 
         taskContent = getTaskFormattedData(taskKey);
     }
@@ -338,17 +340,13 @@ public class InMemoryTaskManager implements TaskManager {
         Duration timeGap = Duration.parse("PT15M");
         LocalDateTime timeInterval = LocalDateTime.now();
 
-        for (int i = 0; i < 131400; i++) {
+        for (int i = 0; i < 35000; i++) { //131400
             timeInterval = timeInterval.plus(timeGap);
-            timeGapsStorage.put(timeInterval.truncatedTo(ChronoUnit.MINUTES), true);
-            System.out.println(timeInterval);
+            timeGapsStorage.put(timeInterval, true);
         }
     }
 
-    public void advancedTimeCrossingCheck(Task task) {
-        long duration = task.getDuration().toMinutes();
-        int periods = (int) Math.ceil((int) (duration / 15)) + 1;
+    public void advancedTimeCrossingCheck(){
 
-        System.out.println(periods);
     }
 }

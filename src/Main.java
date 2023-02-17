@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Scanner;
 
 public class Main {
@@ -25,6 +26,9 @@ public class Main {
         fileBackedTasksManager = new FileBackedTasksManager(dataFile, historyFile);
         taskManager = new InMemoryTaskManager();
         inMemoryHistoryManager = new InMemoryHistoryManager();
+
+        taskManager.timeGapsStorageFiller(); // TODO   
+
 
         getControlOptions();
     }
