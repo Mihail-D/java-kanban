@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toCollection;
 import static tasks.TaskStages.DONE;
 import static tasks.TaskStages.NEW;
+import static tasks.TaskTypes.*;
 
 public class InMemoryTaskManager implements TaskManager {
 
@@ -38,9 +39,9 @@ public class InMemoryTaskManager implements TaskManager {
     public void taskAdd(
             String taskTitle, String taskDescription, String startTime, Duration duration
     ) {
-        String taskId = getId("taskMode");
+        String taskId = getId(TASK);
         timeCrossingCheck(startTime);  // TODO
-        Task task = new Task(taskTitle, taskDescription, taskId, false, NEW, TaskTypes.TASK);
+        Task task = new Task(taskTitle, taskDescription, taskId, false, NEW, TASK);
         task.setDuration(duration);
         task.setStartTime(getLocalDateTime(startTime));
         InMemoryTaskManager.tasksStorage.put(taskId, task);
@@ -50,7 +51,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void epicAdd(String taskTitle, String taskDescription) {
-        String taskId = getId("epicMode");
+        String taskId = getId(EPIC);
         Epic epic = new Epic(taskTitle, taskDescription, taskId, false, NEW, TaskTypes.EPIC, new LinkedHashMap<>());
         InMemoryTaskManager.tasksStorage.put(taskId, epic);
         taskContent = getTaskFormattedData(taskId);
@@ -62,7 +63,7 @@ public class InMemoryTaskManager implements TaskManager {
             String taskTitle, String taskDescription, String parentKey, String startTime,
             Duration duration
     ) {
-        String taskId = getId("subTaskMode");
+        String taskId = getId(SUB_TASK);
         Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(parentKey);
         setEpicStatus(parentKey);
         timeCrossingCheck(startTime);                                                     // TODO
@@ -185,7 +186,7 @@ public class InMemoryTaskManager implements TaskManager {
         ArrayList<String> listOfSubTasks = new ArrayList<>();
 
         for (String i : tasksStorage.keySet()) {
-            if (tasksStorage.get(i).getTaskType() == TaskTypes.TASK) {
+            if (tasksStorage.get(i).getTaskType() == TASK) {
                 listOfTasks.add(getTaskFormattedData(i));
             }
             else if (tasksStorage.get(i).getTaskType() == TaskTypes.EPIC) {
@@ -220,19 +221,19 @@ public class InMemoryTaskManager implements TaskManager {
         return prioritizedTasks;
     }
 
-    public String getId(@NotNull String taskMode) {
+    public String getId(@NotNull TaskTypes taskType) {
         String id = null;
 
-        switch (taskMode) {
-            case "taskMode":
+        switch (taskType) {
+            case TASK:
                 taskId++;
                 id = "t." + taskId;
                 break;
-            case "epicMode":
+            case EPIC:
                 taskId++;
                 id = "e." + taskId;
                 break;
-            case "subTaskMode":
+            case SUB_TASK:
                 taskId++;
                 id = "s." + taskId;
                 break;
