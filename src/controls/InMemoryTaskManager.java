@@ -1,5 +1,6 @@
 package controls;
 
+import exceptions.ManagerLoadException;
 import exceptions.ManagerSaveException;
 import org.jetbrains.annotations.NotNull;
 import tasks.*;
@@ -24,10 +25,10 @@ public class InMemoryTaskManager implements TaskManager {
     HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
 
     private static HashMap<String, Task> tasksStorage = new LinkedHashMap<>();
-    private static Set<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime, Comparator.nullsLast(Comparator.naturalOrder())));
-    int taskId = getInitNumber();
+    private static Set<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime,
+            Comparator.nullsLast(Comparator.naturalOrder())));
+    public int taskId = FileBackedTasksManager.getInitNumber();
     public static String taskContent;
-    public File file;
 
     public static HashMap<String, Task> getTasksStorage() {
         return tasksStorage;
@@ -58,7 +59,8 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void subTaskAdd(
-            String taskTitle, String taskDescription, String parentKey, String startTime, Duration duration
+            String taskTitle, String taskDescription, String parentKey, String startTime,
+            Duration duration
     ) {
         String taskId = getId("subTaskMode");
         Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(parentKey);
@@ -77,7 +79,8 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void taskUpdate(
-            String taskKey, String taskTitle, String taskDescription, String taskStatus, String startTime, Duration duration
+            String taskKey, String taskTitle, String taskDescription, String taskStatus,
+            String startTime, Duration duration
     ) {
         Task task = tasksStorage.get(taskKey);
         task.setTaskTitle(taskTitle);
@@ -105,7 +108,8 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void subTaskUpdate(
-            String taskKey, String taskTitle, String taskDescription, String taskStatus, String parentKey, String startTime, Duration duration
+            String taskKey, String taskTitle, String taskDescription, String taskStatus,
+            String parentKey, String startTime, Duration duration
     ) {
         SubTask task = (SubTask) tasksStorage.get(taskKey);
         task.setTaskTitle(taskTitle);
@@ -309,28 +313,6 @@ public class InMemoryTaskManager implements TaskManager {
         }
 
         return result;
-    }
-
-    public int getInitNumber() { // TODO                  откуда тут файл? Это же инмемори
-        file = new File(FileBackedTasksManager.PATH + File.separator + "dataFile.csv");
-        int max = 0;
-
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                if (line.trim().isEmpty()) {
-                    continue;
-                }
-                String[] arr = line.split(",");
-                int number = Integer.parseInt(arr[0].substring(2));
-                if (number > max) {
-                    max = number;
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return max;
     }
 
     public LocalDateTime getLocalDateTime(String time) {

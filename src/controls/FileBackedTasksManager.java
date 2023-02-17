@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static tasks.TaskTypes.*;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
 
@@ -38,7 +37,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void subTaskAdd(String taskTitle, String taskDescription, String parentKey, String time, Duration duration) {
+    public void subTaskAdd(
+            String taskTitle, String taskDescription, String parentKey,
+            String time, Duration duration
+    ) {
         super.subTaskAdd(taskTitle, taskDescription, parentKey, time, duration);
         saveTask("newTask");
     }
@@ -52,7 +54,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void taskUpdate(String taskKey, String taskTitle, String taskDescription, String taskStatus, String startTime, Duration duration) {
+    public void taskUpdate(
+            String taskKey, String taskTitle, String taskDescription,
+            String taskStatus, String startTime, Duration duration
+    ) {
         super.taskUpdate(taskKey, taskTitle, taskDescription, taskStatus, startTime, duration);
         saveTask("updateTask");
     }
@@ -65,7 +70,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     @Override
     public void subTaskUpdate(
-            String taskKey, String taskTitle, String taskDescription, String taskStatus, String parentKey, String startTime, Duration duration
+            String taskKey, String taskTitle, String taskDescription, String taskStatus,
+            String parentKey, String startTime, Duration duration
     ) {
         super.subTaskUpdate(taskKey, taskTitle, taskDescription, taskStatus, parentKey, startTime, duration);
         saveTask("updateTask");
@@ -175,5 +181,27 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         } catch (IOException e) {
             throw new ManagerSaveException("Не удалось сохранить данные истории");
         }
+    }
+
+    public static int getInitNumber() {
+        File file = new File(FileBackedTasksManager.PATH + File.separator + "dataFile.csv");
+        int max = 0;
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.trim().isEmpty()) {
+                    continue;
+                }
+                String[] arr = line.split(",");
+                int number = Integer.parseInt(arr[0].substring(2));
+                if (number > max) {
+                    max = number;
+                }
+            }
+        } catch (IOException e) {
+            throw new ManagerLoadException("Не удалось загрузить файл");
+        }
+        return max;
     }
 }
