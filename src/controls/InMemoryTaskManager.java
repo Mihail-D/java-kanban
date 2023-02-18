@@ -41,7 +41,7 @@ public class InMemoryTaskManager implements TaskManager {
             String taskTitle, String taskDescription, String startTime, Duration duration
     ) {
         String taskKey = getId(TASK);
-        timeCrossingCheck(startTime, taskKey);  // TODO
+        //timeCrossingCheck(startTime, taskKey);  // TODO
         Task task = new Task(taskTitle, taskDescription, taskKey, false, NEW, TASK);
         task.setDuration(duration);
         task.setStartTime(getLocalDateTime(startTime));
@@ -67,7 +67,7 @@ public class InMemoryTaskManager implements TaskManager {
         String taskKey = getId(SUB_TASK);
         Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(parentKey);
         setEpicStatus(parentKey);
-        timeCrossingCheck(startTime, taskKey);                                                     // TODO
+        //timeCrossingCheck(startTime, taskKey);                                                     // TODO
         SubTask subTask = new SubTask(taskTitle, taskDescription, taskKey, false, NEW, TaskTypes.SUB_TASK, parentKey);
         subTask.setStartTime(getLocalDateTime(startTime));
         subTask.setDuration(duration);
@@ -91,7 +91,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         task.setTaskStatus(TaskStages.valueOf(taskStatus));
         tasksStorage.put(taskKey, task);
-        timeCrossingCheck(startTime, taskKey);                                                     // TODO
+        //timeCrossingCheck(startTime, taskKey);                                                     // TODO
 
         //advancedTimeCrossingCheck(task);                                            // TODO
 
@@ -129,7 +129,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         tasksStorage.put(taskKey, task);
         setEpicStatus(parentKey);
-        timeCrossingCheck(startTime, taskKey);                                                     // TODO
+        //timeCrossingCheck(startTime, taskKey);                                                     // TODO
         taskContent = getTaskFormattedData(taskKey);
     }
 
@@ -325,28 +325,42 @@ public class InMemoryTaskManager implements TaskManager {
         return LocalDateTime.parse(time, formatter);
     }
 
-    public void timeCrossingCheck(String startTime, String taskKey) {
+    public void advTimeCrossingCheck(String taskKey) {
+        List<DateRange> ranges = new ArrayList<>();
+        Task task = tasksStorage.get(taskKey);
+        DateRange checkedInterval = new DateRange(task.getStartTime(), task.getEndTime(), task.getTaskId());
+
         for (Task i : prioritizedTasks) {
-            if (i.getTaskId().equals(taskKey)) {
-                break;
-            }
-            if (getLocalDateTime(startTime).equals(i.getStartTime())) {
-                throw new ManagerSaveException("Время новой задачи пересекается с ранее созданной");
-            }
+            ranges.add(new DateRange(i.getStartTime(), i.getEndTime(), i.getTaskId()));
         }
-    }
 
-    public void timeGapsStorageFiller() {
-        Duration timeGap = Duration.parse("PT15M");
-        LocalDateTime timeInterval = LocalDateTime.now();
+        System.out.println(ranges);
 
-        for (int i = 0; i < 35000; i++) { //131400
-            timeInterval = timeInterval.plus(timeGap);
-            timeGapsStorage.put(timeInterval, true);
+        for (DateRange i : ranges) {
+
+
+            if (i.start.isBefore(checkedInterval.start) && i.stop.isBefore(checkedInterval.stop)) {
+                System.out.println(i.taskKey + " начнется до и закончится до");
+            }
+            else if (i.start.isAfter(checkedInterval.start) && i.stop.isAfter(checkedInterval.stop)) {
+                System.out.println(i.taskKey + " начнется после и продолжится после");
+            }
+            else if (i.start.isAfter(checkedInterval.start) && i.stop.isBefore(checkedInterval.stop)) {
+                System.out.println(i.taskKey + " начнется после и закончится до");
+            }
+            else if (i.start.isBefore(checkedInterval.start) && i.stop.isAfter(checkedInterval.stop)) {
+                System.out.println(i.taskKey + " начнется до и закончится после");
+            }
+            else if (i.start.isEqual(checkedInterval.start) && i.stop.isAfter(checkedInterval.start)) {
+                System.out.println(i.taskKey + "старт совпадают");
+            }
+            else if (i.start.isBefore(checkedInterval.stop) && i.stop.isEqual(checkedInterval.stop)) {
+                System.out.println(i.taskKey + " стоп совпадают");
+            }
+            /*else if (i.start.isEqual(checkedInterval.start) && i.stop.isEqual(checkedInterval.stop)) {
+                System.out.println(i.taskKey + " старт и стоп совпадают");
+            }*/
+
         }
-    }
-
-    public void advancedTimeCrossingCheck(){
-
     }
 }

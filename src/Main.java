@@ -27,8 +27,16 @@ public class Main {
         taskManager = new InMemoryTaskManager();
         inMemoryHistoryManager = new InMemoryHistoryManager();
 
-        taskManager.timeGapsStorageFiller(); // TODO   
+        /*taskManager.taskAdd("sef", "sfe", "19.02.2023_10:42", Duration.ofMinutes(120));
+        taskManager.taskAdd("seef", "sfe", "20.02.2023_10:42", Duration.ofMinutes(120));
+        taskManager.taskAdd("shef", "sfe", "21.02.2023_10:42", Duration.ofMinutes(120));
+        taskManager.taskAdd("serf", "sfe", "22.02.2023_10:42", Duration.ofMinutes(120));*/
+       // taskManager.taskAdd("snef", "sfe", "23.02.2023_10:42", Duration.ofMinutes(120));
+       // taskManager.taskAdd("sqef", "sfe", "24.02.2023_10:42", Duration.ofMinutes(120));
+        taskManager.taskAdd("skef", "sfe", "25.02.2023_10:45", Duration.ofMinutes(120)); //  t.1
+        taskManager.taskAdd("smef", "sfe", "25.02.2023_10:36", Duration.ofMinutes(119));
 
+        taskManager.advTimeCrossingCheck("t.1");
 
         getControlOptions();
     }
