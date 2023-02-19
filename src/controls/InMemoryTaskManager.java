@@ -328,38 +328,42 @@ public class InMemoryTaskManager implements TaskManager {
     public void advTimeCrossingCheck(String taskKey) {
         List<DateRange> ranges = new ArrayList<>();
         Task task = tasksStorage.get(taskKey);
-        DateRange checkedInterval = new DateRange(task.getStartTime(), task.getEndTime(), task.getTaskId());
+        DateRange interval = new DateRange(task.getStartTime(), task.getEndTime(), task.getTaskId());
 
         for (Task i : prioritizedTasks) {
             ranges.add(new DateRange(i.getStartTime(), i.getEndTime(), i.getTaskId()));
         }
 
-        System.out.println(ranges);
-
         for (DateRange i : ranges) {
+            if (i.getTaskKey().equals(taskKey)) {
+                continue;
+            }
+            System.out.println(i.isBeforeBefore(task.getStartTime(), task.getEndTime()));
+            System.out.println(i.isAfterAfter(task.getStartTime(), task.getEndTime()));
+            System.out.println(i.isAfterBefore(task.getStartTime(), task.getEndTime()));
+            System.out.println(i.isBeforeAfter(task.getStartTime(), task.getEndTime()));
 
 
-            if (i.start.isBefore(checkedInterval.start) && i.stop.isBefore(checkedInterval.stop)) {
+
+            /*            if (i.start.isBefore(interval.start) && i.stop.isBefore(interval.stop)) {
                 System.out.println(i.taskKey + " начнется до и закончится до");
             }
-            else if (i.start.isAfter(checkedInterval.start) && i.stop.isAfter(checkedInterval.stop)) {
+            else if (i.start.isAfter(interval.start) && i.stop.isAfter(interval.stop)) {
                 System.out.println(i.taskKey + " начнется после и продолжится после");
             }
-            else if (i.start.isAfter(checkedInterval.start) && i.stop.isBefore(checkedInterval.stop)) {
+            else if (i.start.isAfter(interval.start) && i.stop.isBefore(interval.stop)) {
                 System.out.println(i.taskKey + " начнется после и закончится до");
             }
-            else if (i.start.isBefore(checkedInterval.start) && i.stop.isAfter(checkedInterval.stop)) {
+            else if (i.start.isBefore(interval.start) && i.stop.isAfter(interval.stop)) {
                 System.out.println(i.taskKey + " начнется до и закончится после");
             }
-            else if (i.start.isEqual(checkedInterval.start) && i.stop.isAfter(checkedInterval.start)) {
+            else if (i.start.isEqual(interval.start) && i.stop.isAfter(interval.start)) {
                 System.out.println(i.taskKey + "старт совпадают");
             }
-            else if (i.start.isBefore(checkedInterval.stop) && i.stop.isEqual(checkedInterval.stop)) {
+            else if (i.start.isBefore(interval.stop) && i.stop.isEqual(interval.stop)) {
                 System.out.println(i.taskKey + " стоп совпадают");
-            }
-            /*else if (i.start.isEqual(checkedInterval.start) && i.stop.isEqual(checkedInterval.stop)) {
-                System.out.println(i.taskKey + " старт и стоп совпадают");
             }*/
+
 
         }
     }
