@@ -130,7 +130,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                             break;
                     }
 
-                    if (file == dataFile) {                                          // TODO
+                    if (file == dataFile) {
                         InMemoryTaskManager.getTasksStorage().put(tokens[0], task);
                     }
                     else {
@@ -138,7 +138,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                     }
                 }
 
-                InMemoryTaskManager.getPrioritizedTasks().addAll(InMemoryTaskManager.getTasksStorage().values()); // TODO
+                InMemoryTaskManager.getPrioritizedTasks().addAll(InMemoryTaskManager.getTasksStorage().values());
 
             } catch (FileNotFoundException e) {
                 throw new ManagerLoadException("Не удалось восстановить данные задач");

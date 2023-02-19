@@ -25,6 +25,7 @@ public class InMemoryTaskManager implements TaskManager {
             Task::getStartTime,
             Comparator.nullsLast(Comparator.naturalOrder())
     ));
+    List<DateRange> ranges = new ArrayList<>();
 
     public int taskId = FileBackedTasksManager.getInitNumber();
     public static String taskContent;
@@ -43,6 +44,7 @@ public class InMemoryTaskManager implements TaskManager {
         task.setStartTime(getLocalDateTime(startTime));
         DateRange interval = new DateRange(task.getStartTime(), task.getEndTime(), task.getTaskId());
         advancedTimeOverlappingCheck(interval);
+        ranges.add(interval);
 
         InMemoryTaskManager.tasksStorage.put(taskKey, task);
         taskContent = getTaskFormattedData(taskKey);
@@ -71,6 +73,7 @@ public class InMemoryTaskManager implements TaskManager {
         task.setDuration(duration);
         DateRange interval = new DateRange(task.getStartTime(), task.getEndTime(), task.getTaskId());
         advancedTimeOverlappingCheck(interval);
+        ranges.add(interval);
 
         InMemoryTaskManager.tasksStorage.put(taskKey, task);
         parentTask.relatedSubTask.put(taskKey, task);
@@ -92,6 +95,7 @@ public class InMemoryTaskManager implements TaskManager {
         task.setTaskStatus(TaskStages.valueOf(taskStatus));
         DateRange interval = new DateRange(task.getStartTime(), task.getEndTime(), task.getTaskId());
         advancedTimeOverlappingCheck(interval);
+        ranges.add(interval);
 
         tasksStorage.put(taskKey, task);
         taskContent = getTaskFormattedData(taskKey);
@@ -124,6 +128,7 @@ public class InMemoryTaskManager implements TaskManager {
         task.setTaskStatus(TaskStages.valueOf(taskStatus));
         DateRange interval = new DateRange(task.getStartTime(), task.getEndTime(), task.getTaskId());
         advancedTimeOverlappingCheck(interval);
+        ranges.add(interval);
 
         parentTask.relatedSubTask.put(taskKey, task);
         tasksStorage.put(taskKey, task);
@@ -326,13 +331,6 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     public void advancedTimeOverlappingCheck(DateRange interval) {
-        List<DateRange> ranges = new ArrayList<>();
-
-        for (Task i : prioritizedTasks) {
-            if (i.getStartTime() != null) {
-                ranges.add(new DateRange(i.getStartTime(), i.getEndTime(), i.getTaskId()));
-            }
-        }
 
         for (DateRange i : ranges) {
             if (i.getTaskKey().equals(interval.taskKey)) {
