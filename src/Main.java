@@ -57,7 +57,7 @@ public class Main {
 
                     switch (mode) {
                         case "task":
-                            System.out.println("time <14.02.2023_10:42>"); // TODO
+                            System.out.println("time <19.02.2023_17:00>"); // TODO
                             time = scanner.next();
                             System.out.println("duration"); // TODO
                             duration = scanner.next();
@@ -71,7 +71,7 @@ public class Main {
                         case "subtask":
                             System.out.println("parentKey"); // TODO
                             parentKey = scanner.next();
-                            System.out.println("time <14.02.2023_10:42>"); // TODO
+                            System.out.println("time <19.02.2023_17:00>"); // TODO
                             time = scanner.next();
                             System.out.println("duration"); // TODO
                             duration = scanner.next();
@@ -97,7 +97,7 @@ public class Main {
 
                         System.out.println("taskStatus"); // TODO
                         taskStatus = scanner.next();
-                        System.out.println("time <14.02.2023_10:42>"); // TODO
+                        System.out.println("time <19.02.2023_17:00>"); // TODO
                         startTime = scanner.next();
                         System.out.println("duration"); // TODO
                         duration = scanner.next();
@@ -108,7 +108,7 @@ public class Main {
                     else if (taskKey.charAt(0) == 't') {
                         System.out.println("taskStatus"); // TODO
                         taskStatus = scanner.next();
-                        System.out.println("time <14.02.2023_10:42>"); // TODO
+                        System.out.println("time <19.02.2023_17:00>"); // TODO
                         startTime = scanner.next();
                         System.out.println("duration"); // TODO
                         duration = scanner.next();

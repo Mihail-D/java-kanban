@@ -33,8 +33,6 @@ public class InMemoryTaskManager implements TaskManager {
         return tasksStorage;
     }
 
-
-
     @Override
     public void taskAdd(
             String taskTitle, String taskDescription, String startTime, Duration duration
@@ -44,7 +42,7 @@ public class InMemoryTaskManager implements TaskManager {
         task.setDuration(duration);
         task.setStartTime(getLocalDateTime(startTime));
         DateRange interval = new DateRange(task.getStartTime(), task.getEndTime(), task.getTaskId());
-        advancedTimeCrossingCheck(interval);
+        advancedTimeOverlappingCheck(interval);
 
         InMemoryTaskManager.tasksStorage.put(taskKey, task);
         taskContent = getTaskFormattedData(taskKey);
@@ -72,7 +70,7 @@ public class InMemoryTaskManager implements TaskManager {
         task.setStartTime(getLocalDateTime(startTime));
         task.setDuration(duration);
         DateRange interval = new DateRange(task.getStartTime(), task.getEndTime(), task.getTaskId());
-        advancedTimeCrossingCheck(interval);
+        advancedTimeOverlappingCheck(interval);
 
         InMemoryTaskManager.tasksStorage.put(taskKey, task);
         parentTask.relatedSubTask.put(taskKey, task);
@@ -93,7 +91,7 @@ public class InMemoryTaskManager implements TaskManager {
         TaskTypes taskType = task.getTaskType();
         task.setTaskStatus(TaskStages.valueOf(taskStatus));
         DateRange interval = new DateRange(task.getStartTime(), task.getEndTime(), task.getTaskId());
-        advancedTimeCrossingCheck(interval);
+        advancedTimeOverlappingCheck(interval);
 
         tasksStorage.put(taskKey, task);
         taskContent = getTaskFormattedData(taskKey);
@@ -125,7 +123,7 @@ public class InMemoryTaskManager implements TaskManager {
         setEpicTiming(parentTask);
         task.setTaskStatus(TaskStages.valueOf(taskStatus));
         DateRange interval = new DateRange(task.getStartTime(), task.getEndTime(), task.getTaskId());
-        advancedTimeCrossingCheck(interval);
+        advancedTimeOverlappingCheck(interval);
 
         parentTask.relatedSubTask.put(taskKey, task);
         tasksStorage.put(taskKey, task);
@@ -327,7 +325,7 @@ public class InMemoryTaskManager implements TaskManager {
         return LocalDateTime.parse(time, formatter);
     }
 
-    public void advancedTimeCrossingCheck(DateRange interval) {
+    public void advancedTimeOverlappingCheck(DateRange interval) {
         List<DateRange> ranges = new ArrayList<>();
 
         for (Task i : prioritizedTasks) {
@@ -341,8 +339,8 @@ public class InMemoryTaskManager implements TaskManager {
                 continue;
             }
 
-            if (!(i.isBeforeBefore(interval.start, interval.stop) || i.isAfterAfter(interval.start,
-                    interval.stop))) {
+            if (!(i.isOverlappingAtStart (interval.start, interval.stop)
+                    || i.isOverlappingAtStop(interval.start, interval.stop))) {
                 throw new ManagerSaveException("Время новой задачи пересекается с ранее созданной");
             }
         }
