@@ -12,9 +12,6 @@ public class DateRange {
     }
 
     public DateRange(LocalDateTime start, LocalDateTime stop, String taskKey) {
-        if (stop.isBefore(start)) {
-            throw new IllegalArgumentException("The stop date is before the start date.");
-        }
         this.start = start;
         this.stop = stop;
         this.taskKey = taskKey;
@@ -29,14 +26,6 @@ public class DateRange {
         return ((this.start.isAfter(start) && this.start.isAfter(stop))
                 && (this.stop.isAfter(stop) && this.stop.isAfter(stop)));
     }
-
-/*    public boolean isAfterBefore(LocalDateTime start, LocalDateTime stop) {
-        return this.start.isAfter(start) && this.stop.isBefore(stop);
-    }
-
-    public boolean isBeforeAfter(LocalDateTime start, LocalDateTime stop) {
-        return this.start.isBefore(start) && this.stop.isAfter(stop);
-    }*/
 
     @Override
     public boolean equals(Object o) {

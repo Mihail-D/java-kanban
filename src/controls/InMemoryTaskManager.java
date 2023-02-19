@@ -5,12 +5,10 @@ import org.jetbrains.annotations.NotNull;
 import tasks.*;
 
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toCollection;
@@ -27,7 +25,6 @@ public class InMemoryTaskManager implements TaskManager {
             Task::getStartTime,
             Comparator.nullsLast(Comparator.naturalOrder())
     ));
-    private static Map<LocalDateTime, Boolean> timeGapsStorage = new HashMap<>(131400);
 
     public int taskId = FileBackedTasksManager.getInitNumber();
     public static String taskContent;
@@ -36,15 +33,19 @@ public class InMemoryTaskManager implements TaskManager {
         return tasksStorage;
     }
 
+
+
     @Override
     public void taskAdd(
             String taskTitle, String taskDescription, String startTime, Duration duration
     ) {
         String taskKey = getId(TASK);
-        //timeCrossingCheck(startTime, taskKey);  // TODO
         Task task = new Task(taskTitle, taskDescription, taskKey, false, NEW, TASK);
         task.setDuration(duration);
         task.setStartTime(getLocalDateTime(startTime));
+        DateRange interval = new DateRange(task.getStartTime(), task.getEndTime(), task.getTaskId());
+        advancedTimeCrossingCheck(interval);
+
         InMemoryTaskManager.tasksStorage.put(taskKey, task);
         taskContent = getTaskFormattedData(taskKey);
         prioritizedTasks.add(task);
@@ -67,16 +68,18 @@ public class InMemoryTaskManager implements TaskManager {
         String taskKey = getId(SUB_TASK);
         Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(parentKey);
         setEpicStatus(parentKey);
-        //timeCrossingCheck(startTime, taskKey);                                                     // TODO
-        SubTask subTask = new SubTask(taskTitle, taskDescription, taskKey, false, NEW, TaskTypes.SUB_TASK, parentKey);
-        subTask.setStartTime(getLocalDateTime(startTime));
-        subTask.setDuration(duration);
-        InMemoryTaskManager.tasksStorage.put(taskKey, subTask);
-        parentTask.relatedSubTask.put(taskKey, subTask);
+        SubTask task = new SubTask(taskTitle, taskDescription, taskKey, false, NEW, TaskTypes.SUB_TASK, parentKey);
+        task.setStartTime(getLocalDateTime(startTime));
+        task.setDuration(duration);
+        DateRange interval = new DateRange(task.getStartTime(), task.getEndTime(), task.getTaskId());
+        advancedTimeCrossingCheck(interval);
+
+        InMemoryTaskManager.tasksStorage.put(taskKey, task);
+        parentTask.relatedSubTask.put(taskKey, task);
         setEpicStatus(parentKey);
         setEpicTiming(parentTask);
         taskContent = getTaskFormattedData(taskKey);
-        prioritizedTasks.add(subTask);
+        prioritizedTasks.add(task);
     }
 
     @Override
@@ -88,13 +91,11 @@ public class InMemoryTaskManager implements TaskManager {
         task.setTaskTitle(taskTitle);
         task.setTaskDescription(taskDescription);
         TaskTypes taskType = task.getTaskType();
-
         task.setTaskStatus(TaskStages.valueOf(taskStatus));
+        DateRange interval = new DateRange(task.getStartTime(), task.getEndTime(), task.getTaskId());
+        advancedTimeCrossingCheck(interval);
+
         tasksStorage.put(taskKey, task);
-        //timeCrossingCheck(startTime, taskKey);                                                     // TODO
-
-        //advancedTimeCrossingCheck(task);                                            // TODO
-
         taskContent = getTaskFormattedData(taskKey);
     }
 
@@ -120,16 +121,15 @@ public class InMemoryTaskManager implements TaskManager {
         task.setTaskTitle(taskTitle);
         task.setTaskDescription(taskDescription);
         TaskTypes taskType = task.getTaskType();
-
         Epic parentTask = (Epic) tasksStorage.get(parentKey);
         setEpicTiming(parentTask);
         task.setTaskStatus(TaskStages.valueOf(taskStatus));
+        DateRange interval = new DateRange(task.getStartTime(), task.getEndTime(), task.getTaskId());
+        advancedTimeCrossingCheck(interval);
 
         parentTask.relatedSubTask.put(taskKey, task);
-
         tasksStorage.put(taskKey, task);
         setEpicStatus(parentKey);
-        //timeCrossingCheck(startTime, taskKey);                                                     // TODO
         taskContent = getTaskFormattedData(taskKey);
     }
 
@@ -308,13 +308,15 @@ public class InMemoryTaskManager implements TaskManager {
         String result;
 
         if (task.getClass() == SubTask.class) {
-            result = taskKey + taskTitle + taskDescription + isViewed + taskStatus + taskType + "," + ((SubTask) task).getParentId() + "," + time + "," + duration + "," + task.getEndTime();
+            result = taskKey + taskTitle + taskDescription + isViewed + taskStatus + taskType + ","
+                    + ((SubTask) task).getParentId() + "," + time + "," + duration + "," + task.getEndTime();
         }
         else if (task.getClass() == Epic.class && time == null) {
             result = taskKey + taskTitle + taskDescription + isViewed + taskStatus + taskType;
         }
         else {
-            result = taskKey + taskTitle + taskDescription + isViewed + taskStatus + taskType + "," + time + "," + duration + "," + task.getEndTime();
+            result = taskKey + taskTitle + taskDescription + isViewed + taskStatus + taskType + ","
+                    + time + "," + duration + "," + task.getEndTime();
         }
 
         return result;
@@ -325,50 +327,24 @@ public class InMemoryTaskManager implements TaskManager {
         return LocalDateTime.parse(time, formatter);
     }
 
-    public void advTimeCrossingCheck(String taskKey) {
+    public void advancedTimeCrossingCheck(DateRange interval) {
         List<DateRange> ranges = new ArrayList<>();
-        Task task = tasksStorage.get(taskKey);
-        DateRange interval = new DateRange(task.getStartTime(), task.getEndTime(), task.getTaskId());
 
         for (Task i : prioritizedTasks) {
-            ranges.add(new DateRange(i.getStartTime(), i.getEndTime(), i.getTaskId()));
+            if (i.getStartTime() != null) {
+                ranges.add(new DateRange(i.getStartTime(), i.getEndTime(), i.getTaskId()));
+            }
         }
 
         for (DateRange i : ranges) {
-            if (i.getTaskKey().equals(taskKey)) {
+            if (i.getTaskKey().equals(interval.taskKey)) {
                 continue;
             }
 
-            if (!(i.isBeforeBefore(task.getStartTime(), task.getEndTime()) || i.isAfterAfter(task.getStartTime(),
-                    task.getEndTime()))) {
+            if (!(i.isBeforeBefore(interval.start, interval.stop) || i.isAfterAfter(interval.start,
+                    interval.stop))) {
                 throw new ManagerSaveException("Время новой задачи пересекается с ранее созданной");
             }
-
-
-            /*System.out.println(i.isBeforeBefore(task.getStartTime(), task.getEndTime()));
-            System.out.println(i.isAfterAfter(task.getStartTime(), task.getEndTime()));
-            System.out.println(i.isAfterBefore(task.getStartTime(), task.getEndTime()));
-            System.out.println(i.isBeforeAfter(task.getStartTime(), task.getEndTime()));*/
-
-            /*            if (i.start.isBefore(interval.start) && i.stop.isBefore(interval.stop)) {
-                System.out.println(i.taskKey + " начнется до и закончится до");
-            }
-            else if (i.start.isAfter(interval.start) && i.stop.isAfter(interval.stop)) {
-                System.out.println(i.taskKey + " начнется после и продолжится после");
-            }
-            else if (i.start.isAfter(interval.start) && i.stop.isBefore(interval.stop)) {
-                System.out.println(i.taskKey + " начнется после и закончится до");
-            }
-            else if (i.start.isBefore(interval.start) && i.stop.isAfter(interval.stop)) {
-                System.out.println(i.taskKey + " начнется до и закончится после");
-            }
-            else if (i.start.isEqual(interval.start) && i.stop.isAfter(interval.start)) {
-                System.out.println(i.taskKey + "старт совпадают");
-            }
-            else if (i.start.isBefore(interval.stop) && i.stop.isEqual(interval.stop)) {
-                System.out.println(i.taskKey + " стоп совпадают");
-            }*/
-
         }
     }
 }
