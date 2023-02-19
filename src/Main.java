@@ -34,8 +34,8 @@ public class Main {
        // taskManager.taskAdd("snef", "sfe", "23.02.2023_10:42", Duration.ofMinutes(120));
        // taskManager.taskAdd("sqef", "sfe", "24.02.2023_10:42", Duration.ofMinutes(120));
         taskManager.taskAdd("ske", "sfe", "25.02.2023_09:00", Duration.ofMinutes(60)); //  t.1
-        taskManager.taskAdd("sme", "sfe", "25.02.2023_08:30", Duration.ofMinutes(168));
-                                                                // this.start.isEqual(stop) || this.stop.isEqual(stop)
+        taskManager.taskAdd("sme", "sfe", "25.02.2023_09:02", Duration.ofMinutes(58));
+
         taskManager.advTimeCrossingCheck("t.1");
 
         getControlOptions();

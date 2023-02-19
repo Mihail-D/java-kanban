@@ -21,20 +21,22 @@ public class DateRange {
     }
 
     public boolean isBeforeBefore(LocalDateTime start, LocalDateTime stop) {
-        return (this.start.isBefore(start) && this.stop.isBefore(stop));
+        return ((this.start.isBefore(start) && this.stop.isBefore(start))
+                && (this.start.isBefore(stop) && this.stop.isBefore(stop)));
     }
 
     public boolean isAfterAfter(LocalDateTime start, LocalDateTime stop) {
-        return (this.start.isAfter(start) && this.stop.isAfter(stop));
+        return ((this.start.isAfter(start) && this.start.isAfter(stop))
+                && (this.stop.isAfter(stop) && this.stop.isAfter(stop)));
     }
 
-    public boolean isAfterBefore(LocalDateTime start, LocalDateTime stop) {
-        return (this.start.isAfter(start) && this.stop.isBefore(stop));
+/*    public boolean isAfterBefore(LocalDateTime start, LocalDateTime stop) {
+        return this.start.isAfter(start) && this.stop.isBefore(stop);
     }
 
     public boolean isBeforeAfter(LocalDateTime start, LocalDateTime stop) {
-        return (this.start.isBefore(start) && this.stop.isAfter(stop));
-    }
+        return this.start.isBefore(start) && this.stop.isAfter(stop);
+    }*/
 
     @Override
     public boolean equals(Object o) {
@@ -66,6 +68,6 @@ public class DateRange {
 
     @Override
     public String toString() {
-        return "DateRange{ " + "start=" + start + ", stop=" + stop + " }";
+        return "DateRange{ " + "start=" + start + ", stop=" + stop + "  " + taskKey + " }";
     }
 }

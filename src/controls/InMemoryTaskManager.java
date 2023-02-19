@@ -338,12 +338,17 @@ public class InMemoryTaskManager implements TaskManager {
             if (i.getTaskKey().equals(taskKey)) {
                 continue;
             }
-            System.out.println(i.isBeforeBefore(task.getStartTime(), task.getEndTime()));
+
+            if (!(i.isBeforeBefore(task.getStartTime(), task.getEndTime()) || i.isAfterAfter(task.getStartTime(),
+                    task.getEndTime()))) {
+                throw new ManagerSaveException("Время новой задачи пересекается с ранее созданной");
+            }
+
+
+            /*System.out.println(i.isBeforeBefore(task.getStartTime(), task.getEndTime()));
             System.out.println(i.isAfterAfter(task.getStartTime(), task.getEndTime()));
             System.out.println(i.isAfterBefore(task.getStartTime(), task.getEndTime()));
-            System.out.println(i.isBeforeAfter(task.getStartTime(), task.getEndTime()));
-
-
+            System.out.println(i.isBeforeAfter(task.getStartTime(), task.getEndTime()));*/
 
             /*            if (i.start.isBefore(interval.start) && i.stop.isBefore(interval.stop)) {
                 System.out.println(i.taskKey + " начнется до и закончится до");
@@ -363,7 +368,6 @@ public class InMemoryTaskManager implements TaskManager {
             else if (i.start.isBefore(interval.stop) && i.stop.isEqual(interval.stop)) {
                 System.out.println(i.taskKey + " стоп совпадают");
             }*/
-
 
         }
     }
