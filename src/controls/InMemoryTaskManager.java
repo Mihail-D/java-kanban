@@ -54,7 +54,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void epicAdd(String taskTitle, String taskDescription) {
         String taskKey = getId(EPIC);
-        Epic epic = new Epic(taskTitle, taskDescription, taskKey, false, NEW, TaskTypes.EPIC, new LinkedHashMap<>());
+        Epic epic = new Epic(taskTitle, taskDescription, taskKey, false, NEW,
+                TaskTypes.EPIC, new LinkedHashMap<>()
+        );
         InMemoryTaskManager.tasksStorage.put(taskKey, epic);
         taskContent = getTaskFormattedData(taskKey);
         prioritizedTasks.add(epic);
@@ -68,7 +70,9 @@ public class InMemoryTaskManager implements TaskManager {
         String taskKey = getId(SUB_TASK);
         Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(parentKey);
         setEpicStatus(parentKey);
-        SubTask task = new SubTask(taskTitle, taskDescription, taskKey, false, NEW, TaskTypes.SUB_TASK, parentKey);
+        SubTask task = new SubTask(taskTitle, taskDescription, taskKey, false, NEW,
+                TaskTypes.SUB_TASK, parentKey
+        );
         task.setStartTime(getLocalDateTime(startTime));
         task.setDuration(duration);
         DateRange interval = new DateRange(task.getStartTime(), task.getEndTime(), task.getTaskId());
@@ -220,11 +224,7 @@ public class InMemoryTaskManager implements TaskManager {
         return localTasksList;
     }
 
-    public static Set<Task> getPrioritizedTasks() {             // TODO
-        for (Task i : prioritizedTasks) {
-            System.out.println(i.getTaskId() + " " + i.getStartTime());
-        }
-
+    public static Set<Task> getPrioritizedTasks() {
         return prioritizedTasks;
     }
 
@@ -337,7 +337,7 @@ public class InMemoryTaskManager implements TaskManager {
                 continue;
             }
 
-            if (!(i.isOverlappingAtStart (interval.start, interval.stop)
+            if (!(i.isOverlappingAtStart(interval.start, interval.stop)
                     || i.isOverlappingAtStop(interval.start, interval.stop))) {
                 throw new ManagerSaveException("Время новой задачи пересекается с ранее созданной");
             }

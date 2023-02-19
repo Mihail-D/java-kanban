@@ -17,7 +17,7 @@ public class DateRange {
         this.taskKey = taskKey;
     }
 
-    public boolean isOverlappingAtStart (LocalDateTime start, LocalDateTime stop) {
+    public boolean isOverlappingAtStart(LocalDateTime start, LocalDateTime stop) {
         return ((this.start.isBefore(start) && this.stop.isBefore(start))
                 && (this.start.isBefore(stop) && this.stop.isBefore(stop)));
     }

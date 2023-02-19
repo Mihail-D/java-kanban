@@ -161,7 +161,7 @@ public class Main {
         }
     }
 
-    /*public static void getControlOptions() {
+/*    public static void getControlOptions() {
         Scanner scanner = new Scanner(System.in);
         int item;
         String taskTitle;
@@ -170,6 +170,9 @@ public class Main {
         String parentKey;
         String mode;
         String taskStatus;
+        String time;
+        String duration;
+        String startTime;
 
         while (true) {
             item = scanner.nextInt();
@@ -180,12 +183,25 @@ public class Main {
                     taskDescription = scanner.next();
                     mode = scanner.next();
 
-                    if (mode.equals("taskMode") || mode.equals("epicMode")) {
-                        fileBackedTasksManager.taskAdd(taskTitle, taskDescription, mode);
-                    }
-                    else if (mode.equals("subTaskMode")) {
-                        parentKey = scanner.next();
-                        fileBackedTasksManager.taskAdd(taskTitle, taskDescription, mode, parentKey);
+                    switch (mode) {
+                        case "task":
+                            time = scanner.next();
+                            duration = scanner.next();
+                            fileBackedTasksManager.taskAdd(taskTitle, taskDescription, time,
+                                    Duration.parse("PT" + duration + "M")
+                            );
+                            break;
+                        case "epic":
+                            fileBackedTasksManager.epicAdd(taskTitle, taskDescription);
+                            break;
+                        case "subtask":
+                            parentKey = scanner.next();
+                            time = scanner.next();
+                            duration = scanner.next();
+                            fileBackedTasksManager.subTaskAdd(taskTitle, taskDescription, parentKey,
+                                    time, Duration.parse("PT" + duration + "M")
+                            );
+                            break;
                     }
                     break;
                 case 2:
@@ -196,14 +212,21 @@ public class Main {
                     if (taskKey.charAt(0) == 's') {
                         parentKey = scanner.next();
                         taskStatus = scanner.next();
-                        fileBackedTasksManager.taskUpdate(taskKey, taskTitle, taskDescription, taskStatus, parentKey);
+                        startTime = scanner.next();
+                        duration = scanner.next();
+                        fileBackedTasksManager.subTaskUpdate(taskKey, taskTitle, taskDescription, taskStatus,
+                                parentKey, startTime, Duration.parse("PT" + duration + "M")
+                        );
                     }
                     else if (taskKey.charAt(0) == 't') {
                         taskStatus = scanner.next();
-                        fileBackedTasksManager.taskUpdate(taskKey, taskTitle, taskDescription, taskStatus);
+                        startTime = scanner.next();
+                        duration = scanner.next();
+                        fileBackedTasksManager.taskUpdate(taskKey, taskTitle, taskDescription, taskStatus, startTime,
+                                Duration.parse("PT" + duration + "M"));
                     }
                     else if (taskKey.charAt(0) == 'e') {
-                        fileBackedTasksManager.taskUpdate(taskKey, taskTitle, taskDescription);
+                        fileBackedTasksManager.epicUpdate(taskKey, taskTitle, taskDescription);
                     }
                     break;
                 case 3:
@@ -219,26 +242,21 @@ public class Main {
                     break;
                 case 6:
                     taskKey = scanner.next();
-
-                    if (taskKey.charAt(0) == 's') {
-                        parentKey = scanner.next();
-                        fileBackedTasksManager.taskDelete(taskKey, parentKey);
-                    }
-                    else {
-                        fileBackedTasksManager.taskDelete(taskKey);
-                    }
+                    fileBackedTasksManager.taskDelete(taskKey);
                     break;
-
                 case 7:
                     fileBackedTasksManager.tasksClear();
                     break;
                 case 8:
                     inMemoryHistoryManager.getHistory();
                     break;
-
+                case 9:
+                    InMemoryTaskManager.getPrioritizedTasks();
+                    break;
                 case 0:
                     return;
             }
         }
     }*/
+
 }
