@@ -99,6 +99,7 @@ public class InMemoryTaskManager implements TaskManager {
         TaskTypes taskType = task.getTaskType();
         task.setTaskStatus(TaskStages.valueOf(taskStatus));
 
+        timeSlotsStorage.removeIf(i -> i.taskKey.equals(taskKey));  // TODO
         task.setStartTime(getLocalDateTime(startTime));
         task.setDuration(duration);
         DateRange interval = new DateRange(task.getStartTime(), task.getEndTime(), task.getTaskId());
@@ -135,6 +136,7 @@ public class InMemoryTaskManager implements TaskManager {
         setEpicTiming(parentTask);
         task.setTaskStatus(TaskStages.valueOf(taskStatus));
 
+        timeSlotsStorage.removeIf(i -> i.taskKey.equals(taskKey));  // TODO
         task.setStartTime(getLocalDateTime(startTime));
         task.setDuration(duration);
         DateRange interval = new DateRange(task.getStartTime(), task.getEndTime(), task.getTaskId());
@@ -188,6 +190,8 @@ public class InMemoryTaskManager implements TaskManager {
                 break;
         }
         inMemoryHistoryManager.removeHistoryRecord(taskKey);
+        timeSlotsStorage.removeIf(i -> i.taskKey.equals(taskKey));  // TODO
+        System.out.println(timeSlotsStorage);                       // TODO
         taskContent = null;
     }
 
@@ -346,9 +350,6 @@ public class InMemoryTaskManager implements TaskManager {
     public void advancedTimeOverlappingCheck(DateRange interval) {
 
         for (DateRange i : timeSlotsStorage) {
-            if (i.getTaskKey().equals(interval.taskKey)) {
-                timeSlotsStorage.remove(i);
-            }
 
             if (!(i.isOverlappingAtStart(interval.start, interval.stop)
                     || i.isOverlappingAtStop(interval.start, interval.stop))) {
