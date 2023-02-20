@@ -139,6 +139,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 }
 
                 InMemoryTaskManager.getPrioritizedTasks().addAll(InMemoryTaskManager.getTasksStorage().values());
+                InMemoryTaskManager.timeSlotsStorageFill();
 
             } catch (FileNotFoundException e) {
                 throw new ManagerLoadException("Не удалось восстановить данные задач");

@@ -154,6 +154,7 @@ public class Main {
                     break;
                 case 9:
                     InMemoryTaskManager.getPrioritizedTasks();
+                    System.out.println(InMemoryTaskManager.getPrioritizedTasks()); // TODO
                     break;
                 case 0:
                     return;

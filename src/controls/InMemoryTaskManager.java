@@ -25,7 +25,7 @@ public class InMemoryTaskManager implements TaskManager {
             Task::getStartTime,
             Comparator.nullsLast(Comparator.naturalOrder())
     ));
-    List<DateRange> ranges = new ArrayList<>();
+    private static List<DateRange> timeSlotsStorage = new ArrayList<>();
 
     public int taskId = FileBackedTasksManager.getInitNumber();
     public static String taskContent;
@@ -40,11 +40,12 @@ public class InMemoryTaskManager implements TaskManager {
     ) {
         String taskKey = getId(TASK);
         Task task = new Task(taskTitle, taskDescription, taskKey, false, NEW, TASK);
-        task.setDuration(duration);
+
         task.setStartTime(getLocalDateTime(startTime));
+        task.setDuration(duration);
         DateRange interval = new DateRange(task.getStartTime(), task.getEndTime(), task.getTaskId());
         advancedTimeOverlappingCheck(interval);
-        ranges.add(interval);
+        timeSlotsStorage.add(interval);
 
         InMemoryTaskManager.tasksStorage.put(taskKey, task);
         taskContent = getTaskFormattedData(taskKey);
@@ -77,7 +78,7 @@ public class InMemoryTaskManager implements TaskManager {
         task.setDuration(duration);
         DateRange interval = new DateRange(task.getStartTime(), task.getEndTime(), task.getTaskId());
         advancedTimeOverlappingCheck(interval);
-        ranges.add(interval);
+        timeSlotsStorage.add(interval);
 
         InMemoryTaskManager.tasksStorage.put(taskKey, task);
         parentTask.relatedSubTask.put(taskKey, task);
@@ -97,9 +98,12 @@ public class InMemoryTaskManager implements TaskManager {
         task.setTaskDescription(taskDescription);
         TaskTypes taskType = task.getTaskType();
         task.setTaskStatus(TaskStages.valueOf(taskStatus));
+
+        task.setStartTime(getLocalDateTime(startTime));
+        task.setDuration(duration);
         DateRange interval = new DateRange(task.getStartTime(), task.getEndTime(), task.getTaskId());
         advancedTimeOverlappingCheck(interval);
-        ranges.add(interval);
+        timeSlotsStorage.add(interval);
 
         tasksStorage.put(taskKey, task);
         taskContent = getTaskFormattedData(taskKey);
@@ -130,9 +134,12 @@ public class InMemoryTaskManager implements TaskManager {
         Epic parentTask = (Epic) tasksStorage.get(parentKey);
         setEpicTiming(parentTask);
         task.setTaskStatus(TaskStages.valueOf(taskStatus));
+
+        task.setStartTime(getLocalDateTime(startTime));
+        task.setDuration(duration);
         DateRange interval = new DateRange(task.getStartTime(), task.getEndTime(), task.getTaskId());
         advancedTimeOverlappingCheck(interval);
-        ranges.add(interval);
+        timeSlotsStorage.add(interval);
 
         parentTask.relatedSubTask.put(taskKey, task);
         tasksStorage.put(taskKey, task);
@@ -330,11 +337,17 @@ public class InMemoryTaskManager implements TaskManager {
         return LocalDateTime.parse(time, formatter);
     }
 
+    public static void timeSlotsStorageFill() {
+        for (Task i : prioritizedTasks) {
+            timeSlotsStorage.add(new DateRange(i.getStartTime(), i.getEndTime(), i.getTaskId()));
+        }
+    }
+
     public void advancedTimeOverlappingCheck(DateRange interval) {
 
-        for (DateRange i : ranges) {
+        for (DateRange i : timeSlotsStorage) {
             if (i.getTaskKey().equals(interval.taskKey)) {
-                continue;
+                timeSlotsStorage.remove(i);
             }
 
             if (!(i.isOverlappingAtStart(interval.start, interval.stop)
