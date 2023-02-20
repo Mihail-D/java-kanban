@@ -1,20 +1,24 @@
 package controls;
 
+import tasks.TaskTypes;
+
 import java.time.LocalDateTime;
 
 public class DateRange {
 
     public LocalDateTime start, stop;
     String taskKey;
+    TaskTypes taskTypes;
 
     public String getTaskKey() {
         return taskKey;
     }
 
-    public DateRange(LocalDateTime start, LocalDateTime stop, String taskKey) {
+    public DateRange(LocalDateTime start, LocalDateTime stop, String taskKey, TaskTypes taskTypes) {
         this.start = start;
         this.stop = stop;
         this.taskKey = taskKey;
+        this.taskTypes = taskTypes;
     }
 
     public boolean isOverlappingAtStart(LocalDateTime start, LocalDateTime stop) {

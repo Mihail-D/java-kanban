@@ -1,16 +1,11 @@
 import controls.*;
-import tasks.Task;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.Scanner;
-
-import static tasks.TaskStages.NEW;
-import static tasks.TaskTypes.TASK;
 
 public class Main {
 
@@ -71,7 +66,7 @@ public class Main {
 
                     switch (mode) {
                         case "task":
-                            System.out.println("time <20.02.2023_17:00>"); // TODO
+                            System.out.println("time <21.02.2023_17:00>"); // TODO
                             time = scanner.next();
                             System.out.println("duration"); // TODO
                             duration = scanner.next();
@@ -85,7 +80,7 @@ public class Main {
                         case "subtask":
                             System.out.println("parentKey"); // TODO
                             parentKey = scanner.next();
-                            System.out.println("time <20.02.2023_17:00>"); // TODO
+                            System.out.println("time <21.02.2023_17:00>"); // TODO
                             time = scanner.next();
                             System.out.println("duration"); // TODO
                             duration = scanner.next();
@@ -111,7 +106,7 @@ public class Main {
 
                         System.out.println("taskStatus"); // TODO
                         taskStatus = scanner.next();
-                        System.out.println("time <20.02.2023_17:00>"); // TODO
+                        System.out.println("time <21.02.2023_17:00>"); // TODO
                         startTime = scanner.next();
                         System.out.println("duration"); // TODO
                         duration = scanner.next();
@@ -122,12 +117,13 @@ public class Main {
                     else if (taskKey.charAt(0) == 't') {
                         System.out.println("taskStatus"); // TODO
                         taskStatus = scanner.next();
-                        System.out.println("time <20.02.2023_17:00>"); // TODO
+                        System.out.println("time <21.02.2023_17:00>"); // TODO
                         startTime = scanner.next();
                         System.out.println("duration"); // TODO
                         duration = scanner.next();
                         fileBackedTasksManager.taskUpdate(taskKey, taskTitle, taskDescription, taskStatus, startTime,
-                                Duration.parse("PT" + duration + "M"));
+                                Duration.parse("PT" + duration + "M")
+                        );
                     }
                     else if (taskKey.charAt(0) == 'e') {
                         fileBackedTasksManager.epicUpdate(taskKey, taskTitle, taskDescription);
