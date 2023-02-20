@@ -138,7 +138,6 @@ public class InMemoryTaskManager implements TaskManager {
         task.setTaskDescription(taskDescription);
         TaskTypes taskType = task.getTaskType();
         Epic parentTask = (Epic) tasksStorage.get(parentKey);
-        setEpicTiming(parentTask);
         task.setTaskStatus(TaskStages.valueOf(taskStatus));
 
         timeSlotsStorage.removeIf(i -> i.taskKey.equals(taskKey));
@@ -151,6 +150,7 @@ public class InMemoryTaskManager implements TaskManager {
         parentTask.relatedSubTask.put(taskKey, task);
         tasksStorage.put(taskKey, task);
         setEpicStatus(parentKey);
+        setEpicTiming(parentTask);
         taskContent = getTaskFormattedData(taskKey);
     }
 
