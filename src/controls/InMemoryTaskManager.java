@@ -143,14 +143,16 @@ public class InMemoryTaskManager implements TaskManager {
         timeSlotsStorage.removeIf(i -> i.taskKey.equals(taskKey));
         task.setStartTime(getLocalDateTime(startTime));
         task.setDuration(duration);
-        DateRange interval = new DateRange(task.getStartTime(), task.getEndTime(), task.getTaskId(), SUB_TASK);
-        advancedTimeOverlappingCheck(interval);
-        timeSlotsStorage.add(interval);
-
         parentTask.relatedSubTask.put(taskKey, task);
-        tasksStorage.put(taskKey, task);
+
         setEpicStatus(parentKey);
         setEpicTiming(parentTask);
+
+        DateRange interval = new DateRange(task.getStartTime(), task.getEndTime(), task.getTaskId(), SUB_TASK);
+        timeSlotsStorage.add(interval);
+        advancedTimeOverlappingCheck(interval);
+
+        tasksStorage.put(taskKey, task);
         taskContent = getTaskFormattedData(taskKey);
     }
 
@@ -298,8 +300,6 @@ public class InMemoryTaskManager implements TaskManager {
         LocalDateTime endTime;
         Duration duration = Duration.ZERO;
 
-        System.out.println(epicTask.relatedSubTask.values()); // TODO
-
         for (SubTask i : epicTask.relatedSubTask.values()) {
             if (epicTask.relatedSubTask.values().size() == 1) {
                 startTime = i.getStartTime();
@@ -363,10 +363,12 @@ public class InMemoryTaskManager implements TaskManager {
     public void advancedTimeOverlappingCheck(DateRange interval) {
 
         for (DateRange i : timeSlotsStorage) {
+            if (i.taskKey.equals(interval.taskKey)) {
+                continue;
+            }
 
             if (!(i.isOverlappingAtStart(interval.start, interval.stop)
                     || i.isOverlappingAtStop(interval.start, interval.stop))) {
-                System.out.println(timeSlotsStorage);                                     // TODO
                 throw new ManagerSaveException("Время новой задачи пересекается с ранее созданной");
             }
         }
