@@ -1,11 +1,16 @@
 import controls.*;
+import tasks.Task;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Scanner;
+
+import static tasks.TaskStages.NEW;
+import static tasks.TaskTypes.TASK;
 
 public class Main {
 
@@ -25,6 +30,15 @@ public class Main {
         fileBackedTasksManager = new FileBackedTasksManager(dataFile, historyFile);
         taskManager = new InMemoryTaskManager();
         inMemoryHistoryManager = new InMemoryHistoryManager();
+
+    /*taskManager.taskAdd("sef", "sfe", "19.02.2023_10:42", Duration.ofMinutes(120));
+        taskManager.taskAdd("seef", "sfe", "20.02.2023_10:42", Duration.ofMinutes(120));
+        taskManager.taskAdd("shef", "sfe", "21.02.2023_10:42", Duration.ofMinutes(120));
+        taskManager.taskAdd("serf", "sfe", "22.02.2023_10:42", Duration.ofMinutes(120));*/
+        // taskManager.taskAdd("snef", "sfe", "23.02.2023_10:42", Duration.ofMinutes(120));
+        // taskManager.taskAdd("sqef", "sfe", "24.02.2023_10:42", Duration.ofMinutes(120));
+        taskManager.taskAdd("ske", "sfe", "25.02.2023_10:00", Duration.ofMinutes(60)); //  t.1
+        taskManager.taskAdd("sme", "sfe", "25.02.2023_10:00", Duration.ofMinutes(60));
 
         getControlOptions();
     }
@@ -57,7 +71,7 @@ public class Main {
 
                     switch (mode) {
                         case "task":
-                            System.out.println("time <19.02.2023_17:00>"); // TODO
+                            System.out.println("time <20.02.2023_17:00>"); // TODO
                             time = scanner.next();
                             System.out.println("duration"); // TODO
                             duration = scanner.next();
@@ -71,7 +85,7 @@ public class Main {
                         case "subtask":
                             System.out.println("parentKey"); // TODO
                             parentKey = scanner.next();
-                            System.out.println("time <19.02.2023_17:00>"); // TODO
+                            System.out.println("time <20.02.2023_17:00>"); // TODO
                             time = scanner.next();
                             System.out.println("duration"); // TODO
                             duration = scanner.next();
@@ -97,7 +111,7 @@ public class Main {
 
                         System.out.println("taskStatus"); // TODO
                         taskStatus = scanner.next();
-                        System.out.println("time <19.02.2023_17:00>"); // TODO
+                        System.out.println("time <20.02.2023_17:00>"); // TODO
                         startTime = scanner.next();
                         System.out.println("duration"); // TODO
                         duration = scanner.next();
@@ -108,7 +122,7 @@ public class Main {
                     else if (taskKey.charAt(0) == 't') {
                         System.out.println("taskStatus"); // TODO
                         taskStatus = scanner.next();
-                        System.out.println("time <19.02.2023_17:00>"); // TODO
+                        System.out.println("time <20.02.2023_17:00>"); // TODO
                         startTime = scanner.next();
                         System.out.println("duration"); // TODO
                         duration = scanner.next();
