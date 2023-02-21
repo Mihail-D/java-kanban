@@ -93,17 +93,14 @@ public class Main {
                 case 2:
                     System.out.println("taskKey"); // TODO
                     taskKey = scanner.next();
-
                     System.out.println("taskTitle"); // TODO
                     taskTitle = scanner.next();
-
                     System.out.println("taskDescription"); // TODO
                     taskDescription = scanner.next();
 
                     if (taskKey.charAt(0) == 's') {
                         System.out.println("parentKey"); // TODO
                         parentKey = scanner.next();
-
                         System.out.println("taskStatus"); // TODO
                         taskStatus = scanner.next();
                         System.out.println("time <21.02.2023_17:00>"); // TODO
@@ -142,19 +139,14 @@ public class Main {
                 case 5:
                     System.out.println("taskKey"); // TODO
                     taskKey = scanner.next();
-
                     System.out.println(taskManager.collectEpicSubtasks(taskKey)); // TODO
                     taskManager.collectEpicSubtasks(taskKey);
-
                     break;
                 case 6:
                     System.out.println("taskKey"); // TODO
                     taskKey = scanner.next();
-
                     fileBackedTasksManager.taskDelete(taskKey);
-
                     break;
-
                 case 7:
                     fileBackedTasksManager.tasksClear();
                     break;

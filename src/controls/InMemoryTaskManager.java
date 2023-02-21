@@ -297,8 +297,8 @@ public class InMemoryTaskManager implements TaskManager {
 
     public void setEpicTiming(Epic epicTask) {
         LocalDateTime startTime = epicTask.getStartTime();
-        LocalDateTime endTime;
         Duration duration = Duration.ZERO;
+        LocalDateTime endTime;
 
         for (SubTask i : epicTask.relatedSubTask.values()) {
             if (epicTask.relatedSubTask.values().size() == 1) {
