@@ -100,7 +100,7 @@ public class Main {
 
                     break;
                 case 2:
-                    System.out.println("taskKey"); // TODO
+                   /* System.out.println("taskKey"); // TODO
                     taskKey = scanner.next();
                     System.out.println("taskTitle"); // TODO
                     taskTitle = scanner.next();
@@ -129,7 +129,7 @@ public class Main {
                     }
                     else if (taskKey.charAt(0) == 'e') {
                         fileBackedTasksManager.epicUpdate(taskKey, taskTitle, taskDescription);
-                    }
+                    }*/
                     break;
 
                 case 3:

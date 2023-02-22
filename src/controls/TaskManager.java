@@ -5,6 +5,7 @@ import tasks.SubTask;
 import tasks.Task;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public interface TaskManager {
 
     void taskUpdate(
             String taskKey, String taskTitle, String taskDescription,
-            String taskStatus, String startTime, Duration duration
+            String taskStatus, LocalDateTime startTime, Duration duration
     );
 
     void epicUpdate(String taskKey, String taskTitle, String taskDescription);

@@ -85,7 +85,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void taskUpdate(
             String taskKey, String taskTitle, String taskDescription, String taskStatus,
-            String startTime, Duration duration
+            LocalDateTime startTime, Duration duration
     ) {
         Task task = tasksStorage.get(taskKey);
         task.setTaskTitle(taskTitle);
@@ -94,7 +94,7 @@ public class InMemoryTaskManager implements TaskManager {
         task.setTaskStatus(TaskStages.valueOf(taskStatus));
 
         timeSlotsStorage.removeIf(i -> i.taskKey.equals(taskKey));
-        task.setStartTime(LocalDateTime.parse(startTime, formatter));
+        task.setStartTime(startTime);
         task.setDuration(duration);
         DateRange interval = new DateRange(task.getStartTime(), task.getEndTime(), task.getTaskId(), TASK);
         advancedTimeOverlappingCheck(interval);
