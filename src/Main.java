@@ -15,8 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.Scanner;
 
 import static tasks.TaskStages.NEW;
-import static tasks.TaskTypes.EPIC;
-import static tasks.TaskTypes.TASK;
+import static tasks.TaskTypes.*;
 
 public class Main {
 
@@ -69,51 +68,46 @@ public class Main {
 
             switch (item) {
                 case 1:
-                    System.out.println("mode t - e - s"); // TODO
-                    mode = scanner.next();
 
-                    switch (mode) {
-                        case "t":
-                            fileBackedTasksManager.taskAdd(new Task("task_1", "description_1",
-                                    false, NEW, TASK, LocalDateTime.parse("22.02.2023_17:00", formatter),
-                                    Duration.ofMinutes(60)
-                            ));
-                            fileBackedTasksManager.taskAdd(new Task("task_2", "description_2",
-                                    false, NEW, TASK, LocalDateTime.parse("22.02.2023_19:00", formatter),
-                                    Duration.ofMinutes(60)
-                            ));
-                            fileBackedTasksManager.taskAdd(new Task("task_3", "description_3",
-                                    false, NEW, TASK, LocalDateTime.parse("22.02.2023_21:00", formatter),
-                                    Duration.ofMinutes(60)
-                            ));
-                            break;
-                        case "e":
-                            fileBackedTasksManager.epicAdd(new Epic("task_4", "description_4",
-                                    false, NEW, EPIC, LocalDateTime.MAX, Duration.ZERO,
-                                    new LinkedHashMap<>()
-                            ));
-                            fileBackedTasksManager.epicAdd(new Epic("task_5",
-                                    "description_5", false, NEW, EPIC, LocalDateTime.MAX, Duration.ZERO,
-                                    new LinkedHashMap<>()
-                            ));
-                            fileBackedTasksManager.epicAdd(new Epic("task_6", "description_6",
-                                    false, NEW, EPIC, LocalDateTime.MAX, Duration.ZERO,
-                                    new LinkedHashMap<>()
-                            ));
+                    fileBackedTasksManager.taskAdd(new Task("task_1", "description_1",
+                            false, NEW, TASK, LocalDateTime.parse("22.02.2023_17:00", formatter),
+                            Duration.ofMinutes(60)
+                    ));
+                    fileBackedTasksManager.taskAdd(new Task("task_2", "description_2",
+                            false, NEW, TASK, LocalDateTime.parse("22.02.2023_19:00", formatter),
+                            Duration.ofMinutes(60)
+                    ));
+                    fileBackedTasksManager.taskAdd(new Task("task_3", "description_3",
+                            false, NEW, TASK, LocalDateTime.parse("22.02.2023_21:00", formatter),
+                            Duration.ofMinutes(60)
+                    ));
 
-                            break;
-                        /*case "s":
-                            System.out.println("parentKey"); // TODO
-                            parentKey = scanner.next();
-                            System.out.println("time <21.02.2023_17:00>"); // TODO
-                            time = scanner.next();
-                            System.out.println("duration"); // TODO
-                            duration = scanner.next();
-                            fileBackedTasksManager.subTaskAdd(taskTitle, taskDescription, parentKey,
-                                    time, Duration.parse("PT" + duration + "M")
-                            );
-                            break;*/
-                    }
+                    fileBackedTasksManager.epicAdd(new Epic("task_4", "description_4",
+                            false, NEW, EPIC, LocalDateTime.MAX, Duration.ZERO,
+                            new LinkedHashMap<>()
+                    ));
+                    fileBackedTasksManager.epicAdd(new Epic("task_5",
+                            "description_5", false, NEW, EPIC, LocalDateTime.MAX, Duration.ZERO,
+                            new LinkedHashMap<>()
+                    ));
+                    fileBackedTasksManager.epicAdd(new Epic("task_6", "description_6",
+                            false, NEW, EPIC, LocalDateTime.MAX, Duration.ZERO,
+                            new LinkedHashMap<>()
+                    ));
+
+                    fileBackedTasksManager.subTaskAdd(new SubTask("task_7", "description_7",
+                            false, NEW, SUB_TASK, LocalDateTime.parse("23.02.2023_06:00", formatter),
+                            Duration.ofMinutes(60), "e.4"
+                    ));
+                    fileBackedTasksManager.subTaskAdd(new SubTask("task_8", "description_8",
+                            false, NEW, SUB_TASK, LocalDateTime.parse("23.02.2023_08:00", formatter),
+                            Duration.ofMinutes(60), "e.4"
+                    ));
+                    fileBackedTasksManager.subTaskAdd(new SubTask("task_9", "description_9",
+                            false, NEW, SUB_TASK, LocalDateTime.parse("23.02.2023_10:00", formatter),
+                            Duration.ofMinutes(60), "e.5"
+                    ));
+
                     break;
                 case 2:
                     System.out.println("taskKey"); // TODO
