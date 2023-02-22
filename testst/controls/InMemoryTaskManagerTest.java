@@ -9,6 +9,7 @@ import tasks.Task;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -53,23 +54,37 @@ class InMemoryTaskManagerTest<T extends TaskManager> {
         assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
         taskManager.taskAdd(task1);
         taskManager.taskAdd(task2);
-        assertEquals(2, InMemoryTaskManager.getTasksStorage().size());
     }
 
     @Test
     void testTaskAdd() {
         assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
         taskManager.taskAdd(task1);
-        assertEquals(1, InMemoryTaskManager.getTasksStorage().size());
-        assertEquals(task1, InMemoryTaskManager.getTasksStorage().get("t.1"));
+        taskManager.taskAdd(task2);
+        task1.setTaskId("t.1");
+        task2.setTaskId("t.2");
+        assertEquals(2, InMemoryTaskManager.getTasksStorage().size());
+        taskManager.tasksClear();
+        assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
+        taskManager.taskAdd(null);
+        assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
+        taskManager.taskAdd(epic);
+        assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
     }
 
-    @Test
+    @Test ()
     void testEpicAdd() {
         assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
         taskManager.epicAdd(epic);
+        epic.setTaskId("e.1");
         assertEquals(1, InMemoryTaskManager.getTasksStorage().size());
         assertEquals(epic, InMemoryTaskManager.getTasksStorage().get("e.1"));
+        taskManager.tasksClear();
+        assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
+        taskManager.epicAdd(null);
+        assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
+        Exception exception = assertThrows(ClassCastException.class, () -> taskManager.epicAdd((Epic) task1));
+        assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
     }
 
     @Test

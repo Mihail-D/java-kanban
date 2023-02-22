@@ -37,6 +37,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void taskAdd(Task task) {
+        if (task == null || task.getTaskType() != TASK) {
+            return;
+        }
         String taskKey = getId(TASK);
         task.setTaskId(taskKey);
 
@@ -51,6 +54,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void epicAdd(Epic epic) {
+        if (epic == null ||  epic.getTaskType() != EPIC) {
+            return;
+        }
         String taskKey = getId(EPIC);
         epic.setTaskId(taskKey);
 
