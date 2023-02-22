@@ -40,9 +40,6 @@ public class InMemoryTaskManager implements TaskManager {
         String taskKey = getId(TASK);
         task.setTaskId(taskKey);
 
-        //task.setStartTime(task.getStartTime());
-        //task.setDuration(task.getDuration());
-
         DateRange interval = new DateRange(task.getStartTime(), task.getEndTime(), task.getTaskId(), TASK);
         advancedTimeOverlappingCheck(interval);
         timeSlotsStorage.add(interval);
@@ -68,9 +65,6 @@ public class InMemoryTaskManager implements TaskManager {
         subTask.setTaskId(taskKey);
         Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(subTask.getParentId());
         setEpicStatus(parentTask.getTaskId());
-
-        //subTask.setStartTime(subTask.getStartTime());
-        //subTask.setDuration(subTask.getDuration());
 
         if (parentTask.relatedSubTask.isEmpty()) {
             parentTask.setStartTime(subTask.getStartTime());
@@ -340,11 +334,6 @@ public class InMemoryTaskManager implements TaskManager {
 
         return result;
     }
-
-/*    public LocalDateTime getLocalDateTime(String time) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
-        return LocalDateTime.parse(time, formatter);
-    }*/
 
     public static void timeSlotsStorageFill() {
         for (Task i : prioritizedTasks) {
