@@ -1,14 +1,17 @@
 package tasks;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public class SubTask extends Task {
 
     String parentId;
 
     public SubTask(
             String taskTitle, String taskDescription, boolean isViewed, TaskStages taskStatus,
-            TaskTypes taskType, String parentId
+            TaskTypes taskType, LocalDateTime startTime, Duration duration, String parentId
     ) {
-        super(taskTitle, taskDescription, isViewed, taskStatus, taskType);
+        super(taskTitle, taskDescription, isViewed, taskStatus, taskType, startTime, duration);
         this.parentId = parentId;
     }
 

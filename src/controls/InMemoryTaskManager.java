@@ -28,6 +28,7 @@ public class InMemoryTaskManager implements TaskManager {
     private static List<DateRange> timeSlotsStorage = new ArrayList<>();
 
     public int taskId = FileBackedTasksManager.getInitNumber();
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
     public static String taskContent;
 
     public static HashMap<String, Task> getTasksStorage() {
@@ -39,8 +40,8 @@ public class InMemoryTaskManager implements TaskManager {
         String taskKey = getId(TASK);
         task.setTaskId(taskKey);
 
-        task.setStartTime(task.getStartTime());
-        task.setDuration(task.getDuration());
+        //task.setStartTime(task.getStartTime());
+        //task.setDuration(task.getDuration());
 
         DateRange interval = new DateRange(task.getStartTime(), task.getEndTime(), task.getTaskId(), TASK);
         advancedTimeOverlappingCheck(interval);
@@ -54,6 +55,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void epicAdd(Epic epic) {
         String taskKey = getId(EPIC);
+        epic.setTaskId(taskKey);
 
         InMemoryTaskManager.tasksStorage.put(taskKey, epic);
         taskContent = getTaskFormattedData(taskKey);
@@ -63,11 +65,12 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void subTaskAdd(SubTask subTask) {
         String taskKey = getId(SUB_TASK);
+        subTask.setTaskId(taskKey);
         Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(subTask.getParentId());
         setEpicStatus(parentTask.getTaskId());
 
-        subTask.setStartTime(subTask.getStartTime());
-        subTask.setDuration(subTask.getDuration());
+        //subTask.setStartTime(subTask.getStartTime());
+        //subTask.setDuration(subTask.getDuration());
 
         if (parentTask.relatedSubTask.isEmpty()) {
             parentTask.setStartTime(subTask.getStartTime());
@@ -97,7 +100,7 @@ public class InMemoryTaskManager implements TaskManager {
         task.setTaskStatus(TaskStages.valueOf(taskStatus));
 
         timeSlotsStorage.removeIf(i -> i.taskKey.equals(taskKey));
-        task.setStartTime(getLocalDateTime(startTime));
+        task.setStartTime(LocalDateTime.parse(startTime, formatter));
         task.setDuration(duration);
         DateRange interval = new DateRange(task.getStartTime(), task.getEndTime(), task.getTaskId(), TASK);
         advancedTimeOverlappingCheck(interval);
@@ -133,7 +136,7 @@ public class InMemoryTaskManager implements TaskManager {
         task.setTaskStatus(TaskStages.valueOf(taskStatus));
 
         timeSlotsStorage.removeIf(i -> i.taskKey.equals(taskKey));
-        task.setStartTime(getLocalDateTime(startTime));
+        task.setStartTime(LocalDateTime.parse(startTime, formatter));
         task.setDuration(duration);
         parentTask.relatedSubTask.put(taskKey, task);
 
@@ -327,7 +330,7 @@ public class InMemoryTaskManager implements TaskManager {
             result = taskKey + taskTitle + taskDescription + isViewed + taskStatus + taskType + ","
                     + ((SubTask) task).getParentId() + "," + time + "," + duration + "," + task.getEndTime();
         }
-        else if (task.getClass() == Epic.class && time == null) {
+        else if (task.getClass() == Epic.class && time == LocalDateTime.MAX) {
             result = taskKey + taskTitle + taskDescription + isViewed + taskStatus + taskType;
         }
         else {
@@ -338,10 +341,10 @@ public class InMemoryTaskManager implements TaskManager {
         return result;
     }
 
-    public LocalDateTime getLocalDateTime(String time) {
+/*    public LocalDateTime getLocalDateTime(String time) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
         return LocalDateTime.parse(time, formatter);
-    }
+    }*/
 
     public static void timeSlotsStorageFill() {
         for (Task i : prioritizedTasks) {

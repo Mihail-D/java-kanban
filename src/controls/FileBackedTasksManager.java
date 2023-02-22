@@ -7,6 +7,7 @@ import tasks.*;
 import java.io.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -16,6 +17,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     public static final String PATH = "./src/data";
     private final File dataFile;
     private final File historyFile;
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
 
     public FileBackedTasksManager(File dataFile, File historyFile) {
         this.dataFile = dataFile;
@@ -103,28 +105,33 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                     switch (TaskTypes.valueOf(tokens[5])) {
                         case TASK:
                             task = new Task(tokens[1], tokens[2], Boolean.parseBoolean(tokens[3]),
-                                    TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5])
+                                    TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5]),
+                                    LocalDateTime.parse(tokens[6],DateTimeFormatter.ISO_DATE_TIME), Duration.parse(tokens[7])
                             );
                             task.setTaskId(tokens[0]);
-                            task.setStartTime(LocalDateTime.parse(tokens[6]));
-                            task.setDuration(Duration.parse(tokens[7]));
+                            //task.setStartTime(LocalDateTime.parse(tokens[6]));
+                            //task.setDuration(Duration.parse(tokens[7]));
                             break;
                         case EPIC:
                             task = new Epic(tokens[1], tokens[2], Boolean.parseBoolean(tokens[3]),
-                                    TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5]), new LinkedHashMap<>()
+                                    TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5]),
+                                    LocalDateTime.MAX, Duration.ZERO, new LinkedHashMap<>()
                             );
                             task.setTaskId(tokens[0]);
-                            if (task.getStartTime() == null) {
+
+                            /*if (task.getStartTime() == null) {
                                 task.setStartTime(LocalDateTime.MAX);
-                            }
+                            }*/
+
                             break;
                         case SUB_TASK:
                             task = new SubTask(tokens[1], tokens[2], Boolean.parseBoolean(tokens[3]),
-                                    TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5]), tokens[6]
+                                    TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5]),
+                                    LocalDateTime.parse(tokens[7]), Duration.parse(tokens[8]), tokens[6]
                             );
                             task.setTaskId(tokens[0]);
-                            task.setStartTime(LocalDateTime.parse(tokens[7]));
-                            task.setDuration(Duration.parse(tokens[8]));
+                            //task.setStartTime(LocalDateTime.parse(tokens[7]));
+                            //task.setDuration(Duration.parse(tokens[8]));
 
                             Epic parentTask = (Epic) InMemoryTaskManager.getTasksStorage().get(tokens[6]);
                             parentTask.relatedSubTask.put(tokens[0], (SubTask) task);

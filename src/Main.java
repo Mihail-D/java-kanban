@@ -1,4 +1,6 @@
 import controls.*;
+import tasks.Epic;
+import tasks.SubTask;
 import tasks.Task;
 
 import java.io.File;
@@ -6,9 +8,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.LinkedHashMap;
 import java.util.Scanner;
 
 import static tasks.TaskStages.NEW;
+import static tasks.TaskTypes.EPIC;
 import static tasks.TaskTypes.TASK;
 
 public class Main {
@@ -43,6 +50,7 @@ public class Main {
     }
 
     public static void getControlOptions() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
         Scanner scanner = new Scanner(System.in);
         int item;
         String taskTitle;
@@ -61,22 +69,40 @@ public class Main {
 
             switch (item) {
                 case 1:
-                    System.out.println("mode task epic subtask"); // TODO
+                    System.out.println("mode t - e - s"); // TODO
                     mode = scanner.next();
 
                     switch (mode) {
-                        case "task":
-                            fileBackedTasksManager.taskAdd(new Task("task_1", "description_1", false, NEW, TASK));
-
-
-                            //taskManager.taskAdd();
-                            //taskManager.taskAdd();
-                            //taskManager.taskAdd();
+                        case "t":
+                            fileBackedTasksManager.taskAdd(new Task("task_1", "description_1",
+                                    false, NEW, TASK, LocalDateTime.parse("22.02.2023_17:00", formatter),
+                                    Duration.ofMinutes(60)
+                            ));
+                            fileBackedTasksManager.taskAdd(new Task("task_2", "description_2",
+                                    false, NEW, TASK, LocalDateTime.parse("22.02.2023_19:00", formatter),
+                                    Duration.ofMinutes(60)
+                            ));
+                            fileBackedTasksManager.taskAdd(new Task("task_3", "description_3",
+                                    false, NEW, TASK, LocalDateTime.parse("22.02.2023_21:00", formatter),
+                                    Duration.ofMinutes(60)
+                            ));
                             break;
-                       /* case "epic":
-                            fileBackedTasksManager.epicAdd(taskTitle, taskDescription);
+                        case "e":
+                            fileBackedTasksManager.epicAdd(new Epic("task_4", "description_4",
+                                    false, NEW, EPIC, LocalDateTime.MAX, Duration.ZERO,
+                                    new LinkedHashMap<>()
+                            ));
+                            fileBackedTasksManager.epicAdd(new Epic("task_5",
+                                    "description_5", false, NEW, EPIC, LocalDateTime.MAX, Duration.ZERO,
+                                    new LinkedHashMap<>()
+                            ));
+                            fileBackedTasksManager.epicAdd(new Epic("task_6", "description_6",
+                                    false, NEW, EPIC, LocalDateTime.MAX, Duration.ZERO,
+                                    new LinkedHashMap<>()
+                            ));
+
                             break;
-                        case "subtask":
+                        /*case "s":
                             System.out.println("parentKey"); // TODO
                             parentKey = scanner.next();
                             System.out.println("time <21.02.2023_17:00>"); // TODO
@@ -106,9 +132,7 @@ public class Main {
                         startTime = scanner.next();
                         System.out.println("duration"); // TODO
                         duration = scanner.next();
-                        fileBackedTasksManager.subTaskUpdate(taskKey, taskTitle, taskDescription, taskStatus,
-                                parentKey, startTime, Duration.parse("PT" + duration + "M")
-                        );
+                        fileBackedTasksManager.subTaskUpdate(taskKey, taskTitle, taskDescription, taskStatus, parentKey, startTime, Duration.parse("PT" + duration + "M"));
                     }
                     else if (taskKey.charAt(0) == 't') {
                         System.out.println("taskStatus"); // TODO
@@ -117,9 +141,7 @@ public class Main {
                         startTime = scanner.next();
                         System.out.println("duration"); // TODO
                         duration = scanner.next();
-                        fileBackedTasksManager.taskUpdate(taskKey, taskTitle, taskDescription, taskStatus, startTime,
-                                Duration.parse("PT" + duration + "M")
-                        );
+                        fileBackedTasksManager.taskUpdate(taskKey, taskTitle, taskDescription, taskStatus, startTime, Duration.parse("PT" + duration + "M"));
                     }
                     else if (taskKey.charAt(0) == 'e') {
                         fileBackedTasksManager.epicUpdate(taskKey, taskTitle, taskDescription);

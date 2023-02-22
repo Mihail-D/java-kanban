@@ -15,13 +15,15 @@ public class Task {
 
     public Task(
             String taskTitle, String taskDescription, boolean isViewed, TaskStages taskStatus,
-            TaskTypes taskType
+            TaskTypes taskType, LocalDateTime startTime, Duration duration
     ) {
         this.taskTitle = taskTitle;
         this.taskDescription = taskDescription;
         this.isViewed = isViewed;
         this.taskStatus = taskStatus;
         this.taskType = taskType;
+        this.startTime = startTime;
+        this.duration = duration;
     }
 
     public TaskTypes getTaskType() {
