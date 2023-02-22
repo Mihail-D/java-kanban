@@ -1,22 +1,20 @@
 package controls;
 
+import tasks.Epic;
+import tasks.SubTask;
+import tasks.Task;
+
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
 public interface TaskManager {
 
-    void taskAdd(
-            String taskTitle, String taskDescription, String startTime,
-            Duration duration
-    );
+    void taskAdd(Task task);
 
-    void epicAdd(String taskTitle, String taskDescription);
+    void epicAdd(Epic epic);
 
-    void subTaskAdd(
-            String taskTitle, String taskDescription, String parentKey,
-            String time, Duration duration
-    );
+    void subTaskAdd(SubTask subTask);
 
     void taskUpdate(
             String taskKey, String taskTitle, String taskDescription,

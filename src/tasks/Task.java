@@ -14,12 +14,11 @@ public class Task {
     private Duration duration;
 
     public Task(
-            String taskTitle, String taskDescription, String taskId, boolean isViewed,
-            TaskStages taskStatus, TaskTypes taskType
+            String taskTitle, String taskDescription, boolean isViewed, TaskStages taskStatus,
+            TaskTypes taskType
     ) {
         this.taskTitle = taskTitle;
         this.taskDescription = taskDescription;
-        this.taskId = taskId;
         this.isViewed = isViewed;
         this.taskStatus = taskStatus;
         this.taskType = taskType;
@@ -59,6 +58,10 @@ public class Task {
 
     public void setTaskDescription(String taskDescription) {
         this.taskDescription = taskDescription;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
     }
 
     public void setViewed() {

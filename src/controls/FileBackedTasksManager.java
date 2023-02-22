@@ -25,23 +25,20 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void taskAdd(String taskTitle, String taskDescription, String time, Duration duration) {
-        super.taskAdd(taskTitle, taskDescription, time, duration);
+    public void taskAdd(Task task) {
+        super.taskAdd(task);
         saveTask("newTask");
     }
 
     @Override
-    public void epicAdd(String taskTitle, String taskDescription) {
-        super.epicAdd(taskTitle, taskDescription);
+    public void epicAdd(Epic epic) {
+        super.epicAdd(epic);
         saveTask("newTask");
     }
 
     @Override
-    public void subTaskAdd(
-            String taskTitle, String taskDescription, String parentKey,
-            String time, Duration duration
-    ) {
-        super.subTaskAdd(taskTitle, taskDescription, parentKey, time, duration);
+    public void subTaskAdd(SubTask subTask) {
+        super.subTaskAdd(subTask);
         saveTask("newTask");
     }
 
@@ -105,24 +102,27 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
                     switch (TaskTypes.valueOf(tokens[5])) {
                         case TASK:
-                            task = new Task(tokens[1], tokens[2], tokens[0], Boolean.parseBoolean(tokens[3]),
+                            task = new Task(tokens[1], tokens[2], Boolean.parseBoolean(tokens[3]),
                                     TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5])
                             );
+                            task.setTaskId(tokens[0]);
                             task.setStartTime(LocalDateTime.parse(tokens[6]));
                             task.setDuration(Duration.parse(tokens[7]));
                             break;
                         case EPIC:
-                            task = new Epic(tokens[1], tokens[2], tokens[0], Boolean.parseBoolean(tokens[3]),
+                            task = new Epic(tokens[1], tokens[2], Boolean.parseBoolean(tokens[3]),
                                     TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5]), new LinkedHashMap<>()
                             );
+                            task.setTaskId(tokens[0]);
                             if (task.getStartTime() == null) {
                                 task.setStartTime(LocalDateTime.MAX);
                             }
                             break;
                         case SUB_TASK:
-                            task = new SubTask(tokens[1], tokens[2], tokens[0], Boolean.parseBoolean(tokens[3]),
+                            task = new SubTask(tokens[1], tokens[2], Boolean.parseBoolean(tokens[3]),
                                     TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5]), tokens[6]
                             );
+                            task.setTaskId(tokens[0]);
                             task.setStartTime(LocalDateTime.parse(tokens[7]));
                             task.setDuration(Duration.parse(tokens[8]));
 

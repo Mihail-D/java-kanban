@@ -8,10 +8,10 @@ public class Epic extends Task {
     public LinkedHashMap<String, SubTask> relatedSubTask;
 
     public Epic(
-            String taskTitle, String taskDescription, String taskId, boolean isViewed,
-            TaskStages taskStatus, TaskTypes taskType, LinkedHashMap<String, SubTask> relatedSubTask
+            String taskTitle, String taskDescription, boolean isViewed, TaskStages taskStatus,
+            TaskTypes taskType, LinkedHashMap<String, SubTask> relatedSubTask
     ) {
-        super(taskTitle, taskDescription, taskId, isViewed, taskStatus, taskType);
+        super(taskTitle, taskDescription, isViewed, taskStatus, taskType);
         this.relatedSubTask = relatedSubTask;
     }
 

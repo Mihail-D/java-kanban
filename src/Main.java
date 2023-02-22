@@ -1,4 +1,5 @@
 import controls.*;
+import tasks.Task;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,6 +7,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Scanner;
+
+import static tasks.TaskStages.NEW;
+import static tasks.TaskTypes.TASK;
 
 public class Main {
 
@@ -57,24 +61,19 @@ public class Main {
 
             switch (item) {
                 case 1:
-                    System.out.println("taskTitle"); // TODO
-                    taskTitle = scanner.next();
-                    System.out.println("taskDescription"); // TODO
-                    taskDescription = scanner.next();
                     System.out.println("mode task epic subtask"); // TODO
                     mode = scanner.next();
 
                     switch (mode) {
                         case "task":
-                            System.out.println("time <21.02.2023_17:00>"); // TODO
-                            time = scanner.next();
-                            System.out.println("duration"); // TODO
-                            duration = scanner.next();
-                            fileBackedTasksManager.taskAdd(taskTitle, taskDescription, time,
-                                    Duration.parse("PT" + duration + "M")
-                            );
+                            fileBackedTasksManager.taskAdd(new Task("task_1", "description_1", false, NEW, TASK));
+
+
+                            //taskManager.taskAdd();
+                            //taskManager.taskAdd();
+                            //taskManager.taskAdd();
                             break;
-                        case "epic":
+                       /* case "epic":
                             fileBackedTasksManager.epicAdd(taskTitle, taskDescription);
                             break;
                         case "subtask":
@@ -87,7 +86,7 @@ public class Main {
                             fileBackedTasksManager.subTaskAdd(taskTitle, taskDescription, parentKey,
                                     time, Duration.parse("PT" + duration + "M")
                             );
-                            break;
+                            break;*/
                     }
                     break;
                 case 2:

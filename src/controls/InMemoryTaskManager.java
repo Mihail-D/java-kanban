@@ -35,14 +35,13 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void taskAdd(
-            String taskTitle, String taskDescription, String startTime, Duration duration
-    ) {
+    public void taskAdd(Task task) {
         String taskKey = getId(TASK);
-        Task task = new Task(taskTitle, taskDescription, taskKey, false, NEW, TASK);
+        task.setTaskId(taskKey);
 
-        task.setStartTime(getLocalDateTime(startTime));
-        task.setDuration(duration);
+        task.setStartTime(task.getStartTime());
+        task.setDuration(task.getDuration());
+
         DateRange interval = new DateRange(task.getStartTime(), task.getEndTime(), task.getTaskId(), TASK);
         advancedTimeOverlappingCheck(interval);
         timeSlotsStorage.add(interval);
@@ -53,44 +52,37 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void epicAdd(String taskTitle, String taskDescription) {
+    public void epicAdd(Epic epic) {
         String taskKey = getId(EPIC);
-        Epic epic = new Epic(taskTitle, taskDescription, taskKey, false, NEW,
-                TaskTypes.EPIC, new LinkedHashMap<>()
-        );
+
         InMemoryTaskManager.tasksStorage.put(taskKey, epic);
         taskContent = getTaskFormattedData(taskKey);
         prioritizedTasks.add(epic);
     }
 
     @Override
-    public void subTaskAdd(
-            String taskTitle, String taskDescription, String parentKey, String startTime,
-            Duration duration
-    ) {
+    public void subTaskAdd(SubTask subTask) {
         String taskKey = getId(SUB_TASK);
-        Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(parentKey);
-        setEpicStatus(parentKey);
-        SubTask task = new SubTask(taskTitle, taskDescription, taskKey, false, NEW,
-                TaskTypes.SUB_TASK, parentKey
-        );
-        task.setStartTime(getLocalDateTime(startTime));
-        task.setDuration(duration);
+        Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(subTask.getParentId());
+        setEpicStatus(parentTask.getTaskId());
+
+        subTask.setStartTime(subTask.getStartTime());
+        subTask.setDuration(subTask.getDuration());
 
         if (parentTask.relatedSubTask.isEmpty()) {
-            parentTask.setStartTime(task.getStartTime());
+            parentTask.setStartTime(subTask.getStartTime());
         }
 
-        DateRange interval = new DateRange(task.getStartTime(), task.getEndTime(), task.getTaskId(), SUB_TASK);
+        DateRange interval = new DateRange(subTask.getStartTime(), subTask.getEndTime(), subTask.getTaskId(), SUB_TASK);
         advancedTimeOverlappingCheck(interval);
         timeSlotsStorage.add(interval);
 
-        InMemoryTaskManager.tasksStorage.put(taskKey, task);
-        parentTask.relatedSubTask.put(taskKey, task);
-        setEpicStatus(parentKey);
+        InMemoryTaskManager.tasksStorage.put(taskKey, subTask);
+        parentTask.relatedSubTask.put(taskKey, subTask);
+        setEpicStatus(parentTask.getTaskId());
         setEpicTiming(parentTask);
         taskContent = getTaskFormattedData(taskKey);
-        prioritizedTasks.add(task);
+        prioritizedTasks.add(subTask);
     }
 
     @Override
