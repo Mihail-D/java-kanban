@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
@@ -35,15 +34,6 @@ public class Main {
         fileBackedTasksManager = new FileBackedTasksManager(dataFile, historyFile);
         taskManager = new InMemoryTaskManager();
         inMemoryHistoryManager = new InMemoryHistoryManager();
-
-        //taskManager.taskAdd("sef", "sfe", "19.02.2023_10:42", Duration.ofMinutes(120));
-        //taskManager.taskAdd("see", "sfe", "20.02.2023_10:42", Duration.ofMinutes(120));
-        //taskManager.taskAdd("she", "sfe", "21.02.2023_10:42", Duration.ofMinutes(120));
-        //taskManager.taskAdd("serf", "sfe", "22.02.2023_10:42", Duration.ofMinutes(120));
-        //taskManager.taskAdd("sne", "sfe", "23.02.2023_10:42", Duration.ofMinutes(120));
-        //taskManager.taskAdd("sqe", "sfe", "24.02.2023_10:42", Duration.ofMinutes(120));
-        //taskManager.taskAdd("ske", "sfe", "25.02.2023_10:00", Duration.ofMinutes(60)); //  t.1
-        //taskManager.taskAdd("sme", "sfe", "25.02.2023_10:00", Duration.ofMinutes(60));
 
         getControlOptions();
     }
