@@ -42,10 +42,10 @@ class InMemoryTaskManagerTest<T extends TaskManager> {
         );
 
         subtask1 = new SubTask("task_7", "description_7", false, NEW, SUB_TASK,
-                LocalDateTime.parse("23.02.2023_06:00", formatter), Duration.ofMinutes(60), "e.1"
+                LocalDateTime.parse("23.02.2023_06:00", formatter), Duration.ofMinutes(60), "e.2"
         );
         subtask2 = new SubTask("task_8", "description_8", false, NEW, SUB_TASK,
-                LocalDateTime.parse("23.02.2023_08:00", formatter), Duration.ofMinutes(60), "e.1"
+                LocalDateTime.parse("23.02.2023_08:00", formatter), Duration.ofMinutes(60), "e.2"
         );
     }
 
@@ -188,7 +188,7 @@ class InMemoryTaskManagerTest<T extends TaskManager> {
         taskManager.epicAdd(epic);
         taskManager.subTaskAdd(subtask1);
         taskManager.subTaskUpdate("s.2", "newTitle_1", "newDescription_1", "DONE",
-                "e.1","23.02.2023_06:00", Duration.ofMinutes(59)
+                "e.1", "23.02.2023_06:00", Duration.ofMinutes(59)
         );
         assertEquals("newTitle_1", subtask1.getTaskTitle(), "заголовки задач не совпадают");
         assertEquals("newDescription_1", subtask1.getTaskDescription(), "описания задач не совпадают");
@@ -203,21 +203,61 @@ class InMemoryTaskManagerTest<T extends TaskManager> {
         taskManager.epicAdd(epic);
         taskManager.subTaskAdd(subtask1);
         taskManager.subTaskUpdate("s.2", null, "newDescription_1", "DONE",
-                null,"23.02.2023_06:00", Duration.ofMinutes(59)
+                null, "23.02.2023_06:00", Duration.ofMinutes(59)
         );
         assertFalse(subtask1.isValueNull());
     }
 
     @Test
     void shouldTaskRetrieve() {
+        String taskReference = "t.1,task_1,description_1,true,NEW,TASK,2023-02-22T17:00,PT1H,2023-02-22T18:00";
+        String epicReference = "e.2,task_4,description_4,true,NEW,EPIC";
+        String subTaskReference = "s.3,task_7,description_7,true,NEW,SUB_TASK,e.2,2023-02-23T06:00,PT1H," +
+                "2023-02-23T07:00";
+
+        taskManager.taskAdd(task1);
+        taskManager.epicAdd(epic);
+
+        String taskData = taskManager.taskRetrieve("t.1");
+        String epicData = taskManager.taskRetrieve("e.2");
+
+        assertEquals(taskReference, taskData, "no");
+        assertEquals(epicReference, epicData, "no");
+
+        subtask1.setTaskId("s.3");
+        taskManager.subTaskAdd(subtask1);
+        String subTaskData = taskManager.taskRetrieve("s.3");
+
+        assertEquals(subTaskReference, subTaskData, "no");
     }
 
     @Test
     void shouldTaskDelete() {
+        taskManager.taskAdd(task1);
+        taskManager.epicAdd(epic);
+        taskManager.subTaskAdd(subtask1);
+
+        assertEquals(3, InMemoryTaskManager.getTasksStorage().size());
+
+        taskManager.taskDelete(task1.getTaskId());
+        assertEquals(2, InMemoryTaskManager.getTasksStorage().size());
+
+        taskManager.taskDelete(subtask1.getTaskId());
+        assertEquals(1, InMemoryTaskManager.getTasksStorage().size());
+
+        taskManager.taskDelete(epic.getTaskId());
+        assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
     }
 
     @Test
     void shouldTasksClear() {
+        taskManager.taskAdd(task1);
+        taskManager.epicAdd(epic);
+        taskManager.subTaskAdd(subtask1);
+
+        assertEquals(3, InMemoryTaskManager.getTasksStorage().size());
+        taskManager.tasksClear();
+        assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
     }
 
     @Test
