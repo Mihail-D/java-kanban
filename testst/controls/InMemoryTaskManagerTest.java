@@ -9,15 +9,14 @@ import tasks.Task;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static tasks.TaskStages.DONE;
-import static tasks.TaskStages.NEW;
+import static tasks.TaskStages.*;
 import static tasks.TaskTypes.*;
 
 class InMemoryTaskManagerTest<T extends TaskManager> {
+
     public TaskManager taskManager;
 
     public Task task1;
@@ -37,23 +36,27 @@ class InMemoryTaskManagerTest<T extends TaskManager> {
                 LocalDateTime.parse("22.02.2023_19:00", formatter), Duration.ofMinutes(60)
         );
 
-        epic = new Epic("task_4", "description_4",false, NEW, EPIC,
+        epic = new Epic("task_4", "description_4", false, NEW, EPIC,
                 LocalDateTime.MAX, Duration.ZERO, new LinkedHashMap<>()
         );
 
-        subtask1 = new SubTask("task_7", "description_7",false, NEW, SUB_TASK,
+        subtask1 = new SubTask("task_7", "description_7", false, NEW, SUB_TASK,
                 LocalDateTime.parse("23.02.2023_06:00", formatter), Duration.ofMinutes(60), "e.1"
         );
-        subtask2 = new SubTask("task_8", "description_8",false, NEW, SUB_TASK,
+        subtask2 = new SubTask("task_8", "description_8", false, NEW, SUB_TASK,
                 LocalDateTime.parse("23.02.2023_08:00", formatter), Duration.ofMinutes(60), "e.1"
         );
     }
 
     @Test
-    void getTasksStorage() {
+    void shouldGetTasksStorage() {
         assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
         taskManager.taskAdd(task1);
         taskManager.taskAdd(task2);
+        assertEquals(2, InMemoryTaskManager.getTasksStorage().size());
+        taskManager.tasksClear();
+        InMemoryTaskManager.getTasksStorage();
+        assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
     }
 
     @Test
@@ -72,8 +75,8 @@ class InMemoryTaskManagerTest<T extends TaskManager> {
         assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
     }
 
-    @Test ()
-    void testEpicAdd() {
+    @Test()
+    void shouldAddEpic() {
         assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
         taskManager.epicAdd(epic);
         epic.setTaskId("e.1");
@@ -88,7 +91,7 @@ class InMemoryTaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    void testSubTaskAdd() {
+    void shouldAddSubTask() {                                                             // TODO
         assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
         taskManager.epicAdd(epic);
         epic.setTaskId("e.1");
@@ -102,72 +105,125 @@ class InMemoryTaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    void testTaskUpdate() {
+    void shouldNotAddSubTask() {
+        assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
+        taskManager.epicAdd(epic);
+        epic.setTaskId("e.15");
+        taskManager.subTaskAdd(subtask1);
+        subtask1.setTaskId("s.2");
+        taskManager.subTaskAdd(subtask2);
+        subtask2.setTaskId("s.3");
+        assertNotEquals(3, InMemoryTaskManager.getTasksStorage().size());
+        assertNotEquals(subtask1, InMemoryTaskManager.getTasksStorage().get("s.2"));
+        assertNotEquals(subtask2, InMemoryTaskManager.getTasksStorage().get("s.3"));
+
+        taskManager.tasksClear();
+        assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
+
+        taskManager.subTaskAdd(null);
+        assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
+        Exception exception = assertThrows(ClassCastException.class, () -> taskManager.subTaskAdd((SubTask) task1));
+        assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
+    }
+
+    @Test
+    void shouldTaskUpdate() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
         taskManager.taskAdd(task1);
-        taskManager.taskUpdate("t.1", "newTitle_1","newDescription_1", "DONE",
-                LocalDateTime.parse("22.02.2023_17:00", formatter), Duration.ofMinutes(59));
+        taskManager.taskUpdate("t.1", "newTitle_1", "newDescription_1", "DONE",
+                LocalDateTime.parse("22.02.2023_17:00", formatter), Duration.ofMinutes(59)
+        );
+
         assertEquals("newTitle_1", task1.getTaskTitle(), "заголовки задач не совпадают");
         assertEquals("newDescription_1", task1.getTaskDescription(), "описания задач не совпадают");
         assertEquals(DONE, task1.getTaskStatus(), "статусы не совпадают");
-        assertEquals(DONE, task1.getTaskStatus(), "статусы не совпадают");
+        assertEquals(TASK, task1.getTaskType(), "типы задач не совпадают");
         assertEquals(LocalDateTime.parse("22.02.2023_17:00", formatter), task1.getStartTime(), "начальное время не " +
                 "совпадает");
+        assertEquals(Duration.ofMinutes(59), task1.getDuration(), "длительности задач не совпадают");
+
+
+
     }
 
     @Test
-    void testEpicUpdate() {
+    void shouldTaskNotUpdate() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
+        taskManager.taskAdd(task1);
+        taskManager.taskUpdate("t.1", "newTitle_1", "newDescription_1", "DONE",
+                LocalDateTime.parse("22.02.2023_17:00", formatter), Duration.ofMinutes(59)
+        );
+        assertNotEquals("newTitle_2", task1.getTaskTitle(), "выполняются неверные условия");
+        assertNotEquals("newDescription_2", task1.getTaskDescription(), "выполняются неверные условия");
+        assertNotEquals(IN_PROGRESS, task1.getTaskStatus(), "выполняются неверные условия");
+        assertNotEquals(SUB_TASK, task1.getTaskType(), "выполняются неверные условия");
+        assertNotEquals(LocalDateTime.parse("22.02.2023_17:01", formatter), task1.getStartTime(),
+                "выполняются неверные условия"
+        );
+        assertNotEquals(Duration.ofMinutes(58), task1.getDuration(), "выполняются неверные условия");
+    }
+
+
+
+    @Test
+    void shouldEpicUpdate() {
+        taskManager.epicAdd(epic);
+        taskManager.epicUpdate("e.1", "newEpicTitle", "newEpicDescription");
+        assertEquals("newEpicTitle", epic.getTaskTitle(), "заголовки задач не совпадают");
+        assertEquals("newEpicDescription", epic.getTaskDescription(), "описания задач не совпадают");
+
+        //assertEquals();
     }
 
     @Test
-    void testSubTaskUpdate() {
+    void shouldSubTaskUpdate() {
     }
 
     @Test
-    void testTaskRetrieve() {
+    void shouldTaskRetrieve() {
     }
 
     @Test
-    void testTaskDelete() {
+    void shouldTaskDelete() {
     }
 
     @Test
-    void testTasksClear() {
+    void shouldTasksClear() {
     }
 
     @Test
-    void testCollectAllTasks() {
+    void shouldCollectAllTasks() {
     }
 
     @Test
-    void testCollectEpicSubtasks() {
+    void shouldCollectEpicSubtasks() {
     }
 
     @Test
-    void getPrioritizedTasks() {
+    void shouldGetPrioritizedTasks() {
     }
 
     @Test
-    void getId() {
+    void shouldGetId() {
     }
 
     @Test
-    void setEpicStatus() {
+    void shouldSetEpicStatus() {
     }
 
     @Test
-    void setEpicTiming() {
+    void shouldSetEpicTiming() {
     }
 
     @Test
-    void getTaskFormattedData() {
+    void shouldGetTaskFormattedData() {
     }
 
     @Test
-    void timeSlotsStorageFill() {
+    void shouldTimeSlotsStorageFill() {
     }
 
     @Test
-    void advancedTimeOverlappingCheck() {
+    void shouldTimeOverlappingCheck() {
     }
 }

@@ -54,7 +54,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void epicAdd(Epic epic) {
-        if (epic == null ||  epic.getTaskType() != EPIC) {
+        if (epic == null || epic.getTaskType() != EPIC) {
             return;
         }
         String taskKey = getId(EPIC);
@@ -67,9 +67,19 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void subTaskAdd(SubTask subTask) {
+
+        if (subTask == null || subTask.getTaskType() != SUB_TASK) {
+            return;
+        }
+
+        Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(subTask.getParentId());
+
+        if (!subTask.getParentId().equals(parentTask.getTaskId())) {
+            return;
+        }
+
         String taskKey = getId(SUB_TASK);
         subTask.setTaskId(taskKey);
-        Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(subTask.getParentId());
         setEpicStatus(parentTask.getTaskId());
 
         if (parentTask.relatedSubTask.isEmpty()) {
@@ -345,7 +355,8 @@ public class InMemoryTaskManager implements TaskManager {
         for (Task i : prioritizedTasks) {
             if (!(i.getTaskType() == EPIC)) {
                 timeSlotsStorage.add(new DateRange(i.getStartTime(), i.getEndTime(),
-                        i.getTaskId(), i.getTaskType()));
+                        i.getTaskId(), i.getTaskType()
+                ));
             }
         }
     }
