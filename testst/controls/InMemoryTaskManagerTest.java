@@ -351,6 +351,10 @@ class InMemoryTaskManagerTest<T extends TaskManager> {
         taskManager.subTaskUpdate("s.3", "newTitle_2", "newDescription_2", "DONE",
                 "e.1", "23.02.2023_08:00", Duration.ofMinutes(59));
         assertSame(epic.getTaskStatus(), DONE);
+        taskManager.taskDelete("s.2");
+        taskManager.taskDelete("s.3");
+
+        assertSame(epic.getTaskStatus(), NEW);
     }
 
     @Test
