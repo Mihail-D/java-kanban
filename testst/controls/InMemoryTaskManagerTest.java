@@ -42,7 +42,6 @@ class InMemoryTaskManagerTest<T extends TaskManager> {
                 LocalDateTime.parse("22.02.2023_19:00", formatter), Duration.ofMinutes(60)
         );
 
-
         subtask1 = new SubTask("task_7", "description_7", false, NEW, SUB_TASK,
                 LocalDateTime.parse("23.02.2023_06:00", formatter), Duration.ofMinutes(60), "e.1"
         );
@@ -344,12 +343,14 @@ class InMemoryTaskManagerTest<T extends TaskManager> {
         assertSame(epic.getTaskStatus(), NEW);
         taskManager.subTaskAdd(subtask1);
         taskManager.subTaskAdd(subtask2);
-        taskManager.subTaskUpdate("s.2", "newTitle_1", "newDescription_1", "DONE",
-                "e.1", "23.02.2023_06:00", Duration.ofMinutes(59));
+        taskManager.subTaskUpdate("s.2", "newTitle_1", "newDescription_1",
+                "DONE", "e.1", "23.02.2023_06:00", Duration.ofMinutes(59)
+        );
         assertSame(epic.getTaskStatus(), IN_PROGRESS);
 
-        taskManager.subTaskUpdate("s.3", "newTitle_2", "newDescription_2", "DONE",
-                "e.1", "23.02.2023_08:00", Duration.ofMinutes(59));
+        taskManager.subTaskUpdate("s.3", "newTitle_2", "newDescription_2",
+                "DONE", "e.1", "23.02.2023_08:00", Duration.ofMinutes(59)
+        );
         assertSame(epic.getTaskStatus(), DONE);
         taskManager.taskDelete("s.2");
         taskManager.taskDelete("s.3");
@@ -359,6 +360,19 @@ class InMemoryTaskManagerTest<T extends TaskManager> {
 
     @Test
     void shouldSetEpicTiming() {
+        taskManager.epicAdd(epic);
+        assertSame(epic.getStartTime(), LocalDateTime.MAX);
+        assertSame(epic.getDuration(), Duration.ZERO);
+
+        taskManager.subTaskAdd(subtask1);
+        taskManager.subTaskAdd(subtask2);
+
+        assertTrue(subtask1.getStartTime().isBefore(subtask2.getStartTime()));
+        assertTrue(subtask1.getEndTime().isBefore(subtask2.getEndTime()));
+
+        assertSame(epic.getStartTime(), subtask1.getStartTime());
+        assertEquals(epic.getDuration(), subtask1.getDuration().plus(subtask2.getDuration()));
+        assertEquals(epic.getEndTime(), subtask2.getEndTime());
     }
 
     @Test

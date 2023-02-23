@@ -2,6 +2,7 @@ package tasks;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashMap;
 
 public class Epic extends Task {
@@ -19,14 +20,14 @@ public class Epic extends Task {
 
     @Override
     public LocalDateTime getEndTime() {
-        LocalDateTime endTime = LocalDateTime.now();
+        LocalDateTime endTime = LocalDateTime.MIN;
 
         for (SubTask i : relatedSubTask.values()) {
             if (i.getEndTime().isAfter(endTime)) {
                 endTime = i.getEndTime();
             }
         }
-        return endTime;
+        return endTime.truncatedTo(ChronoUnit.MINUTES);
     }
 
     @Override
