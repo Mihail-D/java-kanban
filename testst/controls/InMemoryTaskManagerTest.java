@@ -9,7 +9,10 @@ import tasks.Task;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static tasks.TaskStages.*;
@@ -262,14 +265,49 @@ class InMemoryTaskManagerTest<T extends TaskManager> {
 
     @Test
     void shouldCollectAllTasks() {
+        List<ArrayList<String>> collectedTasks = taskManager.collectAllTasks();
+        assertEquals(0, collectedTasks.get(0).size());
+        assertEquals(0, collectedTasks.get(1).size());
+        assertEquals(0, collectedTasks.get(2).size());
+
+        taskManager.taskAdd(task1);
+        taskManager.epicAdd(epic);
+        taskManager.subTaskAdd(subtask1);
+        taskManager.subTaskAdd(subtask2);
+
+        collectedTasks = taskManager.collectAllTasks();
+
+        assertEquals(1, collectedTasks.get(0).size());
+        assertEquals(1, collectedTasks.get(1).size());
+        assertEquals(2, collectedTasks.get(2).size());
     }
 
     @Test
     void shouldCollectEpicSubtasks() {
+        taskManager.taskAdd(task1);
+        taskManager.epicAdd(epic);
+        List<String> collectedSubTasks = taskManager.collectEpicSubtasks(epic.getTaskId());
+        assertEquals(0, collectedSubTasks.size());
+
+        taskManager.subTaskAdd(subtask1);
+        taskManager.subTaskAdd(subtask2);
+
+        collectedSubTasks = taskManager.collectEpicSubtasks(epic.getTaskId());
+
+        assertEquals(2, collectedSubTasks.size());
+
     }
 
     @Test
     void shouldGetPrioritizedTasks() {
+        Set<Task> prioritizedTasks = InMemoryTaskManager.getPrioritizedTasks();
+        assertEquals(0, prioritizedTasks.size());
+        taskManager.taskAdd(task1);
+        taskManager.epicAdd(epic);
+        taskManager.subTaskAdd(subtask1);
+        taskManager.subTaskAdd(subtask2);
+        assertEquals(3, prioritizedTasks.size());
+
     }
 
     @Test
