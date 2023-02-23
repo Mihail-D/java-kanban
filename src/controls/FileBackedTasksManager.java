@@ -17,6 +17,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     public static final String PATH = "./src/data";
     private final File dataFile;
     private final File historyFile;
+    InMemoryTaskManager taskManager = new InMemoryTaskManager();
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
 
     public FileBackedTasksManager(File dataFile, File historyFile) {
@@ -149,7 +150,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 }
 
                 InMemoryTaskManager.getPrioritizedTasks().addAll(InMemoryTaskManager.getTasksStorage().values());
-                InMemoryTaskManager.timeSlotsStorageFill();
+                taskManager.timeSlotsStorageFill();
 
             } catch (FileNotFoundException e) {
                 throw new ManagerLoadException("Не удалось восстановить данные задач");

@@ -35,6 +35,10 @@ public class InMemoryTaskManager implements TaskManager {
         return tasksStorage;
     }
 
+    public static List<DateRange> getTimeSlotsStorage() {
+        return timeSlotsStorage;
+    }
+
     @Override
     public void taskAdd(Task task) {
         if (task == null || task.getTaskType() != TASK) {
@@ -122,6 +126,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         tasksStorage.put(taskKey, task);
         taskContent = getTaskFormattedData(taskKey);
+        prioritizedTasks.add(task);
     }
 
     @Override
@@ -139,6 +144,7 @@ public class InMemoryTaskManager implements TaskManager {
         setEpicTiming(task);
 
         taskContent = getTaskFormattedData(taskKey);
+        prioritizedTasks.add(task);
     }
 
     @Override
@@ -172,6 +178,7 @@ public class InMemoryTaskManager implements TaskManager {
 
         tasksStorage.put(taskKey, task);
         taskContent = getTaskFormattedData(taskKey);
+        prioritizedTasks.add(task);
     }
 
     @Override
@@ -364,15 +371,16 @@ public class InMemoryTaskManager implements TaskManager {
         return result;
     }
 
-    public static void timeSlotsStorageFill() {
+/*    @Override
+    public void timeSlotsStorageFill() {
         for (Task i : prioritizedTasks) {
-            if (!(i.getTaskType() == EPIC)) {
+            if ((i.getTaskType() != EPIC)) {
                 timeSlotsStorage.add(new DateRange(i.getStartTime(), i.getEndTime(),
                         i.getTaskId(), i.getTaskType()
                 ));
             }
         }
-    }
+    }*/
 
     public void advancedTimeOverlappingCheck(DateRange interval) {
 

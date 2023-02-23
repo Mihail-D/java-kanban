@@ -38,6 +38,8 @@ public interface TaskManager {
     void taskDelete(String taskKey);
 
     void tasksClear();
+
+/*    void timeSlotsStorageFill();*/
 }
 
 

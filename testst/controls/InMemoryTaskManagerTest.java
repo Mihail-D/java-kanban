@@ -219,7 +219,6 @@ class InMemoryTaskManagerTest<T extends TaskManager> {
         assertEquals(taskReference, taskData, "no");
         assertEquals(epicReference, epicData, "no");
 
-        //subtask1.setTaskId("s.3");
         taskManager.subTaskAdd(subtask1);
         String subTaskData = taskManager.taskRetrieve("s.3");
 
@@ -377,13 +376,49 @@ class InMemoryTaskManagerTest<T extends TaskManager> {
 
     @Test
     void shouldGetTaskFormattedData() {
+        String taskReference = "t.2,task_1,description_1,true,NEW,TASK,2023-02-22T17:00,PT1H,2023-02-22T18:00";
+        String epicReference = "e.1,task_4,description_4,true,NEW,EPIC";
+        String subTaskReference = "s.3,task_7,description_7,true,NEW,SUB_TASK,e.1,2023-02-23T06:00,PT1H," +
+                "2023-02-23T07:00";
+
+        taskManager.epicAdd(epic);
+        taskManager.taskAdd(task1);
+
+        String epicData = taskManager.taskRetrieve("e.1");
+        String taskData = taskManager.taskRetrieve("t.2");
+
+        assertEquals(taskReference, taskData, "no");
+        assertEquals(epicReference, epicData, "no");
+
+        taskManager.subTaskAdd(subtask1);
+        String subTaskData = taskManager.taskRetrieve("s.3");
+
+        assertEquals(subTaskReference, subTaskData, "no");
     }
 
-    @Test
+/*    @Test
     void shouldTimeSlotsStorageFill() {
-    }
+        InMemoryTaskManager.getPrioritizedTasks().clear();
+        InMemoryTaskManager.getTimeSlotsStorage().clear();
+        assertEquals(0, InMemoryTaskManager.getPrioritizedTasks().size());
+        assertEquals(0, InMemoryTaskManager.getTimeSlotsStorage().size());
+
+        taskManager.epicAdd(epic);
+        taskManager.subTaskAdd(subtask1);
+        taskManager.subTaskAdd(subtask2);
+        taskManager.taskAdd(task1);
+        taskManager.taskAdd(task2);
+
+        taskManager.timeSlotsStorageFill();
+        System.out.println(InMemoryTaskManager.getPrioritizedTasks().size());
+        System.out.println(InMemoryTaskManager.getTimeSlotsStorage()); // TODO
+
+        assertEquals(4, InMemoryTaskManager.getTimeSlotsStorage().size());
+
+    }*/
 
     @Test
     void shouldTimeOverlappingCheck() {
+
     }
 }
