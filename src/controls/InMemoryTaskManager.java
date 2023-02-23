@@ -103,6 +103,10 @@ public class InMemoryTaskManager implements TaskManager {
             String taskKey, String taskTitle, String taskDescription, String taskStatus,
             LocalDateTime startTime, Duration duration
     ) {
+        if (taskTitle == null || taskDescription == null || taskStatus == null
+                || startTime == null || duration == null) {
+            return;
+        }
         Task task = tasksStorage.get(taskKey);
         task.setTaskTitle(taskTitle);
         task.setTaskDescription(taskDescription);
@@ -122,6 +126,10 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void epicUpdate(String taskKey, String taskTitle, String taskDescription) {
+        if (taskTitle == null || taskDescription == null) {
+            return;
+        }
+
         Epic task = (Epic) tasksStorage.get(taskKey);
         task.setTaskTitle(taskTitle);
         task.setTaskDescription(taskDescription);
@@ -138,6 +146,11 @@ public class InMemoryTaskManager implements TaskManager {
             String taskKey, String taskTitle, String taskDescription, String taskStatus,
             String parentKey, String startTime, Duration duration
     ) {
+        if (taskTitle == null || taskDescription == null || taskStatus == null
+                || startTime == null || duration == null || parentKey == null) {
+            return;
+        }
+
         SubTask task = (SubTask) tasksStorage.get(taskKey);
         task.setTaskTitle(taskTitle);
         task.setTaskDescription(taskDescription);

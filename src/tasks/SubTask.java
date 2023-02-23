@@ -20,6 +20,13 @@ public class SubTask extends Task {
     }
 
     @Override
+    public boolean isValueNull() {
+        boolean isNull = false;
+
+        return super.isValueNull() || parentId == null;
+    }
+
+    @Override
     public String toString() {
         return "SubTask " + "ParentId = " + parentId + " " + super.toString() + "\n";
     }

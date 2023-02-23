@@ -14,8 +14,7 @@ public class Task {
     private Duration duration;
 
     public Task(
-            String taskTitle, String taskDescription, boolean isViewed, TaskStages taskStatus,
-            TaskTypes taskType, LocalDateTime startTime, Duration duration
+            String taskTitle, String taskDescription, boolean isViewed, TaskStages taskStatus, TaskTypes taskType, LocalDateTime startTime, Duration duration
     ) {
         this.taskTitle = taskTitle;
         this.taskDescription = taskDescription;
@@ -94,6 +93,14 @@ public class Task {
         return startTime.plus(duration);
     }
 
+    public boolean isValueNull() {
+        boolean isNull = false;
+
+        return taskTitle == null || taskDescription == null || taskStatus == null || taskType == null
+                || startTime == null || duration == null;
+
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -144,9 +151,6 @@ public class Task {
 
     @Override
     public String toString() {
-        return " MainTask Title = " + taskTitle +
-                " Description = " + taskDescription +
-                " Id = " + taskId + " isViewed = " + isViewed + " Status = " + taskStatus
-                + " " + startTime + "***";
+        return " MainTask Title = " + taskTitle + " Description = " + taskDescription + " Id = " + taskId + " isViewed = " + isViewed + " Status = " + taskStatus + " " + startTime + "***";
     }
 }
