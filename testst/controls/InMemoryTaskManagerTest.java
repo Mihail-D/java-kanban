@@ -9,10 +9,7 @@ import tasks.Task;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static tasks.TaskStages.*;
@@ -31,6 +28,11 @@ class InMemoryTaskManagerTest<T extends TaskManager> {
     @BeforeEach
     void setUp() {
         taskManager = new InMemoryTaskManager();
+
+        epic = new Epic("task_4", "description_4", false, NEW, EPIC,
+                LocalDateTime.MAX, Duration.ZERO, new LinkedHashMap<>()
+        );
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
         assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
         task1 = new Task("task_1", "description_1", false, NEW, TASK,
@@ -40,15 +42,12 @@ class InMemoryTaskManagerTest<T extends TaskManager> {
                 LocalDateTime.parse("22.02.2023_19:00", formatter), Duration.ofMinutes(60)
         );
 
-        epic = new Epic("task_4", "description_4", false, NEW, EPIC,
-                LocalDateTime.MAX, Duration.ZERO, new LinkedHashMap<>()
-        );
 
         subtask1 = new SubTask("task_7", "description_7", false, NEW, SUB_TASK,
-                LocalDateTime.parse("23.02.2023_06:00", formatter), Duration.ofMinutes(60), "e.2"
+                LocalDateTime.parse("23.02.2023_06:00", formatter), Duration.ofMinutes(60), "e.1"
         );
         subtask2 = new SubTask("task_8", "description_8", false, NEW, SUB_TASK,
-                LocalDateTime.parse("23.02.2023_08:00", formatter), Duration.ofMinutes(60), "e.2"
+                LocalDateTime.parse("23.02.2023_08:00", formatter), Duration.ofMinutes(60), "e.1"
         );
     }
 
@@ -66,8 +65,6 @@ class InMemoryTaskManagerTest<T extends TaskManager> {
     void shouldTaskAdd() {
         taskManager.taskAdd(task1);
         taskManager.taskAdd(task2);
-        task1.setTaskId("t.1");
-        task2.setTaskId("t.2");
         assertEquals(2, InMemoryTaskManager.getTasksStorage().size());
     }
 
@@ -82,7 +79,6 @@ class InMemoryTaskManagerTest<T extends TaskManager> {
     @Test()
     void shouldAddEpic() {
         taskManager.epicAdd(epic);
-        epic.setTaskId("e.1");
         assertEquals(1, InMemoryTaskManager.getTasksStorage().size());
         assertEquals(epic, InMemoryTaskManager.getTasksStorage().get("e.1"));
     }
@@ -98,11 +94,8 @@ class InMemoryTaskManagerTest<T extends TaskManager> {
     @Test
     void shouldAddSubTask() {
         taskManager.epicAdd(epic);
-        epic.setTaskId("e.1");
         taskManager.subTaskAdd(subtask1);
         taskManager.subTaskAdd(subtask2);
-        subtask1.setTaskId("s.2");
-        subtask2.setTaskId("s.3");
         assertEquals(3, InMemoryTaskManager.getTasksStorage().size());
         assertEquals(subtask1, InMemoryTaskManager.getTasksStorage().get("s.2"));
         assertEquals(subtask2, InMemoryTaskManager.getTasksStorage().get("s.3"));
@@ -213,21 +206,21 @@ class InMemoryTaskManagerTest<T extends TaskManager> {
 
     @Test
     void shouldTaskRetrieve() {
-        String taskReference = "t.1,task_1,description_1,true,NEW,TASK,2023-02-22T17:00,PT1H,2023-02-22T18:00";
-        String epicReference = "e.2,task_4,description_4,true,NEW,EPIC";
-        String subTaskReference = "s.3,task_7,description_7,true,NEW,SUB_TASK,e.2,2023-02-23T06:00,PT1H," +
+        String taskReference = "t.2,task_1,description_1,true,NEW,TASK,2023-02-22T17:00,PT1H,2023-02-22T18:00";
+        String epicReference = "e.1,task_4,description_4,true,NEW,EPIC";
+        String subTaskReference = "s.3,task_7,description_7,true,NEW,SUB_TASK,e.1,2023-02-23T06:00,PT1H," +
                 "2023-02-23T07:00";
 
-        taskManager.taskAdd(task1);
         taskManager.epicAdd(epic);
+        taskManager.taskAdd(task1);
 
-        String taskData = taskManager.taskRetrieve("t.1");
-        String epicData = taskManager.taskRetrieve("e.2");
+        String epicData = taskManager.taskRetrieve("e.1");
+        String taskData = taskManager.taskRetrieve("t.2");
 
         assertEquals(taskReference, taskData, "no");
         assertEquals(epicReference, epicData, "no");
 
-        subtask1.setTaskId("s.3");
+        //subtask1.setTaskId("s.3");
         taskManager.subTaskAdd(subtask1);
         String subTaskData = taskManager.taskRetrieve("s.3");
 
@@ -236,8 +229,8 @@ class InMemoryTaskManagerTest<T extends TaskManager> {
 
     @Test
     void shouldTaskDelete() {
-        taskManager.taskAdd(task1);
         taskManager.epicAdd(epic);
+        taskManager.taskAdd(task1);
         taskManager.subTaskAdd(subtask1);
 
         assertEquals(3, InMemoryTaskManager.getTasksStorage().size());
@@ -254,9 +247,9 @@ class InMemoryTaskManagerTest<T extends TaskManager> {
 
     @Test
     void shouldTasksClear() {
-        taskManager.taskAdd(task1);
         taskManager.epicAdd(epic);
         taskManager.subTaskAdd(subtask1);
+        taskManager.taskAdd(task1);
 
         assertEquals(3, InMemoryTaskManager.getTasksStorage().size());
         taskManager.tasksClear();
@@ -270,10 +263,10 @@ class InMemoryTaskManagerTest<T extends TaskManager> {
         assertEquals(0, collectedTasks.get(1).size());
         assertEquals(0, collectedTasks.get(2).size());
 
-        taskManager.taskAdd(task1);
         taskManager.epicAdd(epic);
         taskManager.subTaskAdd(subtask1);
         taskManager.subTaskAdd(subtask2);
+        taskManager.taskAdd(task1);
 
         collectedTasks = taskManager.collectAllTasks();
 
@@ -284,8 +277,8 @@ class InMemoryTaskManagerTest<T extends TaskManager> {
 
     @Test
     void shouldCollectEpicSubtasks() {
-        taskManager.taskAdd(task1);
         taskManager.epicAdd(epic);
+        taskManager.taskAdd(task1);
         List<String> collectedSubTasks = taskManager.collectEpicSubtasks(epic.getTaskId());
         assertEquals(0, collectedSubTasks.size());
 
@@ -300,22 +293,64 @@ class InMemoryTaskManagerTest<T extends TaskManager> {
 
     @Test
     void shouldGetPrioritizedTasks() {
-        Set<Task> prioritizedTasks = InMemoryTaskManager.getPrioritizedTasks();
+        TreeSet<Task> prioritizedTasks = InMemoryTaskManager.getPrioritizedTasks();
         assertEquals(0, prioritizedTasks.size());
-        taskManager.taskAdd(task1);
         taskManager.epicAdd(epic);
+        taskManager.taskAdd(task1);
         taskManager.subTaskAdd(subtask1);
         taskManager.subTaskAdd(subtask2);
         assertEquals(3, prioritizedTasks.size());
-
+        assertSame(prioritizedTasks.first(), task1);
+        assertSame(prioritizedTasks.last(), subtask2);
     }
 
     @Test
     void shouldGetId() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
+        Task task3 = new Task("task_1", "description_1", false, NEW, TASK,
+                LocalDateTime.parse("25.02.2023_17:00", formatter), Duration.ofMinutes(60)
+        );
+        Task task4 = new Task("task_2", "description_2", false, NEW, TASK,
+                LocalDateTime.parse("25.02.2023_19:00", formatter), Duration.ofMinutes(60)
+        );
+
+        Epic epic1 = new Epic("task_4", "description_4", false, NEW, EPIC,
+                LocalDateTime.MAX, Duration.ZERO, new LinkedHashMap<>()
+        );
+
+        SubTask subtask3 = new SubTask("task_7", "description_7", false, NEW, SUB_TASK,
+                LocalDateTime.parse("26.02.2023_06:00", formatter), Duration.ofMinutes(60), "e.3"
+        );
+        SubTask subtask4 = new SubTask("task_8", "description_8", false, NEW, SUB_TASK,
+                LocalDateTime.parse("26.02.2023_08:00", formatter), Duration.ofMinutes(60), "e.3"
+        );
+
+        taskManager.taskAdd(task3);
+        taskManager.taskAdd(task4);
+        taskManager.epicAdd(epic1);
+        taskManager.subTaskAdd(subtask3);
+        taskManager.subTaskAdd(subtask4);
+
+        assertEquals("t.1", task3.getTaskId());
+        assertEquals("t.2", task4.getTaskId());
+        assertEquals("e.3", epic1.getTaskId());
+        assertEquals("s.4", subtask3.getTaskId());
+        assertEquals("s.5", subtask4.getTaskId());
     }
 
     @Test
     void shouldSetEpicStatus() {
+        taskManager.epicAdd(epic);
+        assertSame(epic.getTaskStatus(), NEW);
+        taskManager.subTaskAdd(subtask1);
+        taskManager.subTaskAdd(subtask2);
+        taskManager.subTaskUpdate("s.2", "newTitle_1", "newDescription_1", "DONE",
+                "e.1", "23.02.2023_06:00", Duration.ofMinutes(59));
+        assertSame(epic.getTaskStatus(), IN_PROGRESS);
+
+        taskManager.subTaskUpdate("s.3", "newTitle_2", "newDescription_2", "DONE",
+                "e.1", "23.02.2023_08:00", Duration.ofMinutes(59));
+        assertSame(epic.getTaskStatus(), DONE);
     }
 
     @Test

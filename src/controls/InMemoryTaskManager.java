@@ -21,7 +21,7 @@ public class InMemoryTaskManager implements TaskManager {
     HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
 
     private static HashMap<String, Task> tasksStorage = new LinkedHashMap<>();
-    private static Set<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(
+    private static TreeSet<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(
             Task::getStartTime,
             Comparator.nullsLast(Comparator.naturalOrder())
     ));
@@ -259,7 +259,7 @@ public class InMemoryTaskManager implements TaskManager {
         return localTasksList;
     }
 
-    public static Set<Task> getPrioritizedTasks() {
+    public static TreeSet<Task> getPrioritizedTasks() {                                // TODO
         return prioritizedTasks;
     }
 
