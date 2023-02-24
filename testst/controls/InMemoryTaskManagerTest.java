@@ -420,6 +420,16 @@ class InMemoryTaskManagerTest<T extends TaskManager> {
     }*/
 
     @Test
+    void shouldNotThrowTimeOverlapping() {
+        taskManager.epicAdd(epic);
+        assertDoesNotThrow(() -> taskManager.subTaskAdd(subtask1));
+        assertDoesNotThrow(() -> taskManager.subTaskAdd(subtask2));
+
+        taskManager.taskAdd(task1);
+        assertDoesNotThrow(() -> taskManager.taskAdd(task2));
+    }
+
+    @Test
     void shouldTimeOverlappingCheck() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
         taskManager.taskAdd(task1);
