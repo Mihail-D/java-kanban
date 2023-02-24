@@ -398,27 +398,6 @@ class InMemoryTaskManagerTest<T extends TaskManager> {
         assertEquals(subTaskReference, subTaskData, "no");
     }
 
-/*    @Test
-    void shouldTimeSlotsStorageFill() {
-        InMemoryTaskManager.getPrioritizedTasks().clear();
-        InMemoryTaskManager.getTimeSlotsStorage().clear();
-        assertEquals(0, InMemoryTaskManager.getPrioritizedTasks().size());
-        assertEquals(0, InMemoryTaskManager.getTimeSlotsStorage().size());
-
-        taskManager.epicAdd(epic);
-        taskManager.subTaskAdd(subtask1);
-        taskManager.subTaskAdd(subtask2);
-        taskManager.taskAdd(task1);
-        taskManager.taskAdd(task2);
-
-        taskManager.timeSlotsStorageFill();
-        System.out.println(InMemoryTaskManager.getPrioritizedTasks().size());
-        System.out.println(InMemoryTaskManager.getTimeSlotsStorage()); // TODO
-
-        assertEquals(4, InMemoryTaskManager.getTimeSlotsStorage().size());
-
-    }*/
-
     @Test
     void shouldNotThrowTimeOverlapping() {
         taskManager.epicAdd(epic);
