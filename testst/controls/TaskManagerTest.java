@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static tasks.TaskStages.*;
 import static tasks.TaskTypes.*;
 
-class InMemoryTaskManagerTest<T extends TaskManager> {
+class TaskManagerTest<T extends TaskManager> {
 
     public TaskManager taskManager;
 
