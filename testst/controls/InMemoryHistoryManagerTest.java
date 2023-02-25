@@ -55,6 +55,8 @@ class HistoryManagerTest <T extends HistoryManager> {
        historyManager.addHistory(epic);
        historyManager.addHistory(subtask1);
        historyManager.addHistory(task1);
+       historyManager.addHistory(task1);
+       historyManager.addHistory(task1);
 
         assertEquals(3, InMemoryHistoryManager.getHistoryStorage().getSize());
         assertEquals(3, InMemoryHistoryManager.getHistoryRegister().size());
@@ -76,6 +78,11 @@ class HistoryManagerTest <T extends HistoryManager> {
 
     @Test
     void testClearHistoryStorage() {
+        historyManager.clearHistoryStorage();
+
+        assertEquals(0, InMemoryHistoryManager.getHistoryStorage().getSize());
+        assertEquals(0, InMemoryHistoryManager.getHistoryRegister().size());
+
         taskManager.epicAdd(epic);
         taskManager.subTaskAdd(subtask1);
         taskManager.taskAdd(task1);
@@ -102,7 +109,7 @@ class HistoryManagerTest <T extends HistoryManager> {
         historyManager.addHistory(epic);
         historyManager.addHistory(subtask1);
         historyManager.addHistory(task1);
-
+        assertNotNull(InMemoryHistoryManager.getHistoryStorage().getTasks());
         assertEquals(3, InMemoryHistoryManager.getHistoryStorage().getTasks().size());
     }
 
@@ -111,6 +118,7 @@ class HistoryManagerTest <T extends HistoryManager> {
         assertEquals(0, InMemoryHistoryManager.getHistoryStorage().getTasks().size());
         taskManager.taskAdd(task1);
         historyManager.addHistory(task1);
+        assertNotNull(InMemoryHistoryManager.getHistoryStorage().getTasks());
         assertEquals(1, InMemoryHistoryManager.getHistoryStorage().getTasks().size());
     }
 
@@ -123,6 +131,5 @@ class HistoryManagerTest <T extends HistoryManager> {
         assertEquals(1, InMemoryHistoryManager.getHistoryStorage().getTasks().size());
         testHistory = InMemoryHistoryManager.getHistoryStorage();
         assertNotNull(testHistory);
-        
     }
 }
