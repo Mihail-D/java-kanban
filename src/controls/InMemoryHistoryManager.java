@@ -10,6 +10,10 @@ public class InMemoryHistoryManager implements HistoryManager {
     private static Map<String, Node> historyRegister = new HashMap<>();
     private static List<Task> historyReport = new ArrayList<>();
 
+    public static List<Task> getHistoryReport() {
+        return historyReport;
+    }
+
     @Override
     public void addHistory(Task task) {
         historyStorage.linkLast(task);

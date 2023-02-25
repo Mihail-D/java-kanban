@@ -30,12 +30,12 @@ class InMemoryTaskManagerTest<T extends TaskManager> {
     @BeforeEach
     void setUp() {
         taskManager = new InMemoryTaskManager();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
 
         epic = new Epic("task_4", "description_4", false, NEW, EPIC,
                 LocalDateTime.MAX, Duration.ZERO, new LinkedHashMap<>()
         );
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
         assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
         task1 = new Task("task_1", "description_1", false, NEW, TASK,
                 LocalDateTime.parse("22.02.2023_17:00", formatter), Duration.ofMinutes(60)
