@@ -27,6 +27,10 @@ abstract class TaskManagerTest<T extends TaskManager> {
     public SubTask subtask1;
     public SubTask subtask2;
 
+    public void setManager(T manager) {
+        this.taskManager = manager;
+    }
+
     @BeforeEach
     void setUp() {
 
