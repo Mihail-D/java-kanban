@@ -160,8 +160,8 @@ public class Main {
                     inMemoryHistoryManager.getHistory();
                     break;
                 case 9:
-                    InMemoryTaskManager.getPrioritizedTasks();
-                    System.out.println(InMemoryTaskManager.getPrioritizedTasks()); // TODO
+                    taskManager.getPrioritizedTasks();
+                    System.out.println(taskManager.getPrioritizedTasks()); // TODO
                     break;
                 case 0:
                     return;

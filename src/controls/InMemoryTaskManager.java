@@ -20,24 +20,27 @@ public class InMemoryTaskManager implements TaskManager {
 
     HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
 
-    private static HashMap<String, Task> tasksStorage = new LinkedHashMap<>();
-    private static TreeSet<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(
+    private HashMap<String, Task> tasksStorage = new LinkedHashMap<>();
+    private TreeSet<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(
             Task::getStartTime,
             Comparator.nullsLast(Comparator.naturalOrder())
     ));
-    private static List<DateRange> timeSlotsStorage = new ArrayList<>();
+    private List<DateRange> timeSlotsStorage = new ArrayList<>();
 
     public int taskId = FileBackedTasksManager.getInitNumber();
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
     public static String taskContent;
 
-    public static HashMap<String, Task> getTasksStorage() {
+
+    public HashMap<String, Task> getTasksStorage() {
         return tasksStorage;
     }
 
-    public static List<DateRange> getTimeSlotsStorage() {
+    public List<DateRange> getTimeSlotsStorage() {
         return timeSlotsStorage;
     }
+
+
 
     @Override
     public void taskAdd(Task task) {
@@ -51,7 +54,7 @@ public class InMemoryTaskManager implements TaskManager {
         advancedTimeOverlappingCheck(interval);
         timeSlotsStorage.add(interval);
 
-        InMemoryTaskManager.tasksStorage.put(taskKey, task);
+        tasksStorage.put(taskKey, task);
         taskContent = getTaskFormattedData(taskKey);
         prioritizedTasks.add(task);
     }
@@ -64,7 +67,7 @@ public class InMemoryTaskManager implements TaskManager {
         String taskKey = getId(EPIC);
         epic.setTaskId(taskKey);
 
-        InMemoryTaskManager.tasksStorage.put(taskKey, epic);
+        tasksStorage.put(taskKey, epic);
         taskContent = getTaskFormattedData(taskKey);
         prioritizedTasks.add(epic);
     }
@@ -76,7 +79,7 @@ public class InMemoryTaskManager implements TaskManager {
             return;
         }
 
-        Epic parentTask = (Epic) InMemoryTaskManager.tasksStorage.get(subTask.getParentId());
+        Epic parentTask = (Epic) tasksStorage.get(subTask.getParentId());
 
         if (!subTask.getParentId().equals(parentTask.getTaskId())) {
             return;
@@ -94,7 +97,7 @@ public class InMemoryTaskManager implements TaskManager {
         advancedTimeOverlappingCheck(interval);
         timeSlotsStorage.add(interval);
 
-        InMemoryTaskManager.tasksStorage.put(taskKey, subTask);
+        tasksStorage.put(taskKey, subTask);
         parentTask.relatedSubTask.put(taskKey, subTask);
         setEpicStatus(parentTask.getTaskId());
         setEpicTiming(parentTask);
@@ -233,25 +236,17 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<ArrayList<String>> collectAllTasks() {
-        ArrayList<String> listOfTasks = new ArrayList<>();
-        ArrayList<String> listOfEpics = new ArrayList<>();
-        ArrayList<String> listOfSubTasks = new ArrayList<>();
+    public HashMap<String, Task> collectAllTasks() {
+        HashMap<String, Task> listOfTasks = new HashMap<>();
 
         for (String i : tasksStorage.keySet()) {
-            if (tasksStorage.get(i).getTaskType() == TASK) {
-                listOfTasks.add(getTaskFormattedData(i));
+                listOfTasks.put(i, tasksStorage.get(i));
             }
-            else if (tasksStorage.get(i).getTaskType() == TaskTypes.EPIC) {
-                listOfEpics.add(getTaskFormattedData(i));
-            }
-            if (tasksStorage.get(i).getTaskType() == TaskTypes.SUB_TASK) {
-                listOfSubTasks.add(getTaskFormattedData(i));
-            }
-        }
 
-        return Stream.of(listOfTasks, listOfEpics, listOfSubTasks).collect(toCollection(ArrayList::new));
+        return listOfTasks;
     }
+
+
 
     @Override
     public ArrayList<String> collectEpicSubtasks(String taskKey) {
@@ -266,7 +261,8 @@ public class InMemoryTaskManager implements TaskManager {
         return localTasksList;
     }
 
-    public static TreeSet<Task> getPrioritizedTasks() {                                // TODO
+    @Override
+    public TreeSet<Task> getPrioritizedTasks() {                                // TODO
         return prioritizedTasks;
     }
 
@@ -370,17 +366,6 @@ public class InMemoryTaskManager implements TaskManager {
 
         return result;
     }
-
-/*    @Override
-    public void timeSlotsStorageFill() {
-        for (Task i : prioritizedTasks) {
-            if ((i.getTaskType() != EPIC)) {
-                timeSlotsStorage.add(new DateRange(i.getStartTime(), i.getEndTime(),
-                        i.getTaskId(), i.getTaskType()
-                ));
-            }
-        }
-    }*/
 
     public void advancedTimeOverlappingCheck(DateRange interval) {
 

@@ -2,7 +2,6 @@ package controls;
 
 import exceptions.ManagerSaveException;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tasks.Epic;
 import tasks.SubTask;
@@ -27,11 +26,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
     public SubTask subtask1;
     public SubTask subtask2;
 
-    public void setManager(T manager) {
-        this.taskManager = manager;
-    }
-
-    @BeforeEach
     void setUp() {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
@@ -40,7 +34,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
                 LocalDateTime.MAX, Duration.ZERO, new LinkedHashMap<>()
         );
 
-        assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
+        assertEquals(0, taskManager.collectAllTasks().size());
         task1 = new Task("task_1", "description_1", false, NEW, TASK,
                 LocalDateTime.parse("22.02.2023_17:00", formatter), Duration.ofMinutes(60)
         );
@@ -60,40 +54,40 @@ abstract class TaskManagerTest<T extends TaskManager> {
     void shouldGetTasksStorage() {
         taskManager.taskAdd(task1);
         taskManager.taskAdd(task2);
-        assertEquals(2, InMemoryTaskManager.getTasksStorage().size());
+        assertEquals(2, taskManager.collectAllTasks().size());
         taskManager.tasksClear();
-        InMemoryTaskManager.getTasksStorage();
-        assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
+        taskManager.collectAllTasks();
+        assertEquals(0, taskManager.collectAllTasks().size());
     }
 
     @Test
     void shouldTaskAdd() {
         taskManager.taskAdd(task1);
         taskManager.taskAdd(task2);
-        assertEquals(2, InMemoryTaskManager.getTasksStorage().size());
+        assertEquals(2, taskManager.collectAllTasks().size());
     }
 
     @Test
     void shouldNotTaskAdd() {
         taskManager.taskAdd(null);
-        assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
+        assertEquals(0, taskManager.collectAllTasks().size());
         taskManager.taskAdd(epic);
-        assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
+        assertEquals(0, taskManager.collectAllTasks().size());
     }
 
     @Test()
     void shouldAddEpic() {
         taskManager.epicAdd(epic);
-        assertEquals(1, InMemoryTaskManager.getTasksStorage().size());
-        assertEquals(epic, InMemoryTaskManager.getTasksStorage().get("e.1"));
+        assertEquals(1, taskManager.collectAllTasks().size());
+        assertEquals(epic, taskManager.collectAllTasks().get(epic.getTaskId()));
     }
 
     @Test()
     void shouldNotAddEpic() {
         taskManager.epicAdd(null);
-        assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
+        assertEquals(0, taskManager.collectAllTasks().size());
         Exception exception = assertThrows(ClassCastException.class, () -> taskManager.epicAdd((Epic) task1));
-        assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
+        assertEquals(0, taskManager.collectAllTasks().size());
     }
 
     @Test
@@ -101,9 +95,9 @@ abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.epicAdd(epic);
         taskManager.subTaskAdd(subtask1);
         taskManager.subTaskAdd(subtask2);
-        assertEquals(3, InMemoryTaskManager.getTasksStorage().size());
-        assertEquals(subtask1, InMemoryTaskManager.getTasksStorage().get("s.2"));
-        assertEquals(subtask2, InMemoryTaskManager.getTasksStorage().get("s.3"));
+        assertEquals(3, taskManager.collectAllTasks().size());
+        assertEquals(subtask1, taskManager.collectAllTasks().get(subtask1.getTaskId()));
+        assertEquals(subtask2, taskManager.collectAllTasks().get(subtask2.getTaskId()));
     }
 
     @Test
@@ -111,20 +105,19 @@ abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.epicAdd(epic);
         epic.setTaskId("e.15");
         taskManager.subTaskAdd(subtask1);
-        subtask1.setTaskId("s.2");
         taskManager.subTaskAdd(subtask2);
-        subtask2.setTaskId("s.3");
-        assertNotEquals(3, InMemoryTaskManager.getTasksStorage().size());
-        assertNotEquals(subtask1, InMemoryTaskManager.getTasksStorage().get("s.2"));
-        assertNotEquals(subtask2, InMemoryTaskManager.getTasksStorage().get("s.3"));
+        assertNotEquals(3, taskManager.collectAllTasks().size());
+        assertNotEquals(subtask1, taskManager.collectAllTasks().get(subtask1.getTaskId()));
+        assertNotEquals(subtask2, taskManager.collectAllTasks().get(subtask2.getTaskId()));
+
 
         taskManager.tasksClear();
-        assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
+        assertEquals(0, taskManager.collectAllTasks().size());
 
         taskManager.subTaskAdd(null);
-        assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
+        assertEquals(0, taskManager.collectAllTasks().size());
         Exception exception = assertThrows(ClassCastException.class, () -> taskManager.subTaskAdd((SubTask) task1));
-        assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
+        assertEquals(0, taskManager.collectAllTasks().size());
     }
 
     @Test
@@ -160,7 +153,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         );
         assertNotEquals(Duration.ofMinutes(58), task1.getDuration(), "выполняются неверные условия");
 
-        assertTrue(InMemoryTaskManager.getTasksStorage().containsKey("t.1"));
+        assertTrue(taskManager.collectAllTasks().containsKey("t.1")); // TODO
 
         taskManager.taskUpdate("t.1", null, "newDescription_1", "DONE",
                 LocalDateTime.parse("22.02.2023_17:00", formatter), Duration.ofMinutes(59)
@@ -237,16 +230,16 @@ abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.taskAdd(task1);
         taskManager.subTaskAdd(subtask1);
 
-        assertEquals(3, InMemoryTaskManager.getTasksStorage().size());
+        assertEquals(3, taskManager.collectAllTasks().size());
 
         taskManager.taskDelete(task1.getTaskId());
-        assertEquals(2, InMemoryTaskManager.getTasksStorage().size());
+        assertEquals(2, taskManager.collectAllTasks().size());
 
         taskManager.taskDelete(subtask1.getTaskId());
-        assertEquals(1, InMemoryTaskManager.getTasksStorage().size());
+        assertEquals(1, taskManager.collectAllTasks().size());
 
         taskManager.taskDelete(epic.getTaskId());
-        assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
+        assertEquals(0, taskManager.collectAllTasks().size());
     }
 
     @Test
@@ -255,28 +248,22 @@ abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.subTaskAdd(subtask1);
         taskManager.taskAdd(task1);
 
-        assertEquals(3, InMemoryTaskManager.getTasksStorage().size());
+        assertEquals(3, taskManager.collectAllTasks().size());
         taskManager.tasksClear();
-        assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
+        assertEquals(0, taskManager.collectAllTasks().size());
     }
 
     @Test
     void shouldCollectAllTasks() {
-        List<ArrayList<String>> collectedTasks = taskManager.collectAllTasks();
-        assertEquals(0, collectedTasks.get(0).size());
-        assertEquals(0, collectedTasks.get(1).size());
-        assertEquals(0, collectedTasks.get(2).size());
+        assertEquals(0, taskManager.collectAllTasks().size());
+
 
         taskManager.epicAdd(epic);
         taskManager.subTaskAdd(subtask1);
         taskManager.subTaskAdd(subtask2);
         taskManager.taskAdd(task1);
 
-        collectedTasks = taskManager.collectAllTasks();
-
-        assertEquals(1, collectedTasks.get(0).size());
-        assertEquals(1, collectedTasks.get(1).size());
-        assertEquals(2, collectedTasks.get(2).size());
+        assertEquals(4, taskManager.collectAllTasks().size());
     }
 
     @Test
@@ -297,7 +284,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void shouldGetPrioritizedTasks() {
-        TreeSet<Task> prioritizedTasks = InMemoryTaskManager.getPrioritizedTasks();
+        TreeSet<Task> prioritizedTasks = taskManager.getPrioritizedTasks();
         assertEquals(0, prioritizedTasks.size());
         taskManager.epicAdd(epic);
         taskManager.taskAdd(task1);

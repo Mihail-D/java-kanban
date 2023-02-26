@@ -7,7 +7,9 @@ import tasks.Task;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.TreeSet;
 
 public interface TaskManager {
 
@@ -31,13 +33,15 @@ public interface TaskManager {
 
     String taskRetrieve(String taskKey);
 
-    List<ArrayList<String>> collectAllTasks();
+    HashMap<String, Task> collectAllTasks();
 
     List<String> collectEpicSubtasks(String taskKey);
 
     void taskDelete(String taskKey);
 
     void tasksClear();
+
+    TreeSet<Task> getPrioritizedTasks();
 }
 
 

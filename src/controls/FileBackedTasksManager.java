@@ -134,7 +134,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                             //task.setStartTime(LocalDateTime.parse(tokens[7]));
                             //task.setDuration(Duration.parse(tokens[8]));
 
-                            Epic parentTask = (Epic) InMemoryTaskManager.getTasksStorage().get(tokens[6]);
+                            Epic parentTask = (Epic) taskManager.getTasksStorage().get(tokens[6]);
                             parentTask.relatedSubTask.put(tokens[0], (SubTask) task);
                             setEpicStatus(tokens[6]);
                             setEpicTiming(parentTask);
@@ -142,14 +142,14 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                     }
 
                     if (file == dataFile) {
-                        InMemoryTaskManager.getTasksStorage().put(tokens[0], task);
+                        taskManager.getTasksStorage().put(tokens[0], task);
                     }
                     else {
                         InMemoryHistoryManager.getHistoryStorage().linkLast(task);
                     }
                 }
 
-                InMemoryTaskManager.getPrioritizedTasks().addAll(InMemoryTaskManager.getTasksStorage().values());
+                taskManager.getPrioritizedTasks().addAll(taskManager.getTasksStorage().values());
                 //taskManager.timeSlotsStorageFill();
 
             } catch (FileNotFoundException e) {

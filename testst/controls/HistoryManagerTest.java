@@ -37,7 +37,7 @@ class HistoryManagerTest <T extends HistoryManager> {
                 LocalDateTime.MAX, Duration.ZERO, new LinkedHashMap<>()
         );
 
-        assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
+        assertEquals(0, taskManager.getTasksStorage().size());
         task1 = new Task("task_1", "description_1", false, NEW, TASK,
                 LocalDateTime.parse("22.02.2023_17:00", formatter), Duration.ofMinutes(60)
         );
