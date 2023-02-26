@@ -17,9 +17,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static tasks.TaskStages.*;
 import static tasks.TaskTypes.*;
 
-class TaskManagerTest<T extends TaskManager> {
+abstract class TaskManagerTest<T extends TaskManager> {
 
-    public TaskManager taskManager;
+    T taskManager;
 
     public Task task1;
     public Task task2;
@@ -29,7 +29,7 @@ class TaskManagerTest<T extends TaskManager> {
 
     @BeforeEach
     void setUp() {
-        taskManager = new InMemoryTaskManager();
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
 
         epic = new Epic("task_4", "description_4", false, NEW, EPIC,

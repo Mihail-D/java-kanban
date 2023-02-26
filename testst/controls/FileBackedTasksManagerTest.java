@@ -15,7 +15,7 @@ import static tasks.TaskStages.NEW;
 import static tasks.TaskTypes.TASK;
 
 public class FileBackedTasksManagerTest extends TaskManagerTest<InMemoryTaskManager> {
-    FileBackedTasksManager fileManager;
+    FileBackedTasksManager taskManager;
 
     private File dataFile;
     private Path dataPath;
@@ -30,13 +30,13 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<InMemoryTaskMana
         historyPath = Path.of("historyFile.csv");
         historyFile = new File(String.valueOf(historyPath));
 
-        //taskManager = new FileBackedTasksManager(dataFile, historyFile);
+        taskManager = new FileBackedTasksManager(dataFile, historyFile);
     }
 
     @Test
     public void getInitNumber() {
         assertEquals(0, InMemoryTaskManager.getTasksStorage().size());
-        fileManager = new FileBackedTasksManager(dataFile, historyFile);
+        //taskManager = new FileBackedTasksManager(dataFile, historyFile);
         System.out.println(InMemoryTaskManager.getTasksStorage());
         assertEquals(5, InMemoryTaskManager.getTasksStorage().size());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
@@ -44,7 +44,7 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<InMemoryTaskMana
                 LocalDateTime.parse("22.03.2023_17:00", formatter), Duration.ofMinutes(60)
         );
 
-        InMemoryTaskManager taskManager = new InMemoryTaskManager();
+       // InMemoryTaskManager taskManager = new InMemoryTaskManager();
         taskManager.taskAdd(task3);
         System.out.println("=====================================================");
         System.out.println(InMemoryTaskManager.getTasksStorage());
