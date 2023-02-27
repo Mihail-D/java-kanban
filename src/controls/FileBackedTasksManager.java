@@ -14,13 +14,13 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
 
-    public static final String PATH = "./src/data";
+    //public static final String PATH = "./src/data";
     private final File dataFile;
     private final File historyFile;
     InMemoryTaskManager taskManager = new InMemoryTaskManager();
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
 
-    public FileBackedTasksManager(File dataFile, File historyFile) {
+    public FileBackedTasksManager(File dataFile, File historyFile) throws IOException {
         this.dataFile = dataFile;
         this.historyFile = historyFile;
         restoreTasks(dataFile);
@@ -110,8 +110,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                                     LocalDateTime.parse(tokens[6],DateTimeFormatter.ISO_DATE_TIME), Duration.parse(tokens[7])
                             );
                             task.setTaskId(tokens[0]);
-                            //task.setStartTime(LocalDateTime.parse(tokens[6]));
-                            //task.setDuration(Duration.parse(tokens[7]));
+
                             break;
                         case EPIC:
                             task = new Epic(tokens[1], tokens[2], Boolean.parseBoolean(tokens[3]),
@@ -120,10 +119,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                             );
                             task.setTaskId(tokens[0]);
 
-                            /*if (task.getStartTime() == null) {
-                                task.setStartTime(LocalDateTime.MAX);
-                            }*/
-
                             break;
                         case SUB_TASK:
                             task = new SubTask(tokens[1], tokens[2], Boolean.parseBoolean(tokens[3]),
@@ -131,8 +126,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                                     LocalDateTime.parse(tokens[7]), Duration.parse(tokens[8]), tokens[6]
                             );
                             task.setTaskId(tokens[0]);
-                            //task.setStartTime(LocalDateTime.parse(tokens[7]));
-                            //task.setDuration(Duration.parse(tokens[8]));
 
                             Epic parentTask = (Epic) taskManager.getTasksStorage().get(tokens[6]);
                             parentTask.relatedSubTask.put(tokens[0], (SubTask) task);
@@ -150,7 +143,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 }
 
                 taskManager.getPrioritizedTasks().addAll(taskManager.getTasksStorage().values());
-                //taskManager.timeSlotsStorageFill();
 
             } catch (FileNotFoundException e) {
                 throw new ManagerLoadException("Не удалось восстановить данные задач");
@@ -196,7 +188,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     public static int getInitNumber() {
-        File file = new File(FileBackedTasksManager.PATH + File.separator + "dataFile.csv");
+
+        File file = new File("./src/data/dataFile.csv");
         int max = 0;
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -212,7 +205,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 }
             }
         } catch (IOException e) {
-            throw new ManagerLoadException("Не удалось загрузить файл");
+            throw new ManagerLoadException("Невозможно создать начальный номер задачи. Не удалось загрузить файл");
         }
         return max;
     }

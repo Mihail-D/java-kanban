@@ -6,6 +6,7 @@ import tasks.Epic;
 import tasks.SubTask;
 import tasks.Task;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -24,7 +25,7 @@ class HistoryManagerTest <T extends HistoryManager> {
     public SubTask subtask1;
 
     @BeforeEach
-    void setup() {
+    void setup() throws IOException {
         historyManager = new InMemoryHistoryManager();
         taskManager = new InMemoryTaskManager();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
@@ -48,7 +49,16 @@ class HistoryManagerTest <T extends HistoryManager> {
 
     @Test
     void testAddHistory() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
+        task1 = new Task("task_1", "description_1", false, NEW, TASK,
+                LocalDateTime.parse("22.02.2023_17:00", formatter), Duration.ofMinutes(60)
+        );
+
         taskManager.epicAdd(epic);
+
+        subtask1 = new SubTask("task_7", "description_7", false, NEW, SUB_TASK,
+                LocalDateTime.parse("23.02.2023_06:00", formatter), Duration.ofMinutes(60), epic.getTaskId()
+        );
         taskManager.subTaskAdd(subtask1);
         taskManager.taskAdd(task1);
 

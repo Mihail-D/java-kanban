@@ -1,58 +1,71 @@
 package controls;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import tasks.Epic;
+import tasks.SubTask;
 import tasks.Task;
 
-import java.io.File;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static tasks.TaskStages.NEW;
-import static tasks.TaskTypes.TASK;
+import static tasks.TaskTypes.*;
+import static tasks.TaskTypes.SUB_TASK;
 
-public class FileBackedTasksManagerTest extends TaskManagerTest<InMemoryTaskManager>  {
-    FileBackedTasksManager taskManager;
+public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager> {
 
-    private File dataFile = new File("./src/data/dataFile.csv");
-    private File historyFile = new File("./src/data/historyFile.csv");
-    //private Path dataPath;
-    //private Path historyPath;
-/*    private dataPath = Path.of("dataFile.csv");
-    dataFile = new File(String.valueOf(dataPath));
 
-    historyPath = Path.of("historyFile.csv");
-    historyFile = new File(String.valueOf(historyPath));*/
+    File dataFile = new File("./src/data/dataFile.csv");
+    File historyFile = new File("./src/data/historyFile.csv");
 
     @BeforeEach
-    public void setTaskManager() {
+    public void setTaskManager() throws IOException {
+        dataFile.createNewFile();
+        historyFile.createNewFile();
         taskManager = new FileBackedTasksManager(dataFile, historyFile);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
+        epic = new Epic("task_4", "description_4", false, NEW, EPIC,
+                LocalDateTime.MAX, Duration.ZERO, new LinkedHashMap<>()
+        );
+
+        assertEquals(0, taskManager.collectAllTasks().size());
+        task1 = new Task("task_1", "description_1", false, NEW, TASK,
+                LocalDateTime.parse("22.02.2023_17:00", formatter), Duration.ofMinutes(60)
+        );
+        task2 = new Task("task_2", "description_2", false, NEW, TASK,
+                LocalDateTime.parse("22.02.2023_19:00", formatter), Duration.ofMinutes(60)
+        );
+
+        subtask1 = new SubTask("task_7", "description_7", false, NEW, SUB_TASK,
+                LocalDateTime.parse("23.02.2023_06:00", formatter), Duration.ofMinutes(60), "e.1"
+        );
+        subtask2 = new SubTask("task_8", "description_8", false, NEW, SUB_TASK,
+                LocalDateTime.parse("23.02.2023_08:00", formatter), Duration.ofMinutes(60), "e.1"
+        );
     }
 
-    /*    @BeforeEach
-
-    void createFileBackedTasksManagerTest() {
-        dataPath = Path.of("dataFile.csv");
-        dataFile = new File(String.valueOf(dataPath));
-
-        historyPath = Path.of("historyFile.csv");
-        historyFile = new File(String.valueOf(historyPath));
-
-        //taskManager = new FileBackedTasksManager(dataFile, historyFile);
-    }*/
-
     @Test
-    public void getInitNumber() {
-        setTaskManager();
+    public void shouldGetInitNumber() {
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
         assertEquals(0, taskManager.getTasksStorage().size());
-        InMemoryTaskManager taskManager = new InMemoryTaskManager();
         taskManager.epicAdd(epic);
         taskManager.subTaskAdd(subtask1);
         taskManager.taskAdd(task1);
         taskManager.taskAdd(task2);
+
         assertEquals(4, taskManager.getTasksStorage().size());
         Task task3 = new Task("task_5", "description_5", false, NEW, TASK,
                 LocalDateTime.parse("22.03.2023_17:00", formatter), Duration.ofMinutes(60)
@@ -60,6 +73,81 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<InMemoryTaskMana
         assertEquals("t.4", task2.getTaskId());
         taskManager.taskAdd(task3);
         assertEquals("t.5", task3.getTaskId());
+
     }
+
+    @Test
+    public void shouldSaveTasks() throws IOException {
+        assertEquals(0, Files.size(Path.of("./src/data/dataFile.csv")));
+
+        taskManager.taskAdd(task1);
+        String taskKey = null;
+        if (dataFile.exists() && !dataFile.isDirectory()) {
+
+            try (BufferedReader br = new BufferedReader(new FileReader(dataFile))) {
+                String line;
+
+                while ((line = br.readLine()) != null) {
+                    if (line.trim().isEmpty()) {
+                        continue;
+                    }
+                    String[] tokens = line.split(",");
+                    taskKey = tokens[0];
+                }
+            }
+        }
+
+        assertEquals(task1.getTaskId(), taskKey);
+    }
+
+    @Test
+    public void shouldSaveHistory() throws IOException {
+        assertEquals(0, Files.size(Path.of("./src/data/historyFile.csv")));
+        taskManager.taskAdd(task1);
+        String taskKey = null;
+        taskManager.taskRetrieve(task1.getTaskId());
+
+        if (historyFile.exists() && !historyFile.isDirectory()) {
+
+            try (BufferedReader br = new BufferedReader(new FileReader(historyFile))) {
+                String line;
+
+                while ((line = br.readLine()) != null) {
+                    if (line.trim().isEmpty()) {
+                        continue;
+                    }
+                    String[] tokens = line.split(",");
+                    taskKey = tokens[0];
+                }
+            }
+        }
+        assertEquals(task1.getTaskId(), taskKey);
+    }
+
+    @Test
+    public void shouldRestoreTasks() throws IOException {
+        Path path = Path.of("./src/data/dataFile.csv");
+        assertEquals(0, Files.size(path));
+        taskManager.taskAdd(task1);
+        taskManager.taskAdd(task2);
+        assertNotEquals(0, Files.size(path));
+
+        FileBackedTasksManager newTaskManager = new FileBackedTasksManager(dataFile, historyFile);
+        InMemoryTaskManager newInMemoryTaskManager = (InMemoryTaskManager) Managers.getDefault();
+        assertEquals(2, newInMemoryTaskManager.getTasksStorage().size());
+
+    }
+
+/*    @AfterEach
+    public void deleteFile() throws IOException {
+        Path dataPath = Paths.get("./src/data/dataFile.csv");
+        Path historyPath = Paths.get("./src/data/historyFile.csv");
+        try {
+            Files.deleteIfExists(dataPath);
+            Files.deleteIfExists(historyPath);
+        } catch (IOException ex) {
+            throw new IOException("error while file deletion");
+        }
+    }*/
 
 }

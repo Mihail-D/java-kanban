@@ -4,6 +4,7 @@ import exceptions.ManagerSaveException;
 import org.jetbrains.annotations.NotNull;
 import tasks.*;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -31,6 +32,8 @@ public class InMemoryTaskManager implements TaskManager {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
     public static String taskContent;
 
+    public InMemoryTaskManager() throws IOException {
+    }
 
     public HashMap<String, Task> getTasksStorage() {
         return tasksStorage;
