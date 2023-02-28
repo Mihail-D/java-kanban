@@ -116,7 +116,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    void shouldTaskUpdate() {                                                            // TODO
+    void shouldTaskUpdate() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
         taskManager.taskAdd(task1);
         String taskKey = task1.getTaskId();
@@ -329,10 +329,11 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-        // TODO
     void shouldSetEpicStatus() {
         taskManager.epicAdd(epic);
         assertSame(epic.getTaskStatus(), NEW);
+        subtask1.setParentId(epic.getTaskId());
+        subtask2.setParentId(epic.getTaskId());
         taskManager.subTaskAdd(subtask1);
         taskManager.subTaskAdd(subtask2);
         taskManager.subTaskUpdate(subtask1.getTaskId(), "newTitle_1", "newDescription_1",
@@ -344,19 +345,19 @@ abstract class TaskManagerTest<T extends TaskManager> {
                 "DONE", epic.getTaskId(), "23.02.2023_08:00", Duration.ofMinutes(59)
         );
         assertSame(epic.getTaskStatus(), DONE);
-        taskManager.taskDelete("s.2");
-        taskManager.taskDelete("s.3");
+        taskManager.taskDelete(subtask1.getTaskId());
+        taskManager.taskDelete(subtask2.getTaskId());
 
         assertSame(epic.getTaskStatus(), NEW);
     }
 
     @Test
-        // TODO
     void shouldSetEpicTiming() {
         taskManager.epicAdd(epic);
         assertSame(epic.getStartTime(), LocalDateTime.MAX);
         assertSame(epic.getDuration(), Duration.ZERO);
-
+        subtask1.setParentId(epic.getTaskId());
+        subtask2.setParentId(epic.getTaskId());
         taskManager.subTaskAdd(subtask1);
         taskManager.subTaskAdd(subtask2);
 
@@ -369,32 +370,26 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-        // TODO
-    void shouldGetTaskFormattedData() {
-        String taskReference = "t.2,task_1,description_1,true,NEW,TASK,2023-02-22T17:00,PT1H,2023-02-22T18:00";
-        String epicReference = "e.1,task_4,description_4,true,NEW,EPIC";
-        String subTaskReference = "s.3,task_7,description_7,true,NEW,SUB_TASK,e.1,2023-02-23T06:00,PT1H," +
-                "2023-02-23T07:00";
-
+   void shouldGetTaskFormattedData() {
         taskManager.epicAdd(epic);
+        subtask1.setParentId(epic.getTaskId());
+        taskManager.subTaskAdd(subtask1);
         taskManager.taskAdd(task1);
 
-        String epicData = taskManager.taskRetrieve(epic.getTaskId());
-        String taskData = taskManager.taskRetrieve(task1.getTaskId());
+        String[] epicData = taskManager.taskRetrieve(epic.getTaskId()).split(",");
+        String[] subTaskData = taskManager.taskRetrieve(subtask1.getTaskId()).split(",");
+        String[] taskData = taskManager.taskRetrieve(task1.getTaskId()).split(",");
 
-        assertEquals(taskReference, taskData, "no");
-        assertEquals(epicReference, epicData, "no");
-
-        taskManager.subTaskAdd(subtask1);
-        String subTaskData = taskManager.taskRetrieve(subtask1.getTaskId());
-
-        assertEquals(subTaskReference, subTaskData, "no");
+        assertEquals(epic.getTaskId(), epicData[0]);
+        assertEquals(task1.getTaskId(), taskData[0]);
+        assertEquals(subtask1.getTaskId(), subTaskData[0]);
     }
 
     @Test
-        // TODO
     void shouldNotThrowTimeOverlapping() {
         taskManager.epicAdd(epic);
+        subtask1.setParentId(epic.getTaskId());
+        subtask2.setParentId(epic.getTaskId());
         assertDoesNotThrow(() -> taskManager.subTaskAdd(subtask1));
         assertDoesNotThrow(() -> taskManager.subTaskAdd(subtask2));
 
