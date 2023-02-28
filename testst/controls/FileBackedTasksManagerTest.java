@@ -1,5 +1,6 @@
 package controls;
 
+import exceptions.ManagerSaveException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static tasks.TaskStages.NEW;
@@ -81,21 +83,21 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
         assertEquals(0, Files.size(Path.of("./src/data/dataFile.csv")));
 
         taskManager.taskAdd(task1);
-        String savedTaskKey = null;
+        String savedTaskKey = task1.getTaskId();
         String restoredTaskKey = null;
 
         if (dataFile.exists() && !dataFile.isDirectory()) {
 
-            try (BufferedReader br = new BufferedReader(new FileReader(dataFile))) {
-                String line;
+            try (final BufferedWriter writer = new BufferedWriter((new FileWriter(dataFile, UTF_8)))) {
 
-                while ((line = br.readLine()) != null) {
-                    if (line.trim().isEmpty()) {
-                        continue;
-                    }
-                    String[] tokens = line.split(",");
-                    savedTaskKey = tokens[0];
+
+                for (String entry : taskManager.getTasksStorage().keySet()) {
+                    writer.append(taskManager.getTaskFormattedData(taskManager.getTasksStorage().get(entry).getTaskId()));
+                    writer.newLine();
                 }
+
+            } catch (IOException e) {
+                throw new ManagerSaveException("Не удалось сохранить данные задач");
             }
 
             try (BufferedReader br = new BufferedReader(new FileReader(dataFile))) {
@@ -117,22 +119,22 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
     public void shouldSaveHistory() throws IOException {
         assertEquals(0, Files.size(Path.of("./src/data/historyFile.csv")));
         taskManager.taskAdd(task1);
-        String savedHistoryKey = null;
+        String savedHistoryKey = task1.getTaskId();
         String restoredHistoryKey = null;
         taskManager.taskRetrieve(task1.getTaskId());
 
         if (historyFile.exists() && !historyFile.isDirectory()) {
 
-            try (BufferedReader br = new BufferedReader(new FileReader(historyFile))) {
-                String line;
+            try (final BufferedWriter writer = new BufferedWriter((new FileWriter(historyFile, UTF_8)))) {
 
-                while ((line = br.readLine()) != null) {
-                    if (line.trim().isEmpty()) {
-                        continue;
-                    }
-                    String[] tokens = line.split(",");
-                    savedHistoryKey = tokens[0];
+
+                for (String entry : taskManager.getTasksStorage().keySet()) {
+                    writer.append(taskManager.getTaskFormattedData(taskManager.getTasksStorage().get(entry).getTaskId()));
+                    writer.newLine();
                 }
+
+            } catch (IOException e) {
+                throw new ManagerSaveException("Не удалось сохранить данные задач");
             }
         }
 
