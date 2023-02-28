@@ -107,7 +107,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                         case TASK:
                             task = new Task(tokens[1], tokens[2], Boolean.parseBoolean(tokens[3]),
                                     TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5]),
-                                    LocalDateTime.parse(tokens[6],DateTimeFormatter.ISO_DATE_TIME), Duration.parse(tokens[7])
+                                    LocalDateTime.parse(tokens[6], DateTimeFormatter.ISO_DATE_TIME), Duration.parse(tokens[7])
                             );
                             task.setTaskId(tokens[0]);
 
@@ -129,7 +129,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
                             Epic parentTask = (Epic) taskManager.getTasksStorage().get(tokens[6]);
                             parentTask.relatedSubTask.put(tokens[0], (SubTask) task);
-                            setEpicStatus(tokens[6]);
+                            setEpicStatus(tokens[6]);                                                  // TODO
                             setEpicTiming(parentTask);
                             break;
                     }
@@ -187,26 +187,31 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    public static int getInitNumber() {
+    public static int getInitNumber() throws IOException {
 
-        File file = new File("./src/data/dataFile.csv");
         int max = 0;
+        File file = new File("./src/data/dataFile.csv");
 
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                if (line.trim().isEmpty()) {
-                    continue;
+        if (!file.exists() && !file.isDirectory()) {
+            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    if (line.trim().isEmpty()) {
+                        continue;
+                    }
+                    String[] arr = line.split(",");
+                    int number = Integer.parseInt(arr[0].substring(2));
+                    if (number > max) {
+                        max = number;
+                    }
                 }
-                String[] arr = line.split(",");
-                int number = Integer.parseInt(arr[0].substring(2));
-                if (number > max) {
-                    max = number;
-                }
+            } catch (IOException e) {
+                file = new File("./src/data/dataFile.csv");
+                file.createNewFile();
+                return 0;
             }
-        } catch (IOException e) {
-            throw new ManagerLoadException("Невозможно создать начальный номер задачи. Не удалось загрузить файл");
         }
+
         return max;
     }
 }

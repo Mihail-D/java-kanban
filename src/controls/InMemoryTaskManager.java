@@ -85,7 +85,7 @@ public class InMemoryTaskManager implements TaskManager {
         Epic parentTask = (Epic) tasksStorage.get(subTask.getParentId());
 
         if (!subTask.getParentId().equals(parentTask.getTaskId())) {
-            return;
+            throw new IllegalArgumentException();
         }
 
         String taskKey = getId(SUB_TASK);

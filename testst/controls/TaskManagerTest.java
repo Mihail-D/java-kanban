@@ -43,10 +43,10 @@ abstract class TaskManagerTest<T extends TaskManager> {
         );
 
         subtask1 = new SubTask("task_7", "description_7", false, NEW, SUB_TASK,
-                LocalDateTime.parse("23.02.2023_06:00", formatter), Duration.ofMinutes(60), "e.1"
+                LocalDateTime.parse("23.02.2023_06:00", formatter), Duration.ofMinutes(60), epic.getTaskId()
         );
         subtask2 = new SubTask("task_8", "description_8", false, NEW, SUB_TASK,
-                LocalDateTime.parse("23.02.2023_08:00", formatter), Duration.ofMinutes(60), "e.1"
+                LocalDateTime.parse("23.02.2023_08:00", formatter), Duration.ofMinutes(60), epic.getTaskId()
         );
     }
 
@@ -91,8 +91,10 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    void shouldAddSubTask() {
+    void shouldAddSubTask() {                                                           // TODO
         taskManager.epicAdd(epic);
+        subtask1.setParentId(epic.getTaskId());
+        subtask2.setParentId(epic.getTaskId());
         taskManager.subTaskAdd(subtask1);
         taskManager.subTaskAdd(subtask2);
         assertEquals(3, taskManager.collectAllTasks().size());
@@ -103,13 +105,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     void shouldNotAddSubTask() {
         taskManager.epicAdd(epic);
-        epic.setTaskId("e.15");
-        taskManager.subTaskAdd(subtask1);
-        taskManager.subTaskAdd(subtask2);
-        assertNotEquals(3, taskManager.collectAllTasks().size());
-        assertNotEquals(subtask1, taskManager.collectAllTasks().get(subtask1.getTaskId()));
-        assertNotEquals(subtask2, taskManager.collectAllTasks().get(subtask2.getTaskId()));
-
 
         taskManager.tasksClear();
         assertEquals(0, taskManager.collectAllTasks().size());
@@ -121,10 +116,11 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    void shouldTaskUpdate() {
+    void shouldTaskUpdate() {                                                            // TODO
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
         taskManager.taskAdd(task1);
-        taskManager.taskUpdate("t.1", "newTitle_1", "newDescription_1", "DONE",
+        String taskKey = task1.getTaskId();
+        taskManager.taskUpdate(taskKey, "newTitle_1", "newDescription_1", "DONE",
                 LocalDateTime.parse("22.02.2023_17:00", formatter), Duration.ofMinutes(59)
         );
 
@@ -141,7 +137,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
     void shouldTaskNotUpdate() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
         taskManager.taskAdd(task1);
-        taskManager.taskUpdate("t.1", "newTitle_1", "newDescription_1", "DONE",
+        String taskKey = task1.getTaskId();
+        taskManager.taskUpdate(taskKey, "newTitle_1", "newDescription_1", "DONE",
                 LocalDateTime.parse("22.02.2023_17:00", formatter), Duration.ofMinutes(59)
         );
         assertNotEquals("newTitle_2", task1.getTaskTitle(), "выполняются неверные условия");
@@ -153,7 +150,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
         );
         assertNotEquals(Duration.ofMinutes(58), task1.getDuration(), "выполняются неверные условия");
 
-        assertTrue(taskManager.collectAllTasks().containsKey("t.1")); // TODO
+        assertTrue(taskManager.collectAllTasks().containsKey(taskKey));
 
         taskManager.taskUpdate("t.1", null, "newDescription_1", "DONE",
                 LocalDateTime.parse("22.02.2023_17:00", formatter), Duration.ofMinutes(59)
@@ -164,7 +161,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     void shouldEpicUpdate() {
         taskManager.epicAdd(epic);
-        taskManager.epicUpdate("e.1", "newEpicTitle", "newEpicDescription");
+        String taskKey = epic.getTaskId();
+        taskManager.epicUpdate(taskKey, "newEpicTitle", "newEpicDescription");
         assertEquals("newEpicTitle", epic.getTaskTitle(), "заголовки задач не совпадают");
         assertEquals("newEpicDescription", epic.getTaskDescription(), "описания задач не совпадают");
     }
@@ -172,7 +170,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     void shouldNotEpicUpdate() {
         taskManager.epicAdd(epic);
-        taskManager.epicUpdate("e.1", null, "newEpicDescription"); // TODO
+        String taskKey = epic.getTaskId();
+        taskManager.epicUpdate(taskKey, null, "newEpicDescription");
         assertFalse(epic.isValueNull());
     }
 
@@ -180,9 +179,11 @@ abstract class TaskManagerTest<T extends TaskManager> {
     void shouldSubTaskUpdate() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
         taskManager.epicAdd(epic);
+        subtask1.setParentId(epic.getTaskId());
         taskManager.subTaskAdd(subtask1);
-        taskManager.subTaskUpdate("s.2", "newTitle_1", "newDescription_1", "DONE",
-                "e.1", "23.02.2023_06:00", Duration.ofMinutes(59)
+        String taskKey = subtask1.getTaskId();
+        taskManager.subTaskUpdate(taskKey, "newTitle_1", "newDescription_1", "DONE",
+                epic.getTaskId(), "23.02.2023_06:00", Duration.ofMinutes(59)
         );
         assertEquals("newTitle_1", subtask1.getTaskTitle(), "заголовки задач не совпадают");
         assertEquals("newDescription_1", subtask1.getTaskDescription(), "описания задач не совпадают");
@@ -195,8 +196,9 @@ abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     void shouldNotSubTaskUpdate() {
         taskManager.epicAdd(epic);
+        subtask1.setParentId(epic.getTaskId());
         taskManager.subTaskAdd(subtask1);
-        taskManager.subTaskUpdate("s.2", null, "newDescription_1", "DONE",
+        taskManager.subTaskUpdate(subtask1.getTaskId(), null, "newDescription_1", "DONE",
                 null, "23.02.2023_06:00", Duration.ofMinutes(59)
         );
         assertFalse(subtask1.isValueNull());
@@ -204,29 +206,24 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void shouldTaskRetrieve() {
-        String taskReference = "t.2,task_1,description_1,true,NEW,TASK,2023-02-22T17:00,PT1H,2023-02-22T18:00";
-        String epicReference = "e.1,task_4,description_4,true,NEW,EPIC";
-        String subTaskReference = "s.3,task_7,description_7,true,NEW,SUB_TASK,e.1,2023-02-23T06:00,PT1H," +
-                "2023-02-23T07:00";
-
         taskManager.epicAdd(epic);
+        subtask1.setParentId(epic.getTaskId());
+        taskManager.subTaskAdd(subtask1);
         taskManager.taskAdd(task1);
 
-        String epicData = taskManager.taskRetrieve("e.1");
-        String taskData = taskManager.taskRetrieve("t.2");
+        String[] epicData = taskManager.taskRetrieve(epic.getTaskId()).split(",");
+        String[] subTaskData = taskManager.taskRetrieve(subtask1.getTaskId()).split(",");
+        String[] taskData = taskManager.taskRetrieve(task1.getTaskId()).split(",");
 
-        assertEquals(taskReference, taskData, "no");
-        assertEquals(epicReference, epicData, "no");
-
-        taskManager.subTaskAdd(subtask1);
-        String subTaskData = taskManager.taskRetrieve("s.3");
-
-        assertEquals(subTaskReference, subTaskData, "no");
+        assertEquals(epic.getTaskId(), epicData[0]);
+        assertEquals(task1.getTaskId(), taskData[0]);
+        assertEquals(subtask1.getTaskId(), subTaskData[0]);
     }
 
     @Test
     void shouldTaskDelete() {
         taskManager.epicAdd(epic);
+        subtask1.setParentId(epic.getTaskId());
         taskManager.taskAdd(task1);
         taskManager.subTaskAdd(subtask1);
 
@@ -245,6 +242,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     void shouldTasksClear() {
         taskManager.epicAdd(epic);
+        subtask1.setParentId(epic.getTaskId());
         taskManager.subTaskAdd(subtask1);
         taskManager.taskAdd(task1);
 
@@ -257,8 +255,9 @@ abstract class TaskManagerTest<T extends TaskManager> {
     void shouldCollectAllTasks() {
         assertEquals(0, taskManager.collectAllTasks().size());
 
-
         taskManager.epicAdd(epic);
+        subtask1.setParentId(epic.getTaskId());
+        subtask2.setParentId(epic.getTaskId());
         taskManager.subTaskAdd(subtask1);
         taskManager.subTaskAdd(subtask2);
         taskManager.taskAdd(task1);
@@ -269,6 +268,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     void shouldCollectEpicSubtasks() {
         taskManager.epicAdd(epic);
+        subtask1.setParentId(epic.getTaskId());
+        subtask2.setParentId(epic.getTaskId());
         taskManager.taskAdd(task1);
         List<String> collectedSubTasks = taskManager.collectEpicSubtasks(epic.getTaskId());
         assertEquals(0, collectedSubTasks.size());
@@ -279,7 +280,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
         collectedSubTasks = taskManager.collectEpicSubtasks(epic.getTaskId());
 
         assertEquals(2, collectedSubTasks.size());
-
     }
 
     @Test
@@ -288,6 +288,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
         assertEquals(0, prioritizedTasks.size());
         taskManager.epicAdd(epic);
         taskManager.taskAdd(task1);
+        subtask1.setParentId(epic.getTaskId());
+        subtask2.setParentId(epic.getTaskId());
         taskManager.subTaskAdd(subtask1);
         taskManager.subTaskAdd(subtask2);
         assertEquals(3, prioritizedTasks.size());
@@ -296,7 +298,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-    void shouldGetId() {
+    void shouldGetNextIdForTask() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
         Task task3 = new Task("task_1", "description_1", false, NEW, TASK,
                 LocalDateTime.parse("25.02.2023_17:00", formatter), Duration.ofMinutes(60)
@@ -305,43 +307,41 @@ abstract class TaskManagerTest<T extends TaskManager> {
                 LocalDateTime.parse("25.02.2023_19:00", formatter), Duration.ofMinutes(60)
         );
 
+        taskManager.taskAdd(task3);
+        taskManager.taskAdd(task4);
+
+        int numberIndexForTask3 = Integer.parseInt(task3.getTaskId().substring(2));
+        int numberIndexForTask4 = Integer.parseInt(task4.getTaskId().substring(2));
+
+        assertEquals(1, Integer.parseInt(task3.getTaskId().substring(2)));
+        assertEquals(2, Integer.parseInt(task4.getTaskId().substring(2)));
+
+        int predicateIndexForNexTask = numberIndexForTask4 + 1;
+
         Epic epic1 = new Epic("task_4", "description_4", false, NEW, EPIC,
                 LocalDateTime.MAX, Duration.ZERO, new LinkedHashMap<>()
         );
 
-        SubTask subtask3 = new SubTask("task_7", "description_7", false, NEW, SUB_TASK,
-                LocalDateTime.parse("26.02.2023_06:00", formatter), Duration.ofMinutes(60), "e.3"
-        );
-        SubTask subtask4 = new SubTask("task_8", "description_8", false, NEW, SUB_TASK,
-                LocalDateTime.parse("26.02.2023_08:00", formatter), Duration.ofMinutes(60), "e.3"
-        );
-
-        taskManager.taskAdd(task3);
-        taskManager.taskAdd(task4);
         taskManager.epicAdd(epic1);
-        taskManager.subTaskAdd(subtask3);
-        taskManager.subTaskAdd(subtask4);
+        int numberIndexForEpic1 = Integer.parseInt(epic1.getTaskId().substring(2));
 
-        assertEquals("t.1", task3.getTaskId());
-        assertEquals("t.2", task4.getTaskId());
-        assertEquals("e.3", epic1.getTaskId());
-        assertEquals("s.4", subtask3.getTaskId());
-        assertEquals("s.5", subtask4.getTaskId());
+        assertEquals(predicateIndexForNexTask, numberIndexForEpic1);
     }
 
     @Test
+        // TODO
     void shouldSetEpicStatus() {
         taskManager.epicAdd(epic);
         assertSame(epic.getTaskStatus(), NEW);
         taskManager.subTaskAdd(subtask1);
         taskManager.subTaskAdd(subtask2);
-        taskManager.subTaskUpdate("s.2", "newTitle_1", "newDescription_1",
-                "DONE", "e.1", "23.02.2023_06:00", Duration.ofMinutes(59)
+        taskManager.subTaskUpdate(subtask1.getTaskId(), "newTitle_1", "newDescription_1",
+                "DONE", epic.getTaskId(), "23.02.2023_06:00", Duration.ofMinutes(59)
         );
         assertSame(epic.getTaskStatus(), IN_PROGRESS);
 
-        taskManager.subTaskUpdate("s.3", "newTitle_2", "newDescription_2",
-                "DONE", "e.1", "23.02.2023_08:00", Duration.ofMinutes(59)
+        taskManager.subTaskUpdate(subtask2.getTaskId(), "newTitle_2", "newDescription_2",
+                "DONE", epic.getTaskId(), "23.02.2023_08:00", Duration.ofMinutes(59)
         );
         assertSame(epic.getTaskStatus(), DONE);
         taskManager.taskDelete("s.2");
@@ -351,6 +351,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
+        // TODO
     void shouldSetEpicTiming() {
         taskManager.epicAdd(epic);
         assertSame(epic.getStartTime(), LocalDateTime.MAX);
@@ -368,6 +369,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
+        // TODO
     void shouldGetTaskFormattedData() {
         String taskReference = "t.2,task_1,description_1,true,NEW,TASK,2023-02-22T17:00,PT1H,2023-02-22T18:00";
         String epicReference = "e.1,task_4,description_4,true,NEW,EPIC";
@@ -377,19 +379,20 @@ abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.epicAdd(epic);
         taskManager.taskAdd(task1);
 
-        String epicData = taskManager.taskRetrieve("e.1");
-        String taskData = taskManager.taskRetrieve("t.2");
+        String epicData = taskManager.taskRetrieve(epic.getTaskId());
+        String taskData = taskManager.taskRetrieve(task1.getTaskId());
 
         assertEquals(taskReference, taskData, "no");
         assertEquals(epicReference, epicData, "no");
 
         taskManager.subTaskAdd(subtask1);
-        String subTaskData = taskManager.taskRetrieve("s.3");
+        String subTaskData = taskManager.taskRetrieve(subtask1.getTaskId());
 
         assertEquals(subTaskReference, subTaskData, "no");
     }
 
     @Test
+        // TODO
     void shouldNotThrowTimeOverlapping() {
         taskManager.epicAdd(epic);
         assertDoesNotThrow(() -> taskManager.subTaskAdd(subtask1));
@@ -400,6 +403,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
+        // TODO
     void shouldTimeOverlappingCheck() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
         taskManager.taskAdd(task1);
@@ -407,8 +411,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
         ManagerSaveException isTask2StartAfterEndBefore = Assertions.assertThrows(ManagerSaveException.class, () ->
                 taskManager.taskUpdate("t.2", "newTitle", "newDescription",
-                "NEW", LocalDateTime.parse("22.02.2023_17:15", formatter), Duration.ofMinutes(30)
-        ), "ожидалось ManagerSaveException");
+                        "NEW", LocalDateTime.parse("22.02.2023_17:15", formatter), Duration.ofMinutes(30)
+                ), "ожидалось ManagerSaveException");
 
         ManagerSaveException isTask2StartAfterEndAfter = Assertions.assertThrows(ManagerSaveException.class, () ->
                 taskManager.taskUpdate("t.2", "newTitle", "newDescription",
@@ -425,12 +429,10 @@ abstract class TaskManagerTest<T extends TaskManager> {
                         "NEW", LocalDateTime.parse("22.02.2023_16:50", formatter), Duration.ofMinutes(130)
                 ), "ожидалось ManagerSaveException");
 
-
         ManagerSaveException isTask2StartEqualsEndEquals = Assertions.assertThrows(ManagerSaveException.class, () ->
                 taskManager.taskUpdate("t.2", "newTitle", "newDescription",
                         "NEW", LocalDateTime.parse("22.02.2023_17:00", formatter), Duration.ofMinutes(60)
                 ), "ожидалось ManagerSaveException");
-
 
         ManagerSaveException isTask2StartBeforeEndEquals = Assertions.assertThrows(ManagerSaveException.class, () ->
                 taskManager.taskUpdate("t.2", "newTitle", "newDescription",

@@ -49,10 +49,10 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
         );
 
         subtask1 = new SubTask("task_7", "description_7", false, NEW, SUB_TASK,
-                LocalDateTime.parse("23.02.2023_06:00", formatter), Duration.ofMinutes(60), "e.1"
+                LocalDateTime.parse("23.02.2023_06:00", formatter), Duration.ofMinutes(60), epic.getTaskId()
         );
         subtask2 = new SubTask("task_8", "description_8", false, NEW, SUB_TASK,
-                LocalDateTime.parse("23.02.2023_08:00", formatter), Duration.ofMinutes(60), "e.1"
+                LocalDateTime.parse("23.02.2023_08:00", formatter), Duration.ofMinutes(60), epic.getTaskId()
         );
     }
 
@@ -138,7 +138,7 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
 
     }
 
-/*    @AfterEach
+    @AfterEach
     public void deleteFile() throws IOException {
         Path dataPath = Paths.get("./src/data/dataFile.csv");
         Path historyPath = Paths.get("./src/data/historyFile.csv");
@@ -148,6 +148,6 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
         } catch (IOException ex) {
             throw new IOException("error while file deletion");
         }
-    }*/
+    }
 
 }
