@@ -161,9 +161,7 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
             assertNotEquals(0, Files.size(dataFile.toPath()));  // 160kb
 
             FileBackedTasksManager newTaskManager = new FileBackedTasksManager(dataFile, historyFile);
-            //InMemoryTaskManager newInMemoryTaskManager = new InMemoryTaskManager();
-
-
+            newTaskManager.restoreTasks(dataFile);
             assertEquals(2, newTaskManager.getTasksStorage().size());
 
         }

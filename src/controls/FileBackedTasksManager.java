@@ -15,7 +15,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
 
-    //public static final String PATH = "./src/data";
     private final File dataFile;
     private final File historyFile;
     InMemoryTaskManager taskManager = new InMemoryTaskManager();
@@ -90,7 +89,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         saveTask("deleteTask");
     }
 
-    private void restoreTasks(File file) {
+    void restoreTasks(File file) {
         Task task = null;
 
         if (file.exists() && !file.isDirectory()) {
