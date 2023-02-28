@@ -163,7 +163,6 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
         assertEquals(2, FileBackedTasksManager.getTaskManager().getTasksStorage().size());
     }
 
-
     @Test
     public void shouldRestoreHistory() throws IOException {
         FileBackedTasksManager newTaskManager = new FileBackedTasksManager(dataFile, historyFile);
@@ -181,11 +180,6 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
         assertEquals(2, InMemoryHistoryManager.getHistoryStorage().getSize());
     }
 
-
-
-
-
-
     @AfterEach
     public void deleteFile() throws IOException {
         Path dataPath = Paths.get("./src/data/dataFile.csv");
@@ -197,5 +191,4 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
             throw new IOException("error while file deletion");
         }
     }
-
 }

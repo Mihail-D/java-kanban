@@ -370,7 +370,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-   void shouldGetTaskFormattedData() {
+    void shouldGetTaskFormattedData() {
         taskManager.epicAdd(epic);
         subtask1.setParentId(epic.getTaskId());
         taskManager.subTaskAdd(subtask1);
@@ -398,7 +398,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
-        // TODO
     void shouldTimeOverlappingCheck() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
         taskManager.taskAdd(task1);
@@ -439,5 +438,4 @@ abstract class TaskManagerTest<T extends TaskManager> {
                         "NEW", LocalDateTime.parse("22.02.2023_18:00", formatter), Duration.ofMinutes(60)
                 ), "ожидалось ManagerSaveException");
     }
-
 }
