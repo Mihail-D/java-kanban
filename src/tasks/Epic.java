@@ -1,17 +1,33 @@
 package tasks;
 
-import java.util.HashMap;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.LinkedHashMap;
 
 public class Epic extends Task {
 
-    public HashMap<String, String> relatedSubTask;
+    public LinkedHashMap<String, SubTask> relatedSubTask;
 
     public Epic(
-            String taskTitle, String taskDescription, String taskId, boolean isViewed,
-            TaskStages taskStatus, TaskTypes taskType, HashMap<String, String> relatedSubTask
+            String taskTitle, String taskDescription, boolean isViewed, TaskStages taskStatus,
+            TaskTypes taskType, LocalDateTime startTime, Duration duration,
+            LinkedHashMap<String, SubTask> relatedSubTask
     ) {
-        super(taskTitle, taskDescription, taskId, isViewed, taskStatus, taskType);
+        super(taskTitle, taskDescription, isViewed, taskStatus, taskType, startTime, duration);
         this.relatedSubTask = relatedSubTask;
+    }
+
+    @Override
+    public LocalDateTime getEndTime() {
+        LocalDateTime endTime = LocalDateTime.MIN;
+
+        for (SubTask i : relatedSubTask.values()) {
+            if (i.getEndTime().isAfter(endTime)) {
+                endTime = i.getEndTime();
+            }
+        }
+        return endTime.truncatedTo(ChronoUnit.MINUTES);
     }
 
     @Override

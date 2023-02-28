@@ -1,25 +1,47 @@
 package controls;
 
-import org.jetbrains.annotations.NotNull;
+import tasks.Epic;
+import tasks.SubTask;
+import tasks.Task;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.TreeSet;
 
 public interface TaskManager {
 
-    void taskAdd(String @NotNull ... args);
+    void taskAdd(Task task);
 
-    void taskUpdate(String @NotNull ... args);
+    void epicAdd(Epic epic);
+
+    void subTaskAdd(SubTask subTask);
+
+    void taskUpdate(
+            String taskKey, String taskTitle, String taskDescription,
+            String taskStatus, LocalDateTime startTime, Duration duration
+    );
+
+    void epicUpdate(String taskKey, String taskTitle, String taskDescription);
+
+    void subTaskUpdate(
+            String taskKey, String taskTitle, String taskDescription, String taskStatus,
+            String parentKey, String startTime, Duration duration
+    );
 
     String taskRetrieve(String taskKey);
 
-    List<ArrayList<String>> collectAllTasks();
+    HashMap<String, Task> collectAllTasks();
 
     List<String> collectEpicSubtasks(String taskKey);
 
-    void taskDelete(String @NotNull ... args);
+    void taskDelete(String taskKey);
 
     void tasksClear();
+
+    TreeSet<Task> getPrioritizedTasks();
 }
 
 

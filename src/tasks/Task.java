@@ -1,5 +1,7 @@
 package tasks;
 
+import java.time.*;
+
 public class Task {
 
     String taskTitle;
@@ -8,14 +10,19 @@ public class Task {
     private boolean isViewed;
     private TaskStages taskStatus;
     private TaskTypes taskType;
+    private LocalDateTime startTime;
+    private Duration duration;
 
-    public Task(String taskTitle, String taskDescription, String taskId, boolean isViewed, TaskStages taskStatus, TaskTypes taskType) {
+    public Task(
+            String taskTitle, String taskDescription, boolean isViewed, TaskStages taskStatus, TaskTypes taskType, LocalDateTime startTime, Duration duration
+    ) {
         this.taskTitle = taskTitle;
         this.taskDescription = taskDescription;
-        this.taskId = taskId;
         this.isViewed = isViewed;
         this.taskStatus = taskStatus;
         this.taskType = taskType;
+        this.startTime = startTime;
+        this.duration = duration;
     }
 
     public TaskTypes getTaskType() {
@@ -38,12 +45,24 @@ public class Task {
         return taskStatus;
     }
 
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public Duration getDuration() {
+        return duration;
+    }
+
     public void setTaskTitle(String taskTitle) {
         this.taskTitle = taskTitle;
     }
 
     public void setTaskDescription(String taskDescription) {
         this.taskDescription = taskDescription;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
     }
 
     public void setViewed() {
@@ -58,6 +77,30 @@ public class Task {
         this.taskStatus = taskStatus;
     }
 
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getEndTime() {
+        if (startTime == null || duration == null) {
+            return null;
+        }
+
+        return startTime.plus(duration);
+    }
+
+    public boolean isValueNull() {
+        boolean isNull = false;
+
+        return taskTitle == null || taskDescription == null || taskStatus == null || taskType == null
+                || startTime == null || duration == null;
+
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -69,6 +112,9 @@ public class Task {
 
         Task task = (Task) o;
 
+        if (isViewed() != task.isViewed()) {
+            return false;
+        }
         if (!getTaskTitle().equals(task.getTaskTitle())) {
             return false;
         }
@@ -78,7 +124,16 @@ public class Task {
         if (!getTaskId().equals(task.getTaskId())) {
             return false;
         }
-        return getTaskStatus() == task.getTaskStatus();
+        if (getTaskStatus() != task.getTaskStatus()) {
+            return false;
+        }
+        if (getTaskType() != task.getTaskType()) {
+            return false;
+        }
+        if (!getStartTime().equals(task.getStartTime())) {
+            return false;
+        }
+        return getDuration().equals(task.getDuration());
     }
 
     @Override
@@ -86,14 +141,16 @@ public class Task {
         int result = getTaskTitle().hashCode();
         result = 31 * result + getTaskDescription().hashCode();
         result = 31 * result + getTaskId().hashCode();
+        result = 31 * result + (isViewed() ? 1 : 0);
         result = 31 * result + getTaskStatus().hashCode();
+        result = 31 * result + getTaskType().hashCode();
+        result = 31 * result + getStartTime().hashCode();
+        result = 31 * result + getDuration().hashCode();
         return result;
     }
 
     @Override
     public String toString() {
-        return " MainTask Title = " + taskTitle +
-                " Description = " + taskDescription +
-                " Id = " + taskId + " isViewed = " + isViewed + " Status = " + taskStatus + "***";
+        return " MainTask Title = " + taskTitle + " Description = " + taskDescription + " Id = " + taskId + " isViewed = " + isViewed + " Status = " + taskStatus + " " + startTime + "***";
     }
 }
