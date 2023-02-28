@@ -266,6 +266,25 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     @Test
+    void shouldReturnEmptyTasksCollection() {
+        assertEquals(0, taskManager.collectAllTasks().size());
+        taskManager.epicAdd(epic);
+        subtask1.setParentId(epic.getTaskId());
+        subtask2.setParentId(epic.getTaskId());
+        taskManager.subTaskAdd(subtask1);
+        taskManager.subTaskAdd(subtask2);
+        taskManager.taskAdd(task1);
+        assertEquals(4, taskManager.collectAllTasks().size());
+
+        taskManager.taskDelete(subtask1.getTaskId());
+        taskManager.taskDelete(subtask2.getTaskId());
+        taskManager.taskDelete(task1.getTaskId());
+        taskManager.taskDelete(epic.getTaskId());
+
+        assertEquals(0, taskManager.collectAllTasks().size());
+    }
+
+    @Test
     void shouldCollectEpicSubtasks() {
         taskManager.epicAdd(epic);
         subtask1.setParentId(epic.getTaskId());
