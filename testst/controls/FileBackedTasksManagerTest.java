@@ -62,6 +62,7 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
         assertEquals(0, taskManager.getTasksStorage().size());
         taskManager.epicAdd(epic);
+        subtask1.setParentId(epic.getTaskId());
         taskManager.subTaskAdd(subtask1);
         taskManager.taskAdd(task1);
         taskManager.taskAdd(task2);
