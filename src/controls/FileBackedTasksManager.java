@@ -17,7 +17,16 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private final File dataFile;
     private final File historyFile;
-    InMemoryTaskManager taskManager = new InMemoryTaskManager();
+    static InMemoryTaskManager taskManager;
+
+    static {
+        try {
+            taskManager = new InMemoryTaskManager();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
 
     public FileBackedTasksManager(File dataFile, File historyFile) throws IOException {
@@ -25,6 +34,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         this.historyFile = historyFile;
         restoreTasks(dataFile);
         restoreTasks(historyFile);
+    }
+
+    public static InMemoryTaskManager getTaskManager() {
+        return taskManager;
     }
 
     @Override

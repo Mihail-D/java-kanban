@@ -152,17 +152,18 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
 
         @Test
         public void shouldRestoreTasks () throws IOException {
-            /*Path path = Path.of("./src/data/dataFile.csv");
-            Files.deleteIfExists(path);
-            assertEquals(0, Files.size(path));*/
-
-            taskManager.taskAdd(task1);
-            taskManager.taskAdd(task2);
-            assertNotEquals(0, Files.size(dataFile.toPath()));  // 160kb
 
             FileBackedTasksManager newTaskManager = new FileBackedTasksManager(dataFile, historyFile);
+            assertEquals(0, Files.size(dataFile.toPath()));  // 160kb
+            assertEquals(0, FileBackedTasksManager.getTaskManager().getTasksStorage().size());
+            newTaskManager.taskAdd(task1);
+            newTaskManager.taskAdd(task2);
+            assertNotEquals(0, Files.size(dataFile.toPath()));  // 160kb
+
+
+
             newTaskManager.restoreTasks(dataFile);
-            assertEquals(2, newTaskManager.getTasksStorage().size());
+            assertEquals(2, FileBackedTasksManager.getTaskManager().getTasksStorage().size());
 
         }
 
