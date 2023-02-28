@@ -21,6 +21,8 @@ class HistoryManagerTest <T extends HistoryManager> {
     InMemoryHistoryManager historyManager;
 
     public Task task1;
+    public Task task2;
+    public Task task3;
     public Epic epic;
     public SubTask subtask1;
 
@@ -45,10 +47,16 @@ class HistoryManagerTest <T extends HistoryManager> {
         subtask1 = new SubTask("task_7", "description_7", false, NEW, SUB_TASK,
                 LocalDateTime.parse("23.02.2023_06:00", formatter), Duration.ofMinutes(60), "e.1"
         );
+        task2 = new Task("task_1", "description_1", false, NEW, TASK,
+                LocalDateTime.parse("22.02.2023_21:00", formatter), Duration.ofMinutes(60)
+        );
+        task3 = new Task("task_1", "description_1", false, NEW, TASK,
+                LocalDateTime.parse("22.02.2023_19:00", formatter), Duration.ofMinutes(60)
+        );
     }
 
     @Test
-    void testAddHistory() {
+    void shouldAddHistory() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
         task1 = new Task("task_1", "description_1", false, NEW, TASK,
                 LocalDateTime.parse("22.02.2023_17:00", formatter), Duration.ofMinutes(60)
@@ -65,15 +73,38 @@ class HistoryManagerTest <T extends HistoryManager> {
        historyManager.addHistory(epic);
        historyManager.addHistory(subtask1);
        historyManager.addHistory(task1);
-       historyManager.addHistory(task1);
-       historyManager.addHistory(task1);
 
         assertEquals(3, InMemoryHistoryManager.getHistoryStorage().getSize());
         assertEquals(3, InMemoryHistoryManager.getHistoryRegister().size());
     }
 
     @Test
-    void testRemoveHistoryRecord() {
+    void shouldAddEmptyHistory() {
+        assertEquals(0, InMemoryHistoryManager.getHistoryStorage().getSize());
+        assertEquals(0, InMemoryHistoryManager.getHistoryRegister().size());
+        historyManager.addHistory(null);
+        assertEquals(0, InMemoryHistoryManager.getHistoryStorage().getSize());
+        assertEquals(0, InMemoryHistoryManager.getHistoryRegister().size());
+    }
+
+    @Test
+    void shouldNotAddDoubleHistory() {
+        taskManager.taskAdd(task1);
+        historyManager.addHistory(task1);
+
+        assertEquals(1, InMemoryHistoryManager.getHistoryStorage().getSize());
+        assertEquals(1, InMemoryHistoryManager.getHistoryRegister().size());
+
+        historyManager.addHistory(task1);
+        historyManager.addHistory(task1);
+        historyManager.addHistory(task1);
+
+        assertEquals(1, InMemoryHistoryManager.getHistoryStorage().getSize());
+        assertEquals(1, InMemoryHistoryManager.getHistoryRegister().size());
+    }
+
+    @Test
+    void shouldRemoveHistoryRecord() {
         taskManager.taskAdd(task1);
         taskManager.taskRetrieve(task1.getTaskId());
         assertEquals(1, InMemoryHistoryManager.getHistoryStorage().getSize());
@@ -87,7 +118,67 @@ class HistoryManagerTest <T extends HistoryManager> {
     }
 
     @Test
-    void testClearHistoryStorage() {
+    void shouldRemoveHistoryRecordFirstElement() {
+
+        taskManager.taskAdd(task1);
+        taskManager.taskAdd(task2);
+        taskManager.taskAdd(task3);
+
+
+        taskManager.taskRetrieve(task1.getTaskId());
+        taskManager.taskRetrieve(task2.getTaskId());
+        taskManager.taskRetrieve(task3.getTaskId());
+        assertEquals(3, InMemoryHistoryManager.getHistoryStorage().getSize());
+        assertEquals(3, InMemoryHistoryManager.getHistoryRegister().size());
+
+        historyManager.removeHistoryRecord(task1.getTaskId());
+
+        assertEquals(2, InMemoryHistoryManager.getHistoryStorage().getSize());
+        assertEquals(2, InMemoryHistoryManager.getHistoryRegister().size());
+    }
+
+    @Test
+    void shouldRemoveHistoryRecordSecondElement() {
+
+        taskManager.taskAdd(task1);
+        taskManager.taskAdd(task2);
+        taskManager.taskAdd(task3);
+
+
+        taskManager.taskRetrieve(task1.getTaskId());
+        taskManager.taskRetrieve(task2.getTaskId());
+        taskManager.taskRetrieve(task3.getTaskId());
+        assertEquals(3, InMemoryHistoryManager.getHistoryStorage().getSize());
+        assertEquals(3, InMemoryHistoryManager.getHistoryRegister().size());
+
+        historyManager.removeHistoryRecord(task2.getTaskId());
+
+        assertEquals(2, InMemoryHistoryManager.getHistoryStorage().getSize());
+        assertEquals(2, InMemoryHistoryManager.getHistoryRegister().size());
+    }
+
+    @Test
+    void shouldRemoveHistoryRecordThirdElement() {
+
+        taskManager.taskAdd(task1);
+        taskManager.taskAdd(task2);
+        taskManager.taskAdd(task3);
+
+
+        taskManager.taskRetrieve(task1.getTaskId());
+        taskManager.taskRetrieve(task2.getTaskId());
+        taskManager.taskRetrieve(task3.getTaskId());
+        assertEquals(3, InMemoryHistoryManager.getHistoryStorage().getSize());
+        assertEquals(3, InMemoryHistoryManager.getHistoryRegister().size());
+
+        historyManager.removeHistoryRecord(task3.getTaskId());
+
+        assertEquals(2, InMemoryHistoryManager.getHistoryStorage().getSize());
+        assertEquals(2, InMemoryHistoryManager.getHistoryRegister().size());
+    }
+
+    @Test
+    void shouldClearHistoryStorage() {
         historyManager.clearHistoryStorage();
 
         assertEquals(0, InMemoryHistoryManager.getHistoryStorage().getSize());
@@ -111,7 +202,7 @@ class HistoryManagerTest <T extends HistoryManager> {
     }
 
     @Test
-    void testGetHistory() {
+    void shouldGetHistory() {
         taskManager.epicAdd(epic);
         taskManager.subTaskAdd(subtask1);
         taskManager.taskAdd(task1);
@@ -124,7 +215,7 @@ class HistoryManagerTest <T extends HistoryManager> {
     }
 
     @Test
-    void getHistoryRegister() {
+    void shouldGetHistoryRegister() {
         assertEquals(0, InMemoryHistoryManager.getHistoryStorage().getTasks().size());
         taskManager.taskAdd(task1);
         historyManager.addHistory(task1);
@@ -133,7 +224,7 @@ class HistoryManagerTest <T extends HistoryManager> {
     }
 
     @Test
-    void getHistoryStorage() {
+    void shouldGetHistoryStorage() {
         InMemoryHistoryManager.CustomLinkedList testHistory = null;
         assertNull(testHistory);
         taskManager.taskAdd(task1);
