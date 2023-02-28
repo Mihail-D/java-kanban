@@ -113,74 +113,89 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
         }
     }
 
-        @Test
-        public void shouldSaveHistory () throws IOException {
-            assertEquals(0, Files.size(Path.of("./src/data/historyFile.csv")));
-            taskManager.taskAdd(task1);
-            String savedHistoryKey = null;
-            String restoredHistoryKey = null;
-            taskManager.taskRetrieve(task1.getTaskId());
+    @Test
+    public void shouldSaveHistory() throws IOException {
+        assertEquals(0, Files.size(Path.of("./src/data/historyFile.csv")));
+        taskManager.taskAdd(task1);
+        String savedHistoryKey = null;
+        String restoredHistoryKey = null;
+        taskManager.taskRetrieve(task1.getTaskId());
 
-            if (historyFile.exists() && !historyFile.isDirectory()) {
-
-                try (BufferedReader br = new BufferedReader(new FileReader(historyFile))) {
-                    String line;
-
-                    while ((line = br.readLine()) != null) {
-                        if (line.trim().isEmpty()) {
-                            continue;
-                        }
-                        String[] tokens = line.split(",");
-                        savedHistoryKey = tokens[0];
-                    }
-                }
-            }
+        if (historyFile.exists() && !historyFile.isDirectory()) {
 
             try (BufferedReader br = new BufferedReader(new FileReader(historyFile))) {
                 String line;
+
                 while ((line = br.readLine()) != null) {
                     if (line.trim().isEmpty()) {
                         continue;
                     }
                     String[] tokens = line.split(",");
-                    restoredHistoryKey = tokens[0];
+                    savedHistoryKey = tokens[0];
                 }
             }
-
-            assertEquals(restoredHistoryKey, savedHistoryKey);
         }
 
-        @Test
-        public void shouldRestoreTasks () throws IOException {
-
-            FileBackedTasksManager newTaskManager = new FileBackedTasksManager(dataFile, historyFile);
-            assertEquals(0, Files.size(dataFile.toPath()));  // 160kb
-            assertEquals(0, FileBackedTasksManager.getTaskManager().getTasksStorage().size());
-            newTaskManager.taskAdd(task1);
-            newTaskManager.taskAdd(task2);
-            assertNotEquals(0, Files.size(dataFile.toPath()));  // 160kb
-
-
-
-            newTaskManager.restoreTasks(dataFile);
-            assertEquals(2, FileBackedTasksManager.getTaskManager().getTasksStorage().size());
-
-        }
-
-
-
-
-
-        @AfterEach
-        public void deleteFile () throws IOException {
-            Path dataPath = Paths.get("./src/data/dataFile.csv");
-            Path historyPath = Paths.get("./src/data/historyFile.csv");
-            try {
-                Files.deleteIfExists(dataPath);
-                Files.deleteIfExists(historyPath);
-            } catch (IOException ex) {
-                throw new IOException("error while file deletion");
+        try (BufferedReader br = new BufferedReader(new FileReader(historyFile))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.trim().isEmpty()) {
+                    continue;
+                }
+                String[] tokens = line.split(",");
+                restoredHistoryKey = tokens[0];
             }
         }
 
+        assertEquals(restoredHistoryKey, savedHistoryKey);
     }
+
+    @Test
+    public void shouldRestoreTasks() throws IOException {
+        FileBackedTasksManager newTaskManager = new FileBackedTasksManager(dataFile, historyFile);
+        assertEquals(0, Files.size(dataFile.toPath()));
+        assertEquals(0, FileBackedTasksManager.getTaskManager().getTasksStorage().size());
+        newTaskManager.taskAdd(task1);
+        newTaskManager.taskAdd(task2);
+        assertNotEquals(0, Files.size(dataFile.toPath()));
+
+        newTaskManager.restoreTasks(dataFile);
+        assertEquals(2, FileBackedTasksManager.getTaskManager().getTasksStorage().size());
+    }
+
+
+    @Test
+    public void shouldRestoreHistory() throws IOException {
+        FileBackedTasksManager newTaskManager = new FileBackedTasksManager(dataFile, historyFile);
+        assertEquals(0, Files.size(historyFile.toPath()));
+        assertEquals(0, InMemoryHistoryManager.getHistoryStorage().getSize());
+
+        newTaskManager.taskAdd(task1);
+        newTaskManager.taskAdd(task2);
+        newTaskManager.taskRetrieve(task1.getTaskId());
+        newTaskManager.taskRetrieve(task2.getTaskId());
+
+        assertNotEquals(0, Files.size(historyFile.toPath()));
+
+        newTaskManager.restoreTasks(historyFile);
+        assertEquals(2, InMemoryHistoryManager.getHistoryStorage().getSize());
+    }
+
+
+
+
+
+
+    @AfterEach
+    public void deleteFile() throws IOException {
+        Path dataPath = Paths.get("./src/data/dataFile.csv");
+        Path historyPath = Paths.get("./src/data/historyFile.csv");
+        try {
+            Files.deleteIfExists(dataPath);
+            Files.deleteIfExists(historyPath);
+        } catch (IOException ex) {
+            throw new IOException("error while file deletion");
+        }
+    }
+
+}
