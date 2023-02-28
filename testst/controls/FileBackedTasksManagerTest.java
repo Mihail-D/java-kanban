@@ -25,7 +25,6 @@ import static tasks.TaskTypes.SUB_TASK;
 
 public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager> {
 
-
     File dataFile = new File("./src/data/dataFile.csv");
     File historyFile = new File("./src/data/historyFile.csv");
 
@@ -82,7 +81,9 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
         assertEquals(0, Files.size(Path.of("./src/data/dataFile.csv")));
 
         taskManager.taskAdd(task1);
-        String taskKey = null;
+        String savedTaskKey = null;
+        String restoredTaskKey = null;
+
         if (dataFile.exists() && !dataFile.isDirectory()) {
 
             try (BufferedReader br = new BufferedReader(new FileReader(dataFile))) {
@@ -93,62 +94,90 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
                         continue;
                     }
                     String[] tokens = line.split(",");
-                    taskKey = tokens[0];
+                    savedTaskKey = tokens[0];
                 }
             }
-        }
 
-        assertEquals(task1.getTaskId(), taskKey);
-    }
-
-    @Test
-    public void shouldSaveHistory() throws IOException {
-        assertEquals(0, Files.size(Path.of("./src/data/historyFile.csv")));
-        taskManager.taskAdd(task1);
-        String taskKey = null;
-        taskManager.taskRetrieve(task1.getTaskId());
-
-        if (historyFile.exists() && !historyFile.isDirectory()) {
-
-            try (BufferedReader br = new BufferedReader(new FileReader(historyFile))) {
+            try (BufferedReader br = new BufferedReader(new FileReader(dataFile))) {
                 String line;
-
                 while ((line = br.readLine()) != null) {
                     if (line.trim().isEmpty()) {
                         continue;
                     }
                     String[] tokens = line.split(",");
-                    taskKey = tokens[0];
+                    restoredTaskKey = tokens[0];
                 }
             }
-        }
-        assertEquals(task1.getTaskId(), taskKey);
-    }
 
-    @Test
-    public void shouldRestoreTasks() throws IOException {
-        Path path = Path.of("./src/data/dataFile.csv");
-        assertEquals(0, Files.size(path));
-        taskManager.taskAdd(task1);
-        taskManager.taskAdd(task2);
-        assertNotEquals(0, Files.size(path));
-
-        FileBackedTasksManager newTaskManager = new FileBackedTasksManager(dataFile, historyFile);
-        InMemoryTaskManager newInMemoryTaskManager = (InMemoryTaskManager) Managers.getDefault();
-        assertEquals(2, newInMemoryTaskManager.getTasksStorage().size());
-
-    }
-
-    @AfterEach
-    public void deleteFile() throws IOException {
-        Path dataPath = Paths.get("./src/data/dataFile.csv");
-        Path historyPath = Paths.get("./src/data/historyFile.csv");
-        try {
-            Files.deleteIfExists(dataPath);
-            Files.deleteIfExists(historyPath);
-        } catch (IOException ex) {
-            throw new IOException("error while file deletion");
+            assertEquals(restoredTaskKey, savedTaskKey);
         }
     }
 
-}
+        @Test
+        public void shouldSaveHistory () throws IOException {
+            assertEquals(0, Files.size(Path.of("./src/data/historyFile.csv")));
+            taskManager.taskAdd(task1);
+            String savedHistoryKey = null;
+            String restoredHistoryKey = null;
+            taskManager.taskRetrieve(task1.getTaskId());
+
+            if (historyFile.exists() && !historyFile.isDirectory()) {
+
+                try (BufferedReader br = new BufferedReader(new FileReader(historyFile))) {
+                    String line;
+
+                    while ((line = br.readLine()) != null) {
+                        if (line.trim().isEmpty()) {
+                            continue;
+                        }
+                        String[] tokens = line.split(",");
+                        savedHistoryKey = tokens[0];
+                    }
+                }
+            }
+
+            try (BufferedReader br = new BufferedReader(new FileReader(historyFile))) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    if (line.trim().isEmpty()) {
+                        continue;
+                    }
+                    String[] tokens = line.split(",");
+                    restoredHistoryKey = tokens[0];
+                }
+            }
+
+            assertEquals(restoredHistoryKey, savedHistoryKey);
+        }
+
+        @Test
+        public void shouldRestoreTasks () throws IOException {
+            Path path = Path.of("./src/data/dataFile.csv");
+            assertEquals(0, Files.size(path));
+            taskManager.taskAdd(task1);
+            taskManager.taskAdd(task2);
+            assertNotEquals(0, Files.size(path));
+
+            FileBackedTasksManager newTaskManager = new FileBackedTasksManager(dataFile, historyFile);
+            InMemoryTaskManager newInMemoryTaskManager = (InMemoryTaskManager) Managers.getDefault();
+            assertEquals(2, newInMemoryTaskManager.getTasksStorage().size());
+
+        }
+
+
+
+
+
+        @AfterEach
+        public void deleteFile () throws IOException {
+            Path dataPath = Paths.get("./src/data/dataFile.csv");
+            Path historyPath = Paths.get("./src/data/historyFile.csv");
+            try {
+                Files.deleteIfExists(dataPath);
+                Files.deleteIfExists(historyPath);
+            } catch (IOException ex) {
+                throw new IOException("error while file deletion");
+            }
+        }
+
+    }
