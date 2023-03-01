@@ -1,17 +1,11 @@
 package controls;
 
-import java.io.IOException;
-
 public class Managers {
 
     private static TaskManager taskManager;
 
     static {
-        try {
-            taskManager = new InMemoryTaskManager();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        taskManager = new InMemoryTaskManager();
     }
 
     private static HistoryManager historyManager = new InMemoryHistoryManager();

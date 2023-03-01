@@ -1,5 +1,6 @@
 package controls;
 
+import exceptions.ManagerCreateException;
 import exceptions.ManagerLoadException;
 import exceptions.ManagerSaveException;
 import tasks.*;
@@ -21,14 +22,14 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     static {
         try {
             taskManager = new InMemoryTaskManager();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new ManagerCreateException("Не удалось создать новый менеджер задач.");
         }
     }
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
 
-    public FileBackedTasksManager(File dataFile, File historyFile) throws IOException {
+    public FileBackedTasksManager(File dataFile, File historyFile) {
         this.dataFile = dataFile;
         this.historyFile = historyFile;
         restoreTasks(dataFile);

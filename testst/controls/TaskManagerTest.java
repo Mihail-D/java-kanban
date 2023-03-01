@@ -1,6 +1,5 @@
 package controls;
 
-import exceptions.ManagerSaveException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import tasks.Epic;
@@ -422,37 +421,37 @@ abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.taskAdd(task1);
         taskManager.taskAdd(task2);
 
-        ManagerSaveException isTask2StartAfterEndBefore = Assertions.assertThrows(ManagerSaveException.class, () ->
+        IllegalArgumentException isTask2StartAfterEndBefore = Assertions.assertThrows(IllegalArgumentException.class, () ->
                 taskManager.taskUpdate("t.2", "newTitle", "newDescription",
                         "NEW", LocalDateTime.parse("22.02.2023_17:15", formatter), Duration.ofMinutes(30)
                 ), "ожидалось ManagerSaveException");
 
-        ManagerSaveException isTask2StartAfterEndAfter = Assertions.assertThrows(ManagerSaveException.class, () ->
+        IllegalArgumentException isTask2StartAfterEndAfter = Assertions.assertThrows(IllegalArgumentException.class, () ->
                 taskManager.taskUpdate("t.2", "newTitle", "newDescription",
                         "NEW", LocalDateTime.parse("22.02.2023_17:15", formatter), Duration.ofMinutes(130)
                 ), "ожидалось ManagerSaveException");
 
-        ManagerSaveException isTask2StartBeforeEndBefore = Assertions.assertThrows(ManagerSaveException.class, () ->
+        IllegalArgumentException isTask2StartBeforeEndBefore = Assertions.assertThrows(IllegalArgumentException.class, () ->
                 taskManager.taskUpdate("t.2", "newTitle", "newDescription",
                         "NEW", LocalDateTime.parse("22.02.2023_16:50", formatter), Duration.ofMinutes(30)
                 ), "ожидалось ManagerSaveException");
 
-        ManagerSaveException isTask2StartBeforeEndAfter = Assertions.assertThrows(ManagerSaveException.class, () ->
+        IllegalArgumentException isTask2StartBeforeEndAfter = Assertions.assertThrows(IllegalArgumentException.class, () ->
                 taskManager.taskUpdate("t.2", "newTitle", "newDescription",
                         "NEW", LocalDateTime.parse("22.02.2023_16:50", formatter), Duration.ofMinutes(130)
                 ), "ожидалось ManagerSaveException");
 
-        ManagerSaveException isTask2StartEqualsEndEquals = Assertions.assertThrows(ManagerSaveException.class, () ->
+        IllegalArgumentException isTask2StartEqualsEndEquals = Assertions.assertThrows(IllegalArgumentException.class, () ->
                 taskManager.taskUpdate("t.2", "newTitle", "newDescription",
                         "NEW", LocalDateTime.parse("22.02.2023_17:00", formatter), Duration.ofMinutes(60)
                 ), "ожидалось ManagerSaveException");
 
-        ManagerSaveException isTask2StartBeforeEndEquals = Assertions.assertThrows(ManagerSaveException.class, () ->
+        IllegalArgumentException isTask2StartBeforeEndEquals = Assertions.assertThrows(IllegalArgumentException.class, () ->
                 taskManager.taskUpdate("t.2", "newTitle", "newDescription",
                         "NEW", LocalDateTime.parse("22.02.2023_16:00", formatter), Duration.ofMinutes(60)
                 ), "ожидалось ManagerSaveException");
 
-        ManagerSaveException isTask2StartEqualsEndAfter = Assertions.assertThrows(ManagerSaveException.class, () ->
+        IllegalArgumentException isTask2StartEqualsEndAfter = Assertions.assertThrows(IllegalArgumentException.class, () ->
                 taskManager.taskUpdate("t.2", "newTitle", "newDescription",
                         "NEW", LocalDateTime.parse("22.02.2023_18:00", formatter), Duration.ofMinutes(60)
                 ), "ожидалось ManagerSaveException");

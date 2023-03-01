@@ -5,7 +5,6 @@ import controls.TaskManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -26,7 +25,7 @@ class EpicTest {
     public SubTask subtask4;
 
     @BeforeEach
-    void setUp() throws IOException {
+    void setUp() {
         taskManager = new InMemoryTaskManager();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
 

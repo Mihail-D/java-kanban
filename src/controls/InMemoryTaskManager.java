@@ -1,6 +1,6 @@
 package controls;
 
-import exceptions.ManagerSaveException;
+import exceptions.ManagerLoadException;
 import org.jetbrains.annotations.NotNull;
 import tasks.*;
 
@@ -26,12 +26,18 @@ public class InMemoryTaskManager implements TaskManager {
     ));
     private List<DateRange> timeSlotsStorage = new ArrayList<>();
 
-    public int taskId = FileBackedTasksManager.getInitNumber();
+    public int taskId;
+
+    {
+        try {
+            taskId = FileBackedTasksManager.getInitNumber();
+        } catch (ManagerLoadException | IOException e) {
+            throw new ManagerLoadException("Начальный индекс не присвоен. Файл задач отсутствует");
+        }
+    }
+
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
     public static String taskContent;
-
-    public InMemoryTaskManager() throws IOException {
-    }
 
     public HashMap<String, Task> getTasksStorage() {
         return tasksStorage;
@@ -373,7 +379,7 @@ public class InMemoryTaskManager implements TaskManager {
 
             if (!(i.isOverlappingAtStart(interval.start, interval.stop)
                     || i.isOverlappingAtStop(interval.start, interval.stop))) {
-                throw new ManagerSaveException("Время новой задачи пересекается с ранее созданной");
+                throw new IllegalArgumentException("Время новой задачи пересекается с ранее созданной");
             }
         }
     }
