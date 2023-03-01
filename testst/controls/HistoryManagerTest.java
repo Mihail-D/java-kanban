@@ -16,7 +16,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static tasks.TaskStages.NEW;
 import static tasks.TaskTypes.*;
 
-class HistoryManagerTest <T extends HistoryManager> {
+class HistoryManagerTest<T extends HistoryManager> {
+
     InMemoryTaskManager taskManager;
     InMemoryHistoryManager historyManager;
 
@@ -70,9 +71,9 @@ class HistoryManagerTest <T extends HistoryManager> {
         taskManager.subTaskAdd(subtask1);
         taskManager.taskAdd(task1);
 
-       historyManager.addHistory(epic);
-       historyManager.addHistory(subtask1);
-       historyManager.addHistory(task1);
+        historyManager.addHistory(epic);
+        historyManager.addHistory(subtask1);
+        historyManager.addHistory(task1);
 
         assertEquals(3, InMemoryHistoryManager.getHistoryStorage().getSize());
         assertEquals(3, InMemoryHistoryManager.getHistoryRegister().size());
@@ -124,7 +125,6 @@ class HistoryManagerTest <T extends HistoryManager> {
         taskManager.taskAdd(task2);
         taskManager.taskAdd(task3);
 
-
         taskManager.taskRetrieve(task1.getTaskId());
         taskManager.taskRetrieve(task2.getTaskId());
         taskManager.taskRetrieve(task3.getTaskId());
@@ -144,7 +144,6 @@ class HistoryManagerTest <T extends HistoryManager> {
         taskManager.taskAdd(task2);
         taskManager.taskAdd(task3);
 
-
         taskManager.taskRetrieve(task1.getTaskId());
         taskManager.taskRetrieve(task2.getTaskId());
         taskManager.taskRetrieve(task3.getTaskId());
@@ -163,7 +162,6 @@ class HistoryManagerTest <T extends HistoryManager> {
         taskManager.taskAdd(task1);
         taskManager.taskAdd(task2);
         taskManager.taskAdd(task3);
-
 
         taskManager.taskRetrieve(task1.getTaskId());
         taskManager.taskRetrieve(task2.getTaskId());

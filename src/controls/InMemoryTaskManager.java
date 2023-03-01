@@ -10,9 +10,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.toCollection;
 import static tasks.TaskStages.DONE;
 import static tasks.TaskStages.NEW;
 import static tasks.TaskTypes.*;
@@ -42,8 +40,6 @@ public class InMemoryTaskManager implements TaskManager {
     public List<DateRange> getTimeSlotsStorage() {
         return timeSlotsStorage;
     }
-
-
 
     @Override
     public void taskAdd(Task task) {
@@ -243,13 +239,11 @@ public class InMemoryTaskManager implements TaskManager {
         HashMap<String, Task> listOfTasks = new HashMap<>();
 
         for (String i : tasksStorage.keySet()) {
-                listOfTasks.put(i, tasksStorage.get(i));
-            }
+            listOfTasks.put(i, tasksStorage.get(i));
+        }
 
         return listOfTasks;
     }
-
-
 
     @Override
     public ArrayList<String> collectEpicSubtasks(String taskKey) {

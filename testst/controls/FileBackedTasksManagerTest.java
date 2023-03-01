@@ -89,7 +89,6 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
 
             try (final BufferedWriter writer = new BufferedWriter((new FileWriter(dataFile, UTF_8)))) {
 
-
                 for (String entry : taskManager.getTasksStorage().keySet()) {
                     writer.append(taskManager.getTaskFormattedData(taskManager.getTasksStorage().get(entry).getTaskId()));
                     writer.newLine();
@@ -123,7 +122,6 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
 
             try (final BufferedWriter writer = new BufferedWriter((new FileWriter(dataFile, UTF_8)))) {
 
-
                 for (String entry : taskManager.getTasksStorage().keySet()) {
                     writer.append(taskManager.getTaskFormattedData(taskManager.getTasksStorage().get(entry).getTaskId()));
                     writer.newLine();
@@ -150,7 +148,6 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
         if (dataFile.exists() && !dataFile.isDirectory()) {
 
             try (final BufferedWriter writer = new BufferedWriter((new FileWriter(dataFile, UTF_8)))) {
-
 
                 for (String entry : taskManager.getTasksStorage().keySet()) {
                     writer.append(taskManager.getTaskFormattedData(taskManager.getTasksStorage().get(entry).getTaskId()));
@@ -187,7 +184,6 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
         if (historyFile.exists() && !historyFile.isDirectory()) {
 
             try (final BufferedWriter writer = new BufferedWriter((new FileWriter(historyFile, UTF_8)))) {
-
 
                 for (String entry : taskManager.getTasksStorage().keySet()) {
                     writer.append(taskManager.getTaskFormattedData(taskManager.getTasksStorage().get(entry).getTaskId()));

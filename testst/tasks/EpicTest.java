@@ -35,22 +35,26 @@ class EpicTest {
         );
 
         subtask1 = new SubTask("subTask_1", "description", false, NEW,
-                SUB_TASK, LocalDateTime.parse("23.02.2023_06:00", formatter), Duration.ofMinutes(60), "e.1"
+                SUB_TASK, LocalDateTime.parse("23.02.2023_06:00", formatter), Duration.ofMinutes(60), epic.getTaskId()
         );
         subtask2 = new SubTask("subTask_2", "description", false, NEW,
-                SUB_TASK, LocalDateTime.parse("23.02.2023_08:00", formatter), Duration.ofMinutes(60), "e.1"
+                SUB_TASK, LocalDateTime.parse("23.02.2023_08:00", formatter), Duration.ofMinutes(60), epic.getTaskId()
         );
         subtask3 = new SubTask("subTask_3", "description", false, NEW,
-                SUB_TASK, LocalDateTime.parse("23.02.2023_10:00", formatter), Duration.ofMinutes(60), "e.1"
+                SUB_TASK, LocalDateTime.parse("23.02.2023_10:00", formatter), Duration.ofMinutes(60), epic.getTaskId()
         );
         subtask4 = new SubTask("subTask_4", "description", false, NEW,
-                SUB_TASK, LocalDateTime.parse("23.02.2023_12:00", formatter), Duration.ofMinutes(60), "e.1"
+                SUB_TASK, LocalDateTime.parse("23.02.2023_12:00", formatter), Duration.ofMinutes(60), epic.getTaskId()
         );
     }
 
     @Test
     public void shouldReturnEmptyList() {
         taskManager.epicAdd(epic);
+        subtask1.setParentId(epic.getTaskId());
+        subtask2.setParentId(epic.getTaskId());
+        subtask3.setParentId(epic.getTaskId());
+        subtask4.setParentId(epic.getTaskId());
         taskManager.subTaskAdd(subtask1);
         taskManager.subTaskAdd(subtask2);
         taskManager.subTaskAdd(subtask3);
@@ -66,6 +70,10 @@ class EpicTest {
     @Test
     public void shouldAllSubtasksAreNew() {
         taskManager.epicAdd(epic);
+        subtask1.setParentId(epic.getTaskId());
+        subtask2.setParentId(epic.getTaskId());
+        subtask3.setParentId(epic.getTaskId());
+        subtask4.setParentId(epic.getTaskId());
         taskManager.subTaskAdd(subtask1);
         taskManager.subTaskAdd(subtask2);
         taskManager.subTaskAdd(subtask3);
@@ -80,22 +88,26 @@ class EpicTest {
     @Test
     public void shouldAllSubtasksAreDone() {
         taskManager.epicAdd(epic);
+        subtask1.setParentId(epic.getTaskId());
+        subtask2.setParentId(epic.getTaskId());
+        subtask3.setParentId(epic.getTaskId());
+        subtask4.setParentId(epic.getTaskId());
         taskManager.subTaskAdd(subtask1);
         taskManager.subTaskAdd(subtask2);
         taskManager.subTaskAdd(subtask3);
         taskManager.subTaskAdd(subtask4);
 
-        taskManager.subTaskUpdate("s.2", "newTitle_1", "newDescription_1",
-                "DONE", "e.1", "23.02.2023_06:00", Duration.ofMinutes(59)
+        taskManager.subTaskUpdate(subtask1.getTaskId(), "newTitle_1", "newDescription_1",
+                "DONE", epic.getTaskId(), "23.02.2023_06:00", Duration.ofMinutes(59)
         );
-        taskManager.subTaskUpdate("s.3", "newTitle_1", "newDescription_1",
-                "DONE", "e.1", "23.02.2023_08:00", Duration.ofMinutes(59)
+        taskManager.subTaskUpdate(subtask2.getTaskId(), "newTitle_1", "newDescription_1",
+                "DONE", epic.getTaskId(), "23.02.2023_08:00", Duration.ofMinutes(59)
         );
-        taskManager.subTaskUpdate("s.4", "newTitle_1", "newDescription_1",
-                "DONE", "e.1", "23.02.2023_10:00", Duration.ofMinutes(59)
+        taskManager.subTaskUpdate(subtask3.getTaskId(), "newTitle_1", "newDescription_1",
+                "DONE", epic.getTaskId(), "23.02.2023_10:00", Duration.ofMinutes(59)
         );
-        taskManager.subTaskUpdate("s.5", "newTitle_1", "newDescription_1",
-                "DONE", "e.1", "23.02.2023_12:00", Duration.ofMinutes(59)
+        taskManager.subTaskUpdate(subtask4.getTaskId(), "newTitle_1", "newDescription_1",
+                "DONE", epic.getTaskId(), "23.02.2023_12:00", Duration.ofMinutes(59)
         );
         assertEquals(DONE, epic.getTaskStatus());
         assertEquals(DONE, subtask1.getTaskStatus());
@@ -107,16 +119,20 @@ class EpicTest {
     @Test
     public void shouldSubtasksAreNewDone() {
         taskManager.epicAdd(epic);
+        subtask1.setParentId(epic.getTaskId());
+        subtask2.setParentId(epic.getTaskId());
+        subtask3.setParentId(epic.getTaskId());
+        subtask4.setParentId(epic.getTaskId());
         taskManager.subTaskAdd(subtask1);
         taskManager.subTaskAdd(subtask2);
         taskManager.subTaskAdd(subtask3);
         taskManager.subTaskAdd(subtask4);
 
-        taskManager.subTaskUpdate("s.2", "newTitle_1", "newDescription_1",
-                "DONE", "e.1", "23.02.2023_06:00", Duration.ofMinutes(59)
+        taskManager.subTaskUpdate(subtask1.getTaskId(), "newTitle_1", "newDescription_1",
+                "DONE", epic.getTaskId(), "25.02.2023_06:00", Duration.ofMinutes(59)
         );
-        taskManager.subTaskUpdate("s.3", "newTitle_1", "newDescription_1",
-                "DONE", "e.1", "23.02.2023_08:00", Duration.ofMinutes(59)
+        taskManager.subTaskUpdate(subtask2.getTaskId(), "newTitle_1", "newDescription_1",
+                "DONE", epic.getTaskId(), "23.02.2023_08:00", Duration.ofMinutes(59)
         );
 
         assertEquals(IN_PROGRESS, epic.getTaskStatus());
@@ -129,22 +145,26 @@ class EpicTest {
     @Test
     public void shouldSubtasksAreInProgress() {
         taskManager.epicAdd(epic);
+        subtask1.setParentId(epic.getTaskId());
+        subtask2.setParentId(epic.getTaskId());
+        subtask3.setParentId(epic.getTaskId());
+        subtask4.setParentId(epic.getTaskId());
         taskManager.subTaskAdd(subtask1);
         taskManager.subTaskAdd(subtask2);
         taskManager.subTaskAdd(subtask3);
         taskManager.subTaskAdd(subtask4);
 
-        taskManager.subTaskUpdate("s.2", "newTitle_1", "newDescription_1",
-                "IN_PROGRESS", "e.1", "23.02.2023_06:00", Duration.ofMinutes(59)
+        taskManager.subTaskUpdate(subtask1.getTaskId(), "newTitle_1", "newDescription_1",
+                "IN_PROGRESS", epic.getTaskId(), "23.02.2023_06:00", Duration.ofMinutes(59)
         );
-        taskManager.subTaskUpdate("s.3", "newTitle_1", "newDescription_1",
-                "IN_PROGRESS", "e.1", "23.02.2023_08:00", Duration.ofMinutes(59)
+        taskManager.subTaskUpdate(subtask2.getTaskId(), "newTitle_1", "newDescription_1",
+                "IN_PROGRESS", epic.getTaskId(), "23.02.2023_08:00", Duration.ofMinutes(59)
         );
-        taskManager.subTaskUpdate("s.4", "newTitle_1", "newDescription_1",
-                "IN_PROGRESS", "e.1", "23.02.2023_10:00", Duration.ofMinutes(59)
+        taskManager.subTaskUpdate(subtask3.getTaskId(), "newTitle_1", "newDescription_1",
+                "IN_PROGRESS", epic.getTaskId(), "23.02.2023_10:00", Duration.ofMinutes(59)
         );
-        taskManager.subTaskUpdate("s.5", "newTitle_1", "newDescription_1",
-                "IN_PROGRESS", "e.1", "23.02.2023_12:00", Duration.ofMinutes(59)
+        taskManager.subTaskUpdate(subtask4.getTaskId(), "newTitle_1", "newDescription_1",
+                "IN_PROGRESS", epic.getTaskId(), "23.02.2023_12:00", Duration.ofMinutes(59)
         );
 
         assertEquals(IN_PROGRESS, epic.getTaskStatus());
@@ -157,22 +177,26 @@ class EpicTest {
     @Test
     public void shouldSubtasksAreMix() {
         taskManager.epicAdd(epic);
+        subtask1.setParentId(epic.getTaskId());
+        subtask2.setParentId(epic.getTaskId());
+        subtask3.setParentId(epic.getTaskId());
+        subtask4.setParentId(epic.getTaskId());
         taskManager.subTaskAdd(subtask1);
         taskManager.subTaskAdd(subtask2);
         taskManager.subTaskAdd(subtask3);
         taskManager.subTaskAdd(subtask4);
 
-        taskManager.subTaskUpdate("s.2", "newTitle_1", "newDescription_1",
-                "NEW", "e.1", "23.02.2023_06:00", Duration.ofMinutes(59)
+        taskManager.subTaskUpdate(subtask1.getTaskId(), "newTitle_1", "newDescription_1",
+                "NEW", epic.getTaskId(), "23.02.2023_06:00", Duration.ofMinutes(59)
         );
-        taskManager.subTaskUpdate("s.3", "newTitle_1", "newDescription_1",
-                "DONE", "e.1", "23.02.2023_08:00", Duration.ofMinutes(59)
+        taskManager.subTaskUpdate(subtask2.getTaskId(), "newTitle_1", "newDescription_1",
+                "DONE", epic.getTaskId(), "23.02.2023_08:00", Duration.ofMinutes(59)
         );
-        taskManager.subTaskUpdate("s.4", "newTitle_1", "newDescription_1",
-                "IN_PROGRESS", "e.1", "23.02.2023_10:00", Duration.ofMinutes(59)
+        taskManager.subTaskUpdate(subtask3.getTaskId(), "newTitle_1", "newDescription_1",
+                "IN_PROGRESS", epic.getTaskId(), "23.02.2023_10:00", Duration.ofMinutes(59)
         );
-        taskManager.subTaskUpdate("s.5", "newTitle_1", "newDescription_1",
-                "DONE", "e.1", "23.02.2023_12:00", Duration.ofMinutes(59)
+        taskManager.subTaskUpdate(subtask4.getTaskId(), "newTitle_1", "newDescription_1",
+                "DONE", epic.getTaskId(), "23.02.2023_12:00", Duration.ofMinutes(59)
         );
 
         assertEquals(IN_PROGRESS, epic.getTaskStatus());
