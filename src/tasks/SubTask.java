@@ -15,9 +15,9 @@ public class SubTask extends Task {
 
     public SubTask(
             Integer taskKey, String taskTitle, String taskDescription, TaskStatus taskStatus, Instant taskStartTime,
-            Duration taskDuration, Instant tmpTimeTaskWasUpdated, Integer parentTaskKey
+            Duration taskDuration, Instant taskUpdatedTime, Integer parentTaskKey
     ) {
-        super(taskKey, taskTitle, taskDescription, taskStatus, taskStartTime, taskDuration, tmpTimeTaskWasUpdated);
+        super(taskKey, taskTitle, taskDescription, taskStatus, taskStartTime, taskDuration, taskUpdatedTime);
         this.parentTaskKey = parentTaskKey;
         setTaskEndTime(taskStartTime.plus(taskDuration));
     }

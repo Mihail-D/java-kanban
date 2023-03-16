@@ -20,9 +20,9 @@ public class Epic extends Task {
 
     public Epic(
             Integer taskKey, String taskTitle, String taskDescription, TaskStatus taskStatus, Instant taskStartTime,
-            Duration taskDuration, Instant tmpTimeTaskWasUpdated, Set<SubTask> relatedSubtasks
+            Duration taskDuration, Instant taskUpdatedTime, Set<SubTask> relatedSubtasks
     ) {
-        super(taskKey, taskTitle, taskDescription, taskStatus, taskStartTime, taskDuration, tmpTimeTaskWasUpdated);
+        super(taskKey, taskTitle, taskDescription, taskStatus, taskStartTime, taskDuration, taskUpdatedTime);
         this.relatedSubtasks = relatedSubtasks;
         setTaskEndTime(taskStartTime.plus(taskDuration));
     }

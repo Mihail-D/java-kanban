@@ -61,11 +61,11 @@ class EpicTest extends TaskTest {
 
     @Test
     void shouldAddNewSubTaskIdToEpicTask() throws IOException {
-        Set<SubTask> tmpSet = new HashSet<>();
-        tmpSet.add(testSubTask1);
-        tmpSet.add(testSubTask2);
-        tmpSet.add(testSubTask3);
-        assertEquals(tmpSet, testEpicTask.getRelatedSubTasks());
+        Set<SubTask> set = new HashSet<>();
+        set.add(testSubTask1);
+        set.add(testSubTask2);
+        set.add(testSubTask3);
+        assertEquals(set, testEpicTask.getRelatedSubTasks());
 
         SubTask testSubTask4 = new SubTask(
                 taskName,
@@ -75,8 +75,8 @@ class EpicTest extends TaskTest {
                 taskDuration
         );
         manager.addSubTask(testSubTask4, testEpicTask.getTaskKey());
-        tmpSet.add(testSubTask4);
-        assertEquals(tmpSet, testEpicTask.getRelatedSubTasks());
+        set.add(testSubTask4);
+        assertEquals(set, testEpicTask.getRelatedSubTasks());
     }
 
     @Test
@@ -99,10 +99,10 @@ class EpicTest extends TaskTest {
         assertNotNull(testSubTask2);
         assertNotNull(testSubTask3);
 
-        Set<SubTask> tmpSet = new HashSet<>();
-        tmpSet.add(testSubTask1);
-        tmpSet.add(testSubTask2);
-        tmpSet.add(testSubTask3);
-        assertEquals(tmpSet, testEpicTask.getRelatedSubTasks());
+        Set<SubTask> set = new HashSet<>();
+        set.add(testSubTask1);
+        set.add(testSubTask2);
+        set.add(testSubTask3);
+        assertEquals(set, testEpicTask.getRelatedSubTasks());
     }
 }

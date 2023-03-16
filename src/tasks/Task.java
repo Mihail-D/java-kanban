@@ -30,7 +30,7 @@ public class Task {
     public Task(
             Integer taskKey, String taskTitle, String taskDescription, TaskStatus taskStatus,
             Instant taskStartTime,
-            Duration taskDuration, Instant tmpTimeTaskWasUpdated
+            Duration taskDuration, Instant taskUpdatedTime
     ) {
         this.taskKey = taskKey;
         this.taskTitle = taskTitle;
@@ -38,7 +38,7 @@ public class Task {
         this.taskStatus = taskStatus;
         this.taskStartTime = taskStartTime;
         this.taskDuration = taskDuration;
-        taskTimeUpdateCheck = tmpTimeTaskWasUpdated;
+        taskTimeUpdateCheck = taskUpdatedTime;
         this.taskEndTime = taskStartTime.plus(taskDuration);
     }
 
