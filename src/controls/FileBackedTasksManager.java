@@ -1,230 +1,225 @@
 package controls;
 
-import exceptions.ManagerCreateException;
 import exceptions.ManagerLoadException;
+import tasks.TaskStatus;
+import tasks.Epic;
+import tasks.SubTask;
+import tasks.Task;
+import server.Constants;
 import exceptions.ManagerSaveException;
-import tasks.*;
 
 import java.io.*;
 import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.Instant;
 import java.util.*;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
 
-    private final File dataFile;
-    private final File historyFile;
-    static InMemoryTaskManager taskManager;
+    private final List<String> savedTasksList = new ArrayList<>();
 
-    static {
-        try {
-            taskManager = new InMemoryTaskManager();
-        } catch (Exception e) {
-            throw new ManagerCreateException("Не удалось создать новый менеджер задач.");
+    public void tasksForSave() {
+        savedTasksList.clear();
+        for (Task task : getTaskList()) {
+            savedTasksList.add(task.toString());
+        }
+        for (Epic epicTask : getEpicList()) {
+            savedTasksList.add(epicTask.toString());
+        }
+        for (SubTask subTask : getSubTaskList()) {
+            savedTasksList.add(subTask.toString());
         }
     }
 
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
-
-    public FileBackedTasksManager(File dataFile, File historyFile) {
-        this.dataFile = dataFile;
-        this.historyFile = historyFile;
-        restoreTasks(dataFile);
-        restoreTasks(historyFile);
+    public String historyToString() {
+        StringBuilder tasks = new StringBuilder();
+        for (Integer taskKey : getHistoryList()) {
+            tasks.append(taskKey).append(";");
+        }
+        return tasks.toString();
     }
 
-    public static InMemoryTaskManager getTaskManager() {
-        return taskManager;
+    public void loadTasks(ArrayList<String> taskList, String history, String taskKeyCounter) throws IOException {
+        String[] tokens = taskKeyCounter.split(":");
+        Task.setIdCounter(Integer.parseInt(tokens[1]));
+        String[] historySplit = history.split(":");
+
+        taskList.remove(0);
+        taskList.remove(taskList.size() - 1);
+
+        List<Integer> keys = new ArrayList<>();
+
+        String[] historyToken = historySplit[1].split(";");
+
+        Arrays.stream(historyToken).forEach(id -> keys.add(Integer.parseInt(id)));
+
+        for (Integer taskKey : keys) {
+            for (String task : taskList) {
+                String[] taskToken = task.split(";");
+                if (taskKey == Integer.parseInt(taskToken[1])) {
+                    historyRestore(taskToken);
+                }
+            }
+        }
+    }
+
+    private void historyRestore(String[] taskTokens) throws IOException {
+        switch (taskTokens[0]) {
+            case "Task":
+                Task task = new Task(
+                        Integer.parseInt(taskTokens[1]),
+                        taskTokens[2],
+                        taskTokens[3],
+                        TaskStatus.valueOf(taskTokens[4]),
+                        Instant.parse(taskTokens[5]),
+                        Duration.parse(taskTokens[6]),
+                        Instant.parse(taskTokens[7])
+                );
+                addTask(task);
+                addToPrioritizedTasks(task);
+                break;
+            case "SubTask":
+                int parentKey = Integer.parseInt(taskTokens[2]);
+
+                SubTask subTask = new SubTask(
+                        Integer.parseInt(taskTokens[1]),
+                        taskTokens[3],
+                        taskTokens[4],
+                        TaskStatus.valueOf(taskTokens[5]),
+                        Instant.parse(taskTokens[6]),
+                        Duration.parse(taskTokens[7]),
+                        Instant.parse(taskTokens[8]),
+                        parentKey
+                );
+
+                addSubTask(subTask, Integer.valueOf(taskTokens[0]));
+                addToPrioritizedTasks(subTask);
+                break;
+            case "Epic":
+                Set<SubTask> relatedSubTusks = new LinkedHashSet<>();
+
+                Epic epicTask = new Epic(
+                        Integer.parseInt(taskTokens[1]),
+                        taskTokens[3],
+                        taskTokens[4],
+                        TaskStatus.valueOf(taskTokens[5]),
+                        Instant.parse(taskTokens[6]),
+                        Duration.parse(taskTokens[7]),
+                        Instant.parse(taskTokens[8]),
+                        relatedSubTusks
+                );
+                addEpic(epicTask);
+                break;
+            default:
+                System.out.println("Задача не была выгружена из файла; taskKey = " + taskTokens[1]);
+                break;
+        }
+    }
+
+    public void save() {
+        try {
+            tasksForSave();
+            BufferedWriter writer = new BufferedWriter(new FileWriter(Constants.SERVER_URI));
+            writer.write("taskKeyCounter:" + Task.taskKeyCounter);
+            for (String aTask : savedTasksList) {
+                writer.write("\n" + aTask);
+            }
+            writer.write("\n historyOrder:" + historyToString());
+            writer.close();
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        } catch (Exception exception) {
+            throw new ManagerSaveException("Ошибка при сохранении данных" + exception.getMessage());
+        }
+    }
+
+    public void load() {
+        ArrayList<String> tasks = new ArrayList<>();
+
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(Constants.SERVER_URI));
+            String line;
+            while (reader.ready()) {
+                line = reader.readLine();
+                tasks.add(line);
+            }
+            reader.close();
+            if (!tasks.isEmpty()) {
+                loadTasks(tasks, tasks.get(tasks.size() - 1), tasks.get(0));
+            }
+        } catch (FileNotFoundException e) {
+            throw new ManagerLoadException("Не удалось восстановить данные задач");
+        } catch (IOException e) {
+            throw new RuntimeException("Не удалось восстановить данные задач");
+        }
     }
 
     @Override
-    public void taskAdd(Task task) {
-        super.taskAdd(task);
-        saveTask("newTask");
+    public void addTask(Task task) throws IOException {
+        super.addTask(task);
+        save();
     }
 
     @Override
-    public void epicAdd(Epic epic) {
-        super.epicAdd(epic);
-        saveTask("newTask");
+    public void addSubTask(SubTask subTask, Integer epicTaskKey) throws IOException {
+        super.addSubTask(subTask, epicTaskKey);
+        save();
     }
 
     @Override
-    public void subTaskAdd(SubTask subTask) {
-        super.subTaskAdd(subTask);
-        saveTask("newTask");
+    public void addEpic(Epic epicTask) throws IOException {
+        super.addEpic(epicTask);
+        save();
     }
 
     @Override
-    public String taskRetrieve(String taskKey) {
-        super.taskRetrieve(taskKey);
-        saveTask("updateTask");
-
-        return InMemoryTaskManager.taskContent;
+    public void updateTask(Task task) throws IOException {
+        super.updateTask(task);
+        save();
     }
 
     @Override
-    public void taskUpdate(
-            String taskKey, String taskTitle, String taskDescription,
-            String taskStatus, LocalDateTime startTime, Duration duration
-    ) {
-        super.taskUpdate(taskKey, taskTitle, taskDescription, taskStatus, startTime, duration);
-        saveTask("updateTask");
+    public void updateSubTask(SubTask subTask, Integer taskKey) throws IOException {
+        super.updateSubTask(subTask, taskKey);
+        save();
     }
 
     @Override
-    public void epicUpdate(String taskKey, String taskTitle, String taskDescription) {
-        super.epicUpdate(taskKey, taskTitle, taskDescription);
-        saveTask("updateTask");
+    public void updateEpic(Epic epicTask, Integer taskKey) throws IOException {
+        super.updateEpic(epicTask, taskKey);
+        save();
     }
 
     @Override
-    public void subTaskUpdate(
-            String taskKey, String taskTitle, String taskDescription, String taskStatus,
-            String parentKey, String startTime, Duration duration
-    ) {
-        super.subTaskUpdate(taskKey, taskTitle, taskDescription, taskStatus, parentKey, startTime, duration);
-        saveTask("updateTask");
+    public boolean deleteTask(Integer taskKey) throws IOException {
+        boolean isDeleted = super.deleteTask(taskKey);
+        save();
+        return isDeleted;
     }
 
     @Override
-    public void taskDelete(String taskKey) {
-        super.taskDelete(taskKey);
-        saveTask("updateTask");
+    public boolean deleteSubTask(int taskKey) {
+        boolean isDeleted = super.deleteSubTask(taskKey);
+        save();
+        return isDeleted;
+    }
+
+    @Override
+    public boolean deleteEpic(Integer taskKey) throws IOException {
+        boolean isDeleted = super.deleteEpic(taskKey);
+        save();
+        return isDeleted;
+    }
+
+    @Override
+    public boolean clearRelatedSubTusks(Integer taskKey) throws IOException {
+        boolean isClear = super.clearRelatedSubTusks(taskKey);
+        save();
+        return isClear;
     }
 
     @Override
     public void tasksClear() {
         super.tasksClear();
-        saveTask("deleteTask");
-    }
-
-    void restoreTasks(File file) {
-        Task task = null;
-
-        if (file.exists() && !file.isDirectory()) {
-
-            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-                String line;
-
-                while ((line = br.readLine()) != null) {
-                    if (line.trim().isEmpty()) {
-                        continue;
-                    }
-                    String[] tokens = line.split(",");
-
-                    switch (TaskTypes.valueOf(tokens[5])) {
-                        case TASK:
-                            task = new Task(tokens[1], tokens[2], Boolean.parseBoolean(tokens[3]),
-                                    TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5]),
-                                    LocalDateTime.parse(tokens[6], DateTimeFormatter.ISO_DATE_TIME), Duration.parse(tokens[7])
-                            );
-                            task.setTaskId(tokens[0]);
-
-                            break;
-                        case EPIC:
-                            task = new Epic(tokens[1], tokens[2], Boolean.parseBoolean(tokens[3]),
-                                    TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5]),
-                                    LocalDateTime.MAX, Duration.ZERO, new LinkedHashMap<>()
-                            );
-                            task.setTaskId(tokens[0]);
-
-                            break;
-                        case SUB_TASK:
-                            task = new SubTask(tokens[1], tokens[2], Boolean.parseBoolean(tokens[3]),
-                                    TaskStages.valueOf(tokens[4]), TaskTypes.valueOf(tokens[5]),
-                                    LocalDateTime.parse(tokens[7]), Duration.parse(tokens[8]), tokens[6]
-                            );
-                            task.setTaskId(tokens[0]);
-
-                            Epic parentTask = (Epic) taskManager.getTasksStorage().get(tokens[6]);
-                            parentTask.relatedSubTask.put(tokens[0], (SubTask) task);
-                            setEpicStatus(tokens[6]);                                                  // TODO
-                            setEpicTiming(parentTask);
-                            break;
-                    }
-
-                    if (file == dataFile) {
-                        taskManager.getTasksStorage().put(tokens[0], task);
-                    }
-                    else {
-                        InMemoryHistoryManager.getHistoryStorage().linkLast(task);
-                    }
-                }
-
-                taskManager.getPrioritizedTasks().addAll(taskManager.getTasksStorage().values());
-
-            } catch (FileNotFoundException e) {
-                throw new ManagerLoadException("Не удалось восстановить данные задач");
-            } catch (IOException e) {
-                throw new RuntimeException("Не удалось восстановить данные задач");
-            }
-        }
-    }
-
-    private void saveTask(String saveMode) {
-
-        try (
-                final BufferedWriter writer = new BufferedWriter((new FileWriter(dataFile, UTF_8)))
-        ) {
-
-            for (String entry : getTasksStorage().keySet()) {
-                writer.append(getTaskFormattedData(getTasksStorage().get(entry).getTaskId()));
-                writer.newLine();
-            }
-        } catch (IOException e) {
-            throw new ManagerSaveException("Не удалось сохранить данные задач");
-        }
-
-        try (
-                final BufferedWriter writer = new BufferedWriter((new FileWriter(historyFile, UTF_8)))
-        ) {
-            Map<String, Node> list = InMemoryHistoryManager.getHistoryRegister();
-
-            for (String i : list.keySet()) {
-                String newData = getTaskFormattedData(list.get(i).getTask().getTaskId());
-
-                if (!newData.equals(taskContent)) {
-                    writer.append(newData);
-                    writer.newLine();
-                }
-            }
-            if (taskContent != null && !(saveMode.equals("newTask") || saveMode.equals("deleteTask"))) {
-                writer.append(taskContent);
-            }
-        } catch (IOException e) {
-            throw new ManagerSaveException("Не удалось сохранить данные истории");
-        }
-    }
-
-    public static int getInitNumber() throws IOException {
-
-        int max = 0;
-        File file = new File("./src/data/dataFile.csv");
-
-        if (!file.exists() && !file.isDirectory()) {
-            try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-                String line;
-                while ((line = br.readLine()) != null) {
-                    if (line.trim().isEmpty()) {
-                        continue;
-                    }
-                    String[] arr = line.split(",");
-                    int number = Integer.parseInt(arr[0].substring(2));
-                    if (number > max) {
-                        max = number;
-                    }
-                }
-            } catch (IOException e) {
-                file = new File("./src/data/dataFile.csv");
-                file.createNewFile();
-                return 0;
-            }
-        }
-
-        return max;
+        save();
     }
 }

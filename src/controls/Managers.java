@@ -2,19 +2,11 @@ package controls;
 
 public class Managers {
 
-    private static TaskManager taskManager;
-
-    static {
-        taskManager = new InMemoryTaskManager();
-    }
-
-    private static HistoryManager historyManager = new InMemoryHistoryManager();
-
     public static TaskManager getDefault() {
-        return taskManager;
+        return new HttpTaskManager();
     }
 
     public static HistoryManager getDefaultHistory() {
-        return historyManager;
+        return new InMemoryHistoryManager();
     }
 }

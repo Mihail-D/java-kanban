@@ -1,37 +1,54 @@
 package tasks;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.LinkedHashMap;
+import java.time.Instant;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public class Epic extends Task {
 
-    public LinkedHashMap<String, SubTask> relatedSubTask;
+    private final Set<SubTask> relatedSubtasks;
 
     public Epic(
-            String taskTitle, String taskDescription, boolean isViewed, TaskStages taskStatus,
-            TaskTypes taskType, LocalDateTime startTime, Duration duration,
-            LinkedHashMap<String, SubTask> relatedSubTask
+            String taskTitle, String taskDescription, TaskStatus taskStatus, Instant taskStartTime,
+            Duration taskDuration
     ) {
-        super(taskTitle, taskDescription, isViewed, taskStatus, taskType, startTime, duration);
-        this.relatedSubTask = relatedSubTask;
+        super(taskTitle, taskDescription, taskStatus, taskStartTime, taskDuration);
+        this.relatedSubtasks = new LinkedHashSet<>();
+        setTaskEndTime(taskStartTime.plus(taskDuration));
     }
 
-    @Override
-    public LocalDateTime getEndTime() {
-        LocalDateTime endTime = LocalDateTime.MIN;
+    public Epic(
+            Integer taskKey, String taskTitle, String taskDescription, TaskStatus taskStatus, Instant taskStartTime,
+            Duration taskDuration, Instant tmpTimeTaskWasUpdated, Set<SubTask> relatedSubtasks
+    ) {
+        super(taskKey, taskTitle, taskDescription, taskStatus, taskStartTime, taskDuration, tmpTimeTaskWasUpdated);
+        this.relatedSubtasks = relatedSubtasks;
+        setTaskEndTime(taskStartTime.plus(taskDuration));
+    }
 
-        for (SubTask i : relatedSubTask.values()) {
-            if (i.getEndTime().isAfter(endTime)) {
-                endTime = i.getEndTime();
-            }
-        }
-        return endTime.truncatedTo(ChronoUnit.MINUTES);
+    public Set<SubTask> getRelatedSubTasks() {
+        return relatedSubtasks;
+    }
+
+    public void addChildSubTask(SubTask subTask) {
+        relatedSubtasks.add(subTask);
+    }
+
+    public void removeChildSubTask(SubTask subTask) {
+        relatedSubtasks.remove(subTask);
     }
 
     @Override
     public String toString() {
-        return "Epic RelatedSubTask = " + relatedSubTask + super.toString() + "\n";
+        return "Epic;"
+                + getTaskKey() + ";"
+                + getRelatedSubTasks() + ";"
+                + getTaskTitle() + ";"
+                + getTaskDescription() + ";"
+                + getTaskStatus() + ";"
+                + getTaskStartTime() + ";"
+                + getTaskDuration() + ";"
+                + getTaskTimeUpdateCheck();
     }
 }

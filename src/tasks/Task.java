@@ -1,104 +1,135 @@
 package tasks;
 
-import java.time.*;
+import java.time.Duration;
+import java.time.Instant;
 
 public class Task {
 
-    String taskTitle;
+    private String taskTitle;
     private String taskDescription;
-    private String taskId;
-    private boolean isViewed;
-    private TaskStages taskStatus;
-    private TaskTypes taskType;
-    private LocalDateTime startTime;
-    private Duration duration;
+    private Integer taskKey;
+    private TaskStatus taskStatus;
+    private final Instant taskStartTime;
+    private Duration taskDuration;
+    private Instant taskEndTime;
+    private static Instant taskTimeUpdateCheck;
+    public static int taskKeyCounter = 0;
 
     public Task(
-            String taskTitle, String taskDescription, boolean isViewed, TaskStages taskStatus, TaskTypes taskType, LocalDateTime startTime, Duration duration
+            String taskTitle, String taskDescription, TaskStatus taskStatus, Instant taskStartTime,
+            Duration taskDuration
     ) {
         this.taskTitle = taskTitle;
         this.taskDescription = taskDescription;
-        this.isViewed = isViewed;
         this.taskStatus = taskStatus;
-        this.taskType = taskType;
-        this.startTime = startTime;
-        this.duration = duration;
+        this.taskStartTime = taskStartTime;
+        this.taskDuration = taskDuration;
+        this.taskEndTime = taskStartTime.plus(taskDuration);
     }
 
-    public TaskTypes getTaskType() {
-        return taskType;
+    public Task(
+            Integer taskKey, String taskTitle, String taskDescription, TaskStatus taskStatus,
+            Instant taskStartTime,
+            Duration taskDuration, Instant tmpTimeTaskWasUpdated
+    ) {
+        this.taskKey = taskKey;
+        this.taskTitle = taskTitle;
+        this.taskDescription = taskDescription;
+        this.taskStatus = taskStatus;
+        this.taskStartTime = taskStartTime;
+        this.taskDuration = taskDuration;
+        taskTimeUpdateCheck = tmpTimeTaskWasUpdated;
+        this.taskEndTime = taskStartTime.plus(taskDuration);
+    }
+
+    public Integer getTaskKey() {
+        return taskKey;
+    }
+
+    public Integer setTaskKey() {
+        taskUpdateTime();
+        taskKeyCounter++;
+        this.taskKey = taskKeyCounter;
+        return this.taskKey;
     }
 
     public String getTaskTitle() {
         return taskTitle;
     }
 
+    public void setTaskTitle(String taskTitle) {
+        taskUpdateTime();
+        this.taskTitle = taskTitle;
+    }
+
     public String getTaskDescription() {
         return taskDescription;
     }
 
-    public String getTaskId() {
-        return taskId;
-    }
-
-    public TaskStages getTaskStatus() {
-        return taskStatus;
-    }
-
-    public LocalDateTime getStartTime() {
-        return startTime;
-    }
-
-    public Duration getDuration() {
-        return duration;
-    }
-
-    public void setTaskTitle(String taskTitle) {
-        this.taskTitle = taskTitle;
-    }
-
     public void setTaskDescription(String taskDescription) {
+        taskUpdateTime();
         this.taskDescription = taskDescription;
     }
 
-    public void setTaskId(String taskId) {
-        this.taskId = taskId;
+    public TaskStatus getTaskStatus() {
+        return taskStatus;
     }
 
-    public void setViewed() {
-        isViewed = true;
-    }
-
-    public boolean isViewed() {
-        return isViewed;
-    }
-
-    public void setTaskStatus(TaskStages taskStatus) {
+    public void setTaskStatus(TaskStatus taskStatus) {
+        taskUpdateTime();
         this.taskStatus = taskStatus;
-    }
-
-    public void setStartTime(LocalDateTime startTime) {
-        this.startTime = startTime;
-    }
-
-    public void setDuration(Duration duration) {
-        this.duration = duration;
-    }
-
-    public LocalDateTime getEndTime() {
-        if (startTime == null || duration == null) {
-            return null;
+        if (taskStatus.equals(TaskStatus.DONE)) {
+            setTaskEndTime();
         }
-
-        return startTime.plus(duration);
     }
 
-    public boolean isValueNull() {
-        boolean isNull = false;
+    public Instant getTaskStartTime() {
+        return taskStartTime;
+    }
 
-        return taskTitle == null || taskDescription == null || taskStatus == null || taskType == null
-                || startTime == null || duration == null;
+    public Duration getTaskDuration() {
+        return taskDuration;
+    }
 
+    public static Instant getTaskTimeUpdateCheck() {
+        return taskTimeUpdateCheck;
+    }
+
+    public static void taskUpdateTime() {
+        Task.taskTimeUpdateCheck = Instant.now();
+    }
+
+    public void setTaskEndTime(Instant taskEndTime) {
+        this.taskEndTime = taskEndTime;
+    }
+
+    public Instant getTaskEndTime() {
+        return this.taskEndTime;
+    }
+
+    public void setTaskEndTime() {
+        taskDuration = Duration.between(taskStartTime, taskTimeUpdateCheck);
+        this.taskEndTime = taskStartTime.plus(taskDuration);
+    }
+
+    public static void setIdCounter(int taskKeyCounter) {
+        Task.taskKeyCounter = taskKeyCounter;
+    }
+
+    public void setTaskKey(Integer taskKey) {
+        this.taskKey = taskKey;
+    }
+
+    @Override
+    public String toString() {
+        return "Task;"
+                + taskKey + ";"
+                + taskTitle + ";"
+                + taskDescription + ";"
+                + taskStatus + ";"
+                + taskStartTime + ";"
+                + taskDuration + ";"
+                + taskTimeUpdateCheck;
     }
 
     @Override
@@ -112,45 +143,36 @@ public class Task {
 
         Task task = (Task) o;
 
-        if (isViewed() != task.isViewed()) {
+        if (!getTaskKey().equals(task.getTaskKey())) {
             return false;
         }
-        if (!getTaskTitle().equals(task.getTaskTitle())) {
+        if (!taskTitle.equals(task.taskTitle)) {
             return false;
         }
-        if (!getTaskDescription().equals(task.getTaskDescription())) {
+        if (!taskDescription.equals(task.taskDescription)) {
             return false;
         }
-        if (!getTaskId().equals(task.getTaskId())) {
+        if (taskStatus != task.taskStatus) {
             return false;
         }
-        if (getTaskStatus() != task.getTaskStatus()) {
+        if (!taskStartTime.equals(task.taskStartTime)) {
             return false;
         }
-        if (getTaskType() != task.getTaskType()) {
+        if (!taskDuration.equals(task.taskDuration)) {
             return false;
         }
-        if (!getStartTime().equals(task.getStartTime())) {
-            return false;
-        }
-        return getDuration().equals(task.getDuration());
+        return taskEndTime.equals(task.taskEndTime);
     }
 
     @Override
     public int hashCode() {
-        int result = getTaskTitle().hashCode();
-        result = 31 * result + getTaskDescription().hashCode();
-        result = 31 * result + getTaskId().hashCode();
-        result = 31 * result + (isViewed() ? 1 : 0);
-        result = 31 * result + getTaskStatus().hashCode();
-        result = 31 * result + getTaskType().hashCode();
-        result = 31 * result + getStartTime().hashCode();
-        result = 31 * result + getDuration().hashCode();
+        int result = getTaskKey().hashCode();
+        result = 31 * result + taskTitle.hashCode();
+        result = 31 * result + taskDescription.hashCode();
+        result = 31 * result + taskStatus.hashCode();
+        result = 31 * result + taskStartTime.hashCode();
+        result = 31 * result + taskDuration.hashCode();
+        result = 31 * result + taskEndTime.hashCode();
         return result;
-    }
-
-    @Override
-    public String toString() {
-        return " MainTask Title = " + taskTitle + " Description = " + taskDescription + " Id = " + taskId + " isViewed = " + isViewed + " Status = " + taskStatus + " " + startTime + "***";
     }
 }

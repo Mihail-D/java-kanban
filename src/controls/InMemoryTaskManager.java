@@ -1,303 +1,254 @@
 package controls;
 
-import exceptions.ManagerLoadException;
-import org.jetbrains.annotations.NotNull;
-import tasks.*;
+import exceptions.ManagerTaskTimeOverlappingException;
+import tasks.Epic;
+import tasks.SubTask;
+import tasks.Task;
+import tasks.TaskStatus;
 
 import java.io.IOException;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-import static tasks.TaskStages.DONE;
-import static tasks.TaskStages.NEW;
-import static tasks.TaskTypes.*;
+import static tasks.TaskStatus.DONE;
+import static tasks.TaskStatus.NEW;
 
 public class InMemoryTaskManager implements TaskManager {
 
-    HistoryManager inMemoryHistoryManager = Managers.getDefaultHistory();
+    public HistoryManager historyManager = Managers.getDefaultHistory();
+    private final HashMap<Integer, Task> tasksStorage = new HashMap<>();
+    private final HashMap<Integer, Epic> epicsStorage = new HashMap<>();
+    private final HashMap<Integer, SubTask> subTasksStorage = new HashMap<>();
+    private final TreeSet<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getTaskStartTime));
 
-    private HashMap<String, Task> tasksStorage = new LinkedHashMap<>();
-    private TreeSet<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(
-            Task::getStartTime,
-            Comparator.nullsLast(Comparator.naturalOrder())
-    ));
-    private List<DateRange> timeSlotsStorage = new ArrayList<>();
-
-    public int taskId;
-
-    {
-        try {
-            taskId = FileBackedTasksManager.getInitNumber();
-        } catch (ManagerLoadException | IOException e) {
-            throw new ManagerLoadException("Начальный индекс не присвоен. Файл задач отсутствует");
-        }
-    }
-
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy_HH:mm");
-    public static String taskContent;
-
-    public HashMap<String, Task> getTasksStorage() {
+    @Override
+    public HashMap<Integer, Task> getTasksMap() {
         return tasksStorage;
     }
 
-    public List<DateRange> getTimeSlotsStorage() {
-        return timeSlotsStorage;
+    @Override
+    public HashMap<Integer, Epic> getEpicsMap() {
+        return epicsStorage;
     }
 
     @Override
-    public void taskAdd(Task task) {
-        if (task == null || task.getTaskType() != TASK) {
-            return;
-        }
-        String taskKey = getId(TASK);
-        task.setTaskId(taskKey);
-
-        DateRange interval = new DateRange(task.getStartTime(), task.getEndTime(), task.getTaskId(), TASK);
-        advancedTimeOverlappingCheck(interval);
-        timeSlotsStorage.add(interval);
-
-        tasksStorage.put(taskKey, task);
-        taskContent = getTaskFormattedData(taskKey);
-        prioritizedTasks.add(task);
+    public HashMap<Integer, SubTask> getSubTasksMap() {
+        return subTasksStorage;
     }
 
     @Override
-    public void epicAdd(Epic epic) {
-        if (epic == null || epic.getTaskType() != EPIC) {
-            return;
-        }
-        String taskKey = getId(EPIC);
-        epic.setTaskId(taskKey);
-
-        tasksStorage.put(taskKey, epic);
-        taskContent = getTaskFormattedData(taskKey);
-        prioritizedTasks.add(epic);
+    public List<SubTask> getSubTaskList() {
+        return new ArrayList<>(subTasksStorage.values());
     }
 
     @Override
-    public void subTaskAdd(SubTask subTask) {
-
-        if (subTask == null || subTask.getTaskType() != SUB_TASK) {
-            return;
-        }
-
-        Epic parentTask = (Epic) tasksStorage.get(subTask.getParentId());
-
-        if (!subTask.getParentId().equals(parentTask.getTaskId())) {
-            throw new IllegalArgumentException();
-        }
-
-        String taskKey = getId(SUB_TASK);
-        subTask.setTaskId(taskKey);
-        setEpicStatus(parentTask.getTaskId());
-
-        if (parentTask.relatedSubTask.isEmpty()) {
-            parentTask.setStartTime(subTask.getStartTime());
-        }
-
-        DateRange interval = new DateRange(subTask.getStartTime(), subTask.getEndTime(), subTask.getTaskId(), SUB_TASK);
-        advancedTimeOverlappingCheck(interval);
-        timeSlotsStorage.add(interval);
-
-        tasksStorage.put(taskKey, subTask);
-        parentTask.relatedSubTask.put(taskKey, subTask);
-        setEpicStatus(parentTask.getTaskId());
-        setEpicTiming(parentTask);
-        taskContent = getTaskFormattedData(taskKey);
-        prioritizedTasks.add(subTask);
+    public List<Epic> getEpicList() {
+        return new ArrayList<>(epicsStorage.values());
     }
 
     @Override
-    public void taskUpdate(
-            String taskKey, String taskTitle, String taskDescription, String taskStatus,
-            LocalDateTime startTime, Duration duration
-    ) {
-        if (taskTitle == null || taskDescription == null || taskStatus == null
-                || startTime == null || duration == null) {
-            return;
+    public List<Task> getTaskList() {
+        return new ArrayList<>(tasksStorage.values());
+    }
+
+    @Override
+    public List<Task> collectAllTasks() {
+        List<Task> tasksCollection = new ArrayList<>();
+        tasksCollection.addAll(getEpicList());
+        tasksCollection.addAll(getSubTaskList());
+        tasksCollection.addAll(getTaskList());
+        return tasksCollection;
+    }
+
+    @Override
+    public List<String> getAllTasksStringList() {
+        List<String> tasksCollection = new ArrayList<>();
+        collectAllTasks().forEach(task -> tasksCollection.add(task.toString()));
+        return tasksCollection;
+    }
+
+    @Override
+    public Task getTask(Integer taskKey) {
+        return tasksStorage.get(taskKey);
+    }
+
+    @Override
+    public Epic getEpic(Integer taskKey) {
+        return epicsStorage.get(taskKey);
+    }
+
+    @Override
+    public SubTask getSubTask(Integer taskKey) {
+        return subTasksStorage.get(taskKey);
+    }
+
+    public ArrayList<Integer> getHistoryList() {
+        ArrayList<Integer> historyList = new ArrayList<>();
+        for (Task task : historyManager.getHistory()) {
+            historyList.add(task.getTaskKey());
         }
-        Task task = tasksStorage.get(taskKey);
-        task.setTaskTitle(taskTitle);
-        task.setTaskDescription(taskDescription);
-        TaskTypes taskType = task.getTaskType();
-        task.setTaskStatus(TaskStages.valueOf(taskStatus));
-
-        timeSlotsStorage.removeIf(i -> i.taskKey.equals(taskKey));
-        task.setStartTime(startTime);
-        task.setDuration(duration);
-        DateRange interval = new DateRange(task.getStartTime(), task.getEndTime(), task.getTaskId(), TASK);
-        advancedTimeOverlappingCheck(interval);
-        timeSlotsStorage.add(interval);
-
-        tasksStorage.put(taskKey, task);
-        taskContent = getTaskFormattedData(taskKey);
-        prioritizedTasks.add(task);
+        return historyList;
     }
 
-    @Override
-    public void epicUpdate(String taskKey, String taskTitle, String taskDescription) {
-        if (taskTitle == null || taskDescription == null) {
-            return;
+    public ArrayList<String> getHistoryStringList() {
+        ArrayList<String> historyList = new ArrayList<>();
+        for (Task task : historyManager.getHistory()) {
+            historyList.add(task.getTaskKey().toString());
         }
-
-        Epic task = (Epic) tasksStorage.get(taskKey);
-        task.setTaskTitle(taskTitle);
-        task.setTaskDescription(taskDescription);
-        TaskTypes taskType = task.getTaskType();
-
-        setEpicStatus(taskKey);
-        setEpicTiming(task);
-
-        taskContent = getTaskFormattedData(taskKey);
-        prioritizedTasks.add(task);
+        return historyList;
     }
 
     @Override
-    public void subTaskUpdate(
-            String taskKey, String taskTitle, String taskDescription, String taskStatus,
-            String parentKey, String startTime, Duration duration
-    ) {
-        if (taskTitle == null || taskDescription == null || taskStatus == null
-                || startTime == null || duration == null || parentKey == null) {
-            return;
+    public boolean deleteTask(Integer taskKey) throws IOException {
+        if (!tasksStorage.isEmpty() && tasksStorage.get(taskKey) != null) {
+            prioritizedTasks.remove(tasksStorage.get(taskKey));
+            tasksStorage.remove(taskKey);
+            historyManager.removeHistory(taskKey);
+            return true;
         }
-
-        SubTask task = (SubTask) tasksStorage.get(taskKey);
-        task.setTaskTitle(taskTitle);
-        task.setTaskDescription(taskDescription);
-        TaskTypes taskType = task.getTaskType();
-        Epic parentTask = (Epic) tasksStorage.get(parentKey);
-        task.setTaskStatus(TaskStages.valueOf(taskStatus));
-
-        timeSlotsStorage.removeIf(i -> i.taskKey.equals(taskKey));
-        task.setStartTime(LocalDateTime.parse(startTime, formatter));
-        task.setDuration(duration);
-        parentTask.relatedSubTask.put(taskKey, task);
-
-        setEpicStatus(parentKey);
-        setEpicTiming(parentTask);
-
-        DateRange interval = new DateRange(task.getStartTime(), task.getEndTime(), task.getTaskId(), SUB_TASK);
-        timeSlotsStorage.add(interval);
-        advancedTimeOverlappingCheck(interval);
-
-        tasksStorage.put(taskKey, task);
-        taskContent = getTaskFormattedData(taskKey);
-        prioritizedTasks.add(task);
+        return false;
     }
 
     @Override
-    public String taskRetrieve(String taskKey) {
-        Task task = tasksStorage.get(taskKey);
-        getTaskFormattedData(taskKey);
-        inMemoryHistoryManager.addHistory(task);
-        task.setViewed();
-        taskContent = getTaskFormattedData(taskKey);
-        return taskContent;
+    public boolean deleteEpic(Integer taskKey) throws IOException {
+        boolean isDeleted = false;
+        if (!epicsStorage.isEmpty() && epicsStorage.get(taskKey) != null) {
+            epicsStorage.remove(taskKey);
+            historyManager.removeHistory(taskKey);
+            isDeleted = true;
+        }
+        if (isDeleted) {
+            isDeleted = clearRelatedSubTusks(taskKey);
+        }
+        return isDeleted;
     }
 
     @Override
-    public void taskDelete(String taskKey) {
-        Task task = tasksStorage.get(taskKey);
+    public boolean deleteSubTask(int taskKey) {
+        SubTask subTask = subTasksStorage.get(taskKey);
 
-        switch (task.getTaskType()) {
-            case TASK:
-                tasksStorage.remove(taskKey);
-                break;
-            case EPIC:
-                Epic epicTask = (Epic) tasksStorage.get(taskKey);
-                LinkedHashMap<String, SubTask> relatedSubTasks = epicTask.relatedSubTask;
+        if (!subTasksStorage.isEmpty() && subTasksStorage.get(subTask.getTaskKey()) != null) {
+            Epic epic = epicsStorage.get(subTask.getParentKey());
+            epic.removeChildSubTask(subTask);
+            prioritizedTasks.remove(subTask);
+            subTasksStorage.remove(subTask.getTaskKey());
+            historyManager.removeHistory(subTask.getTaskKey());
+            return true;
+        }
+        return false;
+    }
 
-                for (String i : relatedSubTasks.keySet()) {
-                    tasksStorage.remove(i);
-                    inMemoryHistoryManager.removeHistoryRecord(i);
+    @Override
+    public boolean clearRelatedSubTusks(Integer taskKey) throws IOException {
+        if (!subTasksStorage.isEmpty()) {
+            for (SubTask subTask : subTasksStorage.values()) {
+                if (subTask.getParentKey() == taskKey) {
+                    prioritizedTasks.remove(subTask);
+                    subTasksStorage.remove(subTask.getTaskKey());
+                    historyManager.removeHistory(subTask.getTaskKey());
                 }
-
-                tasksStorage.remove(taskKey);
-                break;
-            case SUB_TASK:
-                SubTask subTask = (SubTask) tasksStorage.get(taskKey);
-                String parentKey = subTask.getParentId();
-                epicTask = (Epic) tasksStorage.get(parentKey);
-                relatedSubTasks = epicTask.relatedSubTask;
-                relatedSubTasks.remove(taskKey);
-                tasksStorage.remove(taskKey);
-                setEpicStatus(parentKey);
-                setEpicTiming(epicTask);
-                break;
+            }
+            return true;
         }
-        inMemoryHistoryManager.removeHistoryRecord(taskKey);
-        timeSlotsStorage.removeIf(i -> i.taskKey.equals(taskKey));
-        taskContent = null;
+        return false;
+    }
+
+    @Override
+    public void updateEpic(Epic epicTask, Integer taskKey) throws IOException {
+        historyManager.add(epicTask, 0);
+        setEpicStatus(taskKey);
+    }
+
+    @Override
+    public void updateSubTask(SubTask subTask, Integer taskKey) throws IOException {
+        historyManager.add(subTask, 0);
+    }
+
+    @Override
+    public void updateTask(Task task) throws IOException {
+        historyManager.add(task, 0);
+    }
+
+    @Override
+    public void addEpic(Epic epicTask) throws IOException {
+        if (advancedTimeOverlappingCheck(epicTask)) {
+            int key;
+            if (epicTask.getTaskKey() != null) {
+                key = epicTask.getTaskKey();
+            }
+            else {
+                key = epicTask.setTaskKey();
+            }
+            epicsStorage.put(key, epicTask);
+            historyManager.add(epicTask, 0);
+        }
+        else {
+            throw new ManagerTaskTimeOverlappingException(
+                    "Обнаружено пересечение " + epicTask.getTaskKey() + "времени " + epicTask.getTaskStartTime()
+            );
+        }
+    }
+
+    @Override
+    public void addSubTask(SubTask subTask, Integer epicTaskKey) throws IOException {
+        if (advancedTimeOverlappingCheck(subTask)) {
+            int key;
+            if (subTask.getTaskKey() != null) {
+                key = subTask.getTaskKey();
+            }
+            else {
+                key = subTask.setTaskKey();
+            }
+            epicsStorage.get(epicTaskKey).addChildSubTask(subTask);
+            subTasksStorage.put(key, subTask);
+            subTasksStorage.get(key).setRelatedSubtasks(epicTaskKey);
+            historyManager.add(subTask, 0);
+            prioritizedTasks.add(subTask);
+        }
+        else {
+            throw new ManagerTaskTimeOverlappingException(
+                    "Обнаружено пересечение " + subTask.getTaskKey() + "времени " + subTask.getTaskStartTime()
+            );
+        }
+    }
+
+    @Override
+    public void addTask(Task task) throws IOException {
+        if (advancedTimeOverlappingCheck(task)) {
+            int key;
+            if (task.getTaskKey() != null) {
+                key = task.getTaskKey();
+            }
+            else {
+                key = task.setTaskKey();
+            }
+            tasksStorage.put(key, task);
+            historyManager.add(task, 0);
+            prioritizedTasks.add(task);
+        }
+        else {
+            throw new ManagerTaskTimeOverlappingException(
+                    "Обнаружено пересечение " + task.getTaskKey() + "времени " + task.getTaskStartTime()
+            );
+        }
     }
 
     @Override
     public void tasksClear() {
         tasksStorage.clear();
-        inMemoryHistoryManager.clearHistoryStorage();
+        subTasksStorage.clear();
+        epicsStorage.clear();
+        prioritizedTasks.clear();
     }
 
     @Override
-    public HashMap<String, Task> collectAllTasks() {
-        HashMap<String, Task> listOfTasks = new HashMap<>();
+    public void setEpicStatus(Integer taskKey) {
+        Epic epicTask = epicsStorage.get(taskKey);
+        TaskStatus status = TaskStatus.IN_PROGRESS;
 
-        for (String i : tasksStorage.keySet()) {
-            listOfTasks.put(i, tasksStorage.get(i));
-        }
-
-        return listOfTasks;
-    }
-
-    @Override
-    public ArrayList<String> collectEpicSubtasks(String taskKey) {
-        ArrayList<String> localTasksList = new ArrayList<>();
-        Epic epicTask = (Epic) tasksStorage.get(taskKey);
-        LinkedHashMap<String, SubTask> relatedSubTasks = epicTask.relatedSubTask;
-
-        for (String i : relatedSubTasks.keySet()) {
-            localTasksList.add(getTaskFormattedData(i));
-        }
-
-        return localTasksList;
-    }
-
-    @Override
-    public TreeSet<Task> getPrioritizedTasks() {                                // TODO
-        return prioritizedTasks;
-    }
-
-    public String getId(@NotNull TaskTypes taskType) {
-        String id = null;
-
-        switch (taskType) {
-            case TASK:
-                taskId++;
-                id = "t." + taskId;
-                break;
-            case EPIC:
-                taskId++;
-                id = "e." + taskId;
-                break;
-            case SUB_TASK:
-                taskId++;
-                id = "s." + taskId;
-                break;
-        }
-
-        return id;
-    }
-
-    public void setEpicStatus(String taskKey) {
-        Epic epicTask = (Epic) tasksStorage.get(taskKey);
-        TaskStages status = TaskStages.IN_PROGRESS;
-
-        Set<SubTask> set = new HashSet<>(epicTask.relatedSubTask.values());
+        Set<SubTask> set = epicTask.getRelatedSubTasks();
 
         if (set.isEmpty()) {
-            status = TaskStages.NEW;
+            status = NEW;
             epicTask.setTaskStatus(status);
             return;
         }
@@ -307,11 +258,11 @@ public class InMemoryTaskManager implements TaskManager {
 
         for (SubTask i : set) {
             if (isAllNew || set.isEmpty()) {
-                status = TaskStages.NEW;
+                status = NEW;
                 break;
             }
             else if (isAllDone) {
-                status = TaskStages.DONE;
+                status = DONE;
                 break;
             }
         }
@@ -319,68 +270,58 @@ public class InMemoryTaskManager implements TaskManager {
         epicTask.setTaskStatus(status);
     }
 
-    public void setEpicTiming(Epic epicTask) {
-        LocalDateTime startTime = epicTask.getStartTime();
-        Duration duration = Duration.ZERO;
-        LocalDateTime endTime;
+    @Override
+    public void load() {
 
-        for (SubTask i : epicTask.relatedSubTask.values()) {
-            if (epicTask.relatedSubTask.values().size() == 1) {
-                startTime = i.getStartTime();
-                break;
-            }
-            else if (i.getStartTime().isBefore(startTime)) {
-                startTime = i.getStartTime();
-            }
-        }
-
-        for (SubTask i : epicTask.relatedSubTask.values()) {
-            duration = i.getDuration().plus(duration);
-        }
-
-        epicTask.setStartTime(startTime.truncatedTo(ChronoUnit.MINUTES));
-        epicTask.setDuration(duration);
-        epicTask.getEndTime();
     }
 
-    public String getTaskFormattedData(String taskKey) {
-        Task task = tasksStorage.get(taskKey);
-        String taskTitle = task.getTaskTitle() + ",";
-        String taskDescription = task.getTaskDescription() + ",";
-        taskKey = task.getTaskId() + ",";
-        String isViewed = task.isViewed() + ",";
-        String taskStatus = task.getTaskStatus() + ",";
-        String taskType = String.valueOf(task.getTaskType());
-        LocalDateTime time = task.getStartTime();
-        Duration duration = task.getDuration();
-        String result;
+    @Override
+    public void save() {
 
-        if (task.getClass() == SubTask.class) {
-            result = taskKey + taskTitle + taskDescription + isViewed + taskStatus + taskType + ","
-                    + ((SubTask) task).getParentId() + "," + time + "," + duration + "," + task.getEndTime();
-        }
-        else if (task.getClass() == Epic.class && time == LocalDateTime.MAX) {
-            result = taskKey + taskTitle + taskDescription + isViewed + taskStatus + taskType;
-        }
-        else {
-            result = taskKey + taskTitle + taskDescription + isViewed + taskStatus + taskType + ","
-                    + time + "," + duration + "," + task.getEndTime();
-        }
-
-        return result;
     }
 
-    public void advancedTimeOverlappingCheck(DateRange interval) {
-
-        for (DateRange i : timeSlotsStorage) {
-            if (i.taskKey.equals(interval.taskKey)) {
+    public boolean advancedTimeOverlappingCheck(Task task) {
+        if (task instanceof Epic) {
+            return true;
+        }
+        for (Task value : getPrioritizedTasks()) {
+            if (value.getTaskKey().equals(task.getTaskKey())) {
                 continue;
             }
-
-            if (!(i.isOverlappingAtStart(interval.start, interval.stop)
-                    || i.isOverlappingAtStop(interval.start, interval.stop))) {
-                throw new IllegalArgumentException("Время новой задачи пересекается с ранее созданной");
+            if (task.getTaskEndTime() != null) {
+                if ((task.getTaskStartTime().compareTo(value.getTaskStartTime()) <=
+                        0 && task.getTaskEndTime().compareTo(value.getTaskStartTime()) >= 0)
+                        || (value.getTaskStartTime().compareTo(task.getTaskStartTime())
+                        <= 0 && value.getTaskEndTime().compareTo(task.getTaskStartTime()) >= 0)) {
+                    return false;
+                }
             }
+            if (task.getTaskEndTime() == null) {
+                if ((task.getTaskStartTime().compareTo(value.getTaskStartTime()) <= 0)
+                        ||
+                        (value.getTaskStartTime().compareTo(task.getTaskStartTime())
+                                <= 0 && value.getTaskEndTime().compareTo(task.getTaskStartTime()) >= 0)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public void addToPrioritizedTasks(Task task) {
+        prioritizedTasks.add(task);
+    }
+
+    public TreeSet<Task> getPrioritizedTasksSet() {
+        return prioritizedTasks;
+    }
+
+    public List<Task> getPrioritizedTasks() {
+        if (!prioritizedTasks.isEmpty()) {
+            return new ArrayList<>(prioritizedTasks);
+        }
+        else {
+            return new ArrayList<>();
         }
     }
 }

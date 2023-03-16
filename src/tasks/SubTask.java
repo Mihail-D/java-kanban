@@ -1,37 +1,45 @@
 package tasks;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public class SubTask extends Task {
 
-    String parentId;
+    private int parentTaskKey;
+
+    public SubTask(String taskTitle, String taskDescription, TaskStatus taskStatus,
+                   Instant taskStartTime, Duration taskDuration) {
+        super(taskTitle, taskDescription, taskStatus, taskStartTime, taskDuration);
+        setTaskEndTime(taskStartTime.plus(taskDuration));
+    }
 
     public SubTask(
-            String taskTitle, String taskDescription, boolean isViewed, TaskStages taskStatus,
-            TaskTypes taskType, LocalDateTime startTime, Duration duration, String parentId
+            Integer taskKey, String taskTitle, String taskDescription, TaskStatus taskStatus, Instant taskStartTime,
+            Duration taskDuration, Instant tmpTimeTaskWasUpdated, Integer parentTaskKey
     ) {
-        super(taskTitle, taskDescription, isViewed, taskStatus, taskType, startTime, duration);
-        this.parentId = parentId;
+        super(taskKey, taskTitle, taskDescription, taskStatus, taskStartTime, taskDuration, tmpTimeTaskWasUpdated);
+        this.parentTaskKey = parentTaskKey;
+        setTaskEndTime(taskStartTime.plus(taskDuration));
     }
 
-    public void setParentId(String parentId) {
-        this.parentId = parentId;
+    public int getParentKey() {
+        return parentTaskKey;
     }
 
-    public String getParentId() {
-        return parentId;
-    }
-
-    @Override
-    public boolean isValueNull() {
-        boolean isNull = false;
-
-        return super.isValueNull() || parentId == null;
+    public void setRelatedSubtasks(int parentTaskKey) {
+        this.parentTaskKey = parentTaskKey;
     }
 
     @Override
     public String toString() {
-        return "SubTask " + "ParentId = " + parentId + " " + super.toString() + "\n";
+        return "SubTask;"
+                + getTaskKey() + ";"
+                + parentTaskKey + ";"
+                + getTaskTitle() + ";"
+                + getTaskDescription() + ";"
+                + getTaskStatus() + ";"
+                + getTaskStartTime() + ";"
+                + getTaskDuration() + ";"
+                + getTaskTimeUpdateCheck();
     }
 }

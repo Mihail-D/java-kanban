@@ -2,129 +2,109 @@ package controls;
 
 import tasks.Task;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
-    private static CustomLinkedList historyStorage = new CustomLinkedList();
-    private static Map<String, Node> historyRegister = new HashMap<>();
-    private static List<Task> historyReport = new ArrayList<>();
-
-    public static List<Task> getHistoryReport() {
-        return historyReport;
-    }
-
-    @Override
-    public void addHistory(Task task) {
-        if (task != null) {
-            historyStorage.linkLast(task);
-        }
-    }
-
-    @Override
-    public void removeHistoryRecord(String taskId) {
-        Node node = historyStorage.getNode(taskId);
-        if (node != null) {
-            historyStorage.removeNode(node);
-            historyReport.removeIf(i -> i.equals(node.getTask()));
-            historyRegister.remove(node.getTask().getTaskId());
-        }
-    }
-
-    @Override
-    public void clearHistoryStorage() {
-        for (String i : historyRegister.keySet()) {
-            historyStorage.removeNode(historyStorage.getNode(i));
-        }
-        historyRegister.clear();
-    }
+    private final CustomLinkedList<Task> tasksHistory = new CustomLinkedList<>();
 
     @Override
     public List<Task> getHistory() {
-        return historyStorage.getTasks();
+        return tasksHistory.getTasks();
     }
 
-    public static Map<String, Node> getHistoryRegister() {
-        return historyRegister;
+    @Override
+    public void add(Task task, int index) {
+        if (index == 0) {
+            tasksHistory.linkLast(task, task.getTaskKey());
+        }
+        else if (index == 1) {
+            tasksHistory.linkFirst(task, task.getTaskKey());
+        }
     }
 
-    public static CustomLinkedList getHistoryStorage() {
-        return historyStorage;
+    @Override
+    public void removeHistory(int taskKey) {
+        tasksHistory.removeNode(taskKey);
     }
 
-    public static class CustomLinkedList {
+    public static class CustomLinkedList<T> {
 
-        private Node head;
-        private Node tail;
+        private Node<T> head;
+        private Node<T> tail;
         private int size;
+        public final HashMap<Integer, Node<T>> tasksHistoryOrder = new HashMap<>();
 
-        public int getSize() {
-            return size;
+        public void removeNode(int index) {
+            if (!tasksHistoryOrder.isEmpty()) {
+                Node<T> nodeX = tasksHistoryOrder.get(index);
+                if (nodeX.previousNode == null) {
+                    head = nodeX.nextNode;
+                }
+                else {
+                    nodeX.previousNode.nextNode = nodeX.nextNode;
+                }
+                if (nodeX.nextNode == null) {
+                    tail = nodeX.previousNode;
+                }
+                else {
+                    nodeX.nextNode.previousNode = nodeX.previousNode;
+                }
+                tasksHistoryOrder.remove(index);
+                int tmpSize = this.size;
+                size--;
+            }
         }
 
-        public void linkLast(Task task) {
-            Node element = new Node();
-            element.setTask(task);
+        public void linkFirst(T item, Integer taskKey) {
+            this.head = new Node<>(this.head, item);
+            tasksHistoryOrder.put(taskKey, this.head);
+            this.size++;
+        }
 
-            if (historyRegister.containsKey(task.getTaskId())) {
-                removeNode(historyRegister.get(task.getTaskId()));
+        public void linkLast(T item, Integer taskKey) {
+            if (this.size == 10) {
+                for (Integer historyId : tasksHistoryOrder.keySet()) {
+                    if (tasksHistoryOrder.get(historyId).equals(tail)) {
+                        removeNode(historyId);
+                    }
+                }
             }
-
-            if (head == null) {
-                tail = element;
-                head = element;
-                element.setNext(null);
-                element.setPrev(null);
+            if (tasksHistoryOrder.containsKey(taskKey)) {
+                removeNode(taskKey);
+            }
+            Node<T> newNode = new Node<>(tail, item);
+            tasksHistoryOrder.put(taskKey, newNode);
+            if (tail != null) {
+                this.tail.nextNode = newNode;
             }
             else {
-                element.setPrev(tail);
-                element.setNext(null);
-                tail.setNext(element);
-                tail = element;
+                head = newNode;
             }
+            tail = newNode;
             size++;
-            historyRegister.put(task.getTaskId(), element);
-
         }
 
-        public void removeNode(Node node) {
-            if (node != null) {
-                Node prev = node.getPrev();
-                Node next = node.getNext();
-
-                if (head == node) {
-                    head = node.getNext();
-                }
-                if (tail == node) {
-                    tail = node.getPrev();
-                }
-
-                if (prev != null) {
-                    prev.setNext(next);
-                }
-
-                if (next != null) {
-                    next.setPrev(prev);
-                }
+        public ArrayList<T> getTasks() {
+            ArrayList<T> historyList = new ArrayList<>(this.size);
+            Node<T> nodeX = head;
+            while (nodeX != null) {
+                historyList.add(nodeX.node);
+                nodeX = nodeX.nextNode;
             }
-            size--;
+            return historyList;
         }
 
-        public List<Task> getTasks() {
-
-            Node element = head;
-            while (element != null) {
-                if (!historyReport.contains(element.getTask())) {
-                    historyReport.add(element.getTask());
-                }
-                element = element.getNext();
-            }
-
-            return historyReport;
+        public int size() {
+            return tasksHistoryOrder.size();
         }
 
-        Node getNode(String taskId) {
-            return historyRegister.get(taskId);
+        public boolean isEmpty() {
+            return this.size == 0;
         }
+
     }
+
 }

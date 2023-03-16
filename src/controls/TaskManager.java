@@ -1,46 +1,64 @@
 package controls;
 
+import tasks.Task;
 import tasks.Epic;
 import tasks.SubTask;
-import tasks.Task;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.TreeSet;
 
 public interface TaskManager {
 
-    void taskAdd(Task task);
+    void addTask(Task task) throws IOException;
 
-    void epicAdd(Epic epic);
+    void addEpic(Epic epicTask) throws IOException;
 
-    void subTaskAdd(SubTask subTask);
+    void addSubTask(SubTask subTask, Integer epicTaskKey) throws IOException;
 
-    void taskUpdate(
-            String taskKey, String taskTitle, String taskDescription,
-            String taskStatus, LocalDateTime startTime, Duration duration
-    );
+    void updateTask(Task task) throws IOException;
 
-    void epicUpdate(String taskKey, String taskTitle, String taskDescription);
+    void updateEpic(Epic epicTask, Integer taskKey) throws IOException;
 
-    void subTaskUpdate(
-            String taskKey, String taskTitle, String taskDescription, String taskStatus,
-            String parentKey, String startTime, Duration duration
-    );
+    void updateSubTask(SubTask subTask, Integer taskKey) throws IOException;
 
-    String taskRetrieve(String taskKey);
+    Task getTask(Integer taskKey);
 
-    HashMap<String, Task> collectAllTasks();
+    Epic getEpic(Integer taskKey);
 
-    List<String> collectEpicSubtasks(String taskKey);
+    SubTask getSubTask(Integer taskKey);
 
-    void taskDelete(String taskKey);
+    List<Task> getTaskList();
+
+    List<Epic> getEpicList();
+
+    List<SubTask> getSubTaskList();
+
+    List<Task> collectAllTasks();
+
+    boolean deleteTask(Integer taskKey) throws IOException;
+
+    boolean deleteEpic(Integer taskKey) throws IOException;
+
+    boolean deleteSubTask(int taskKey);
+
+    boolean clearRelatedSubTusks(Integer taskKey) throws IOException;
+
+    void setEpicStatus(Integer taskKey);
+
+    List<Task> getPrioritizedTasks();
 
     void tasksClear();
 
-    TreeSet<Task> getPrioritizedTasks();
+    void load();
+
+    void save();
+
+    HashMap<Integer, Task> getTasksMap();
+
+    HashMap<Integer, Epic> getEpicsMap();
+
+    HashMap<Integer, SubTask> getSubTasksMap();
+
+    List<String> getAllTasksStringList();
 }
-
-

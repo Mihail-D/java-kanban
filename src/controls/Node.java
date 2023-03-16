@@ -1,34 +1,21 @@
 package controls;
 
-import tasks.Task;
+public class Node<T> {
+    T node;
+    Node<T> nextNode;
+    Node<T> previousNode;
 
-class Node {
-
-    private Task task;
-    private Node prev;
-    private Node next;
-
-    public Node getNext() {
-        return next;
+    public Node(Node<T> previousNode, T node) {
+        this.previousNode = previousNode;
+        this.node = node;
+        this.nextNode = null;
     }
 
-    public Node getPrev() {
-        return prev;
+    public T getNode() {
+        return this.node;
     }
 
-    public Task getTask() {
-        return task;
-    }
-
-    public void setNext(Node next) {
-        this.next = next;
-    }
-
-    public void setPrev(Node prev) {
-        this.prev = prev;
-    }
-
-    public void setTask(Task task) {
-        this.task = task;
+    public void setNode(T node) {
+        this.node = node;
     }
 }
