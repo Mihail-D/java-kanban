@@ -37,7 +37,7 @@
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../../../Downloads/gson-2.9.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/lib/gson-2.9.0.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
