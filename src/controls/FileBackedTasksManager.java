@@ -10,10 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
 
@@ -178,21 +175,22 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                     }
                 }
             }
-            setTaskKey(fileBackedTasksManager);
+            getInitNumber(fileBackedTasksManager);
         } catch (IOException e) {
             throw new ManagerLoadException(e.getMessage());
         }
         return fileBackedTasksManager;
     }
 
-    static private void setTaskKey(FileBackedTasksManager fileBackedTasksManager) {
-        List<Integer> taskKeys = new ArrayList<>();
-        taskKeys.addAll(fileBackedTasksManager.tasks.keySet());
-        taskKeys.addAll(fileBackedTasksManager.subtasks.keySet());
-        taskKeys.addAll(fileBackedTasksManager.epics.keySet());
-        if (taskKeys.size() > 0) {
-            fileBackedTasksManager.setLastTaskId(Collections.max(taskKeys));
+    private static int getInitNumber(FileBackedTasksManager fileBackedTasksManager) {
+        int maxTaskKey = 0;
+
+        for (Task task : fileBackedTasksManager.getTasksCollection()) {
+            if (task.getTaskKey() > maxTaskKey) {
+                maxTaskKey = task.getTaskKey();
+            }
         }
+        return maxTaskKey;
     }
 
     static private void addTaskByType(TaskManager tasksManager, Task task) {
