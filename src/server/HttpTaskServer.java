@@ -37,7 +37,7 @@ public class HttpTaskServer {
         server.createContext("/tasks/subtask/epic", this::handlerEpicSubtasks);
     }
 
-    private void tasksCollectionHandler(HttpExchange h) throws IOException {
+    private void tasksCollectionHandler(HttpExchange h) {
         try {
             System.out.println("\n/tasksCollectionHandler");
             if ("GET".equals(h.getRequestMethod())) {
@@ -47,14 +47,14 @@ public class HttpTaskServer {
                 System.out.println("/tasks ждёт GET-запрос, а получил " + h.getRequestMethod());
                 h.sendResponseHeaders(405, 0);
             }
-        } catch (RuntimeException e) {
+        } catch (IOException e) {
             throw new KVTaskClientLoadException("Ошибка при обработке запроса.");
         } finally {
             h.close();
         }
     }
 
-    private void historyHandler(HttpExchange h) throws IOException {
+    private void historyHandler(HttpExchange h) {
         try {
             System.out.println("\n/historyHandler");
             if ("GET".equals(h.getRequestMethod())) {
@@ -64,14 +64,14 @@ public class HttpTaskServer {
                 System.out.println("/tasks ждёт GET-запрос, а получил " + h.getRequestMethod());
                 h.sendResponseHeaders(405, 0);
             }
-        } catch (RuntimeException e) {
+        } catch (IOException e) {
             throw new KVTaskClientLoadException("Ошибка при обработке запроса.");
         } finally {
             h.close();
         }
     }
 
-    private void taskHandler(HttpExchange h) throws IOException {
+    private void taskHandler(HttpExchange h) {
         try {
             System.out.println("\n/taskHandler");
             String requestMethod = h.getRequestMethod();
@@ -105,14 +105,14 @@ public class HttpTaskServer {
                     sendText(h, "");
                     break;
             }
-        } catch (RuntimeException e) {
+        } catch (IOException e) {
             throw new KVTaskClientLoadException("Ошибка при обработке запроса.");
         } finally {
             h.close();
         }
     }
 
-    private void epicHandler(HttpExchange h) throws IOException {
+    private void epicHandler(HttpExchange h) {
         try {
             System.out.println("\n/epicHandler");
             String requestMethod = h.getRequestMethod();
@@ -146,14 +146,14 @@ public class HttpTaskServer {
                     sendText(h, "");
                     break;
             }
-        } catch (RuntimeException e) {
+        } catch (IOException e) {
             throw new KVTaskClientLoadException("Ошибка при обработке запроса.");
         } finally {
             h.close();
         }
     }
 
-    private void subTaskHandler(HttpExchange h) throws IOException {
+    private void subTaskHandler(HttpExchange h) {
         try {
             System.out.println("\n/subTaskHandler");
             String requestMethod = h.getRequestMethod();
@@ -187,14 +187,14 @@ public class HttpTaskServer {
                     sendText(h, "");
                     break;
             }
-        } catch (RuntimeException e) {
+        } catch (IOException e) {
             throw new KVTaskClientLoadException("Ошибка при обработке запроса.");
         } finally {
             h.close();
         }
     }
 
-    private void handlerEpicSubtasks(HttpExchange h) throws IOException {
+    private void handlerEpicSubtasks(HttpExchange h) {
         try {
             System.out.println("\n/handlerEpicSubtasks");
             String requestMethod = h.getRequestMethod();
@@ -207,7 +207,7 @@ public class HttpTaskServer {
                     sendText(h, "");
                 }
             }
-        } catch (RuntimeException e) {
+        } catch (IOException e) {
             throw new KVTaskClientLoadException("Ошибка при обработке запроса.");
         } finally {
             h.close();
