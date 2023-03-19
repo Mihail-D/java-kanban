@@ -11,8 +11,6 @@ import tasks.Task;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class HTTPTaskManager extends FileBackedTasksManager {
 
@@ -85,17 +83,6 @@ public class HTTPTaskManager extends FileBackedTasksManager {
             for (Task task : historyList) {
                 historyManager.add(task);
             }
-        }
-        setTaskKey();
-    }
-
-    private void setTaskKey() {
-        List<Integer> tasksKeysList = new ArrayList<>();
-        tasksKeysList.addAll(tasks.keySet());
-        tasksKeysList.addAll(subtasks.keySet());
-        tasksKeysList.addAll(epics.keySet());
-        if (tasksKeysList.size() > 0) {
-            setLastTaskId(Collections.max(tasksKeysList));
         }
     }
 

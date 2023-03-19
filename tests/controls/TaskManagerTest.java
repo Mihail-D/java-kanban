@@ -10,8 +10,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public abstract class TaskManagerTest<T extends TaskManager> {
 
@@ -353,5 +352,23 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         assertNotNull(tasks, "Список отсортированных задач не возвращается.");
         assertEquals(3, tasks.size(), "Ошибочное количество задач.");
         assertEquals(task1, tasks.get(2), "Неверная очередность задач");
+    }
+
+    @Test
+    void shouldCreateProperKeys() {
+        taskManager.addTask(task1);
+        taskManager.addTask(task2);
+        taskManager.addTask(task3);
+        taskManager.addEpic(epic1);
+        subtask1.setParentKey(epic1.getTaskKey());
+        subtask2.setParentKey(epic1.getTaskKey());
+        taskManager.addSubtask(subtask1);
+        taskManager.addSubtask(subtask2);
+
+        assertEquals(1, task2.getTaskKey() - task1.getTaskKey());
+        assertEquals(2, task3.getTaskKey() - task1.getTaskKey());
+        assertEquals(3, epic1.getTaskKey() - task1.getTaskKey());
+        assertEquals(4, subtask1.getTaskKey() - task1.getTaskKey());
+        assertEquals(5, subtask2.getTaskKey() - task1.getTaskKey());
     }
 }
