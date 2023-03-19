@@ -1,5 +1,8 @@
 package server;
 
+import exceptions.KVTaskClientLoadException;
+import exceptions.KVTaskClientPutException;
+import exceptions.KVTaskClientRegisterException;
 import exceptions.ManagerSaveException;
 
 import java.io.IOException;
@@ -8,45 +11,62 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-import static java.net.HttpURLConnection.HTTP_OK;
-
 public class KVTaskClient {
+    private final String url;
+    private final String apiToken;
 
-    private final String uri;
-    private final String token;
-    private final HttpClient httpClient;
-
-    public KVTaskClient(String uri) throws IOException, InterruptedException {
-        this.uri = uri;
-
-        httpClient = HttpClient.newBuilder()
-                .build();
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .GET()
-                .uri(URI.create(uri + "/register"))
-                .build();
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        token = response.body();
+    public KVTaskClient(String url) {
+        this.url = url;
+        this.apiToken = register();
     }
 
-    public void put(String taskKey, String jsonData) throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder()
-                .POST(HttpRequest.BodyPublishers.ofString(jsonData))
-                .uri(URI.create(uri + "/save/" + taskKey + "?API_TOKEN=" + token))
-                .build();
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        if (response.statusCode() != HTTP_OK) {
-            throw new ManagerSaveException("Ошибка в методе KVTaskClient.put(), код ответа: " + response.statusCode());
+    public void put(String key, String json) {
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url + "save/" + key + "?API_TOKEN=" + apiToken))
+                    .POST(HttpRequest.BodyPublishers.ofString(json))
+                    .build();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() != 200) {
+                throw new ManagerSaveException("Запрос не может быть обработан.");
+            }
+        } catch (IOException | InterruptedException e) {
+            throw new KVTaskClientPutException("Запрос не может быть обработан.");
         }
     }
 
-    public String load(String taskKey) throws IOException, InterruptedException {
-        HttpRequest request = HttpRequest.newBuilder()
-                .GET()
-                .uri(URI.create(uri + "/load/" + taskKey + "?API_TOKEN=" + token))
-                .build();
-        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        return response.body();
+    public String load(String key) {
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url + "load/" + key + "?API_TOKEN=" + apiToken))
+                    .GET()
+                    .build();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() != 200) {
+                throw new ManagerSaveException("Запрос не может быть обработан. " + response.statusCode());
+            }
+            return response.body();
+        } catch (IOException | InterruptedException e) {
+            throw new KVTaskClientLoadException("Запрос не может быть обработан.");
+        }
+    }
+
+    private String register() {
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url + "register"))
+                    .GET()
+                    .build();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() != 200) {
+                throw new ManagerSaveException("Запрос не может быть обработан.");
+            }
+            return response.body();
+        } catch (IOException | InterruptedException e) {
+            throw new KVTaskClientRegisterException("Запрос не может быть обработан.");
+        }
     }
 }

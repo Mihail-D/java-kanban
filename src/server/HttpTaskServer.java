@@ -2,288 +2,248 @@ package server;
 
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import controls.HistoryManager;
-import controls.Managers;
-import controls.TaskManager;
+import exceptions.KVTaskClientLoadException;
 import tasks.Epic;
 import tasks.SubTask;
 import tasks.Task;
+import controls.HTTPTaskManager;
+import controls.Managers;
+import controls.TaskManager;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.ArrayList;
 
-import static server.Constants.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class HttpTaskServer {
 
-    private HttpServer httpServer;
-    public TaskManager taskManager;
-    public HistoryManager historyManager;
-    private static HashMap<String, HttpHandler> handlersStorage;
+    private final int PORT = 8080;
+    private final Gson json;
+    private final TaskManager taskManager;
+    private final HttpServer server;
 
-    private static void writeResponse(
-            HttpExchange exchange,
-            String responseString,
-            int responseCode
-    ) throws IOException {
-        if (responseString.isBlank()) {
-            exchange.sendResponseHeaders(responseCode, 0);
-        }
-        else {
-            byte[] bytes = responseString.getBytes(CHARSET);
-            exchange.sendResponseHeaders(responseCode, bytes.length);
-            try (OutputStream os = exchange.getResponseBody()) {
-                os.write(bytes);
-            }
-        }
-        exchange.close();
+    public HttpTaskServer() throws IOException {
+        this.json = HTTPTaskManager.getTaskGson();
+        this.taskManager = Managers.getDefault();
+        this.server = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
+
+        server.createContext("/tasks", this::tasksCollectionHandler);
+        server.createContext("/tasks/task", this::taskHandler);
+        server.createContext("/tasks/epic", this::epicHandler);
+        server.createContext("/tasks/subtask", this::subTaskHandler);
+        server.createContext("/tasks/history", this::historyHandler);
+        server.createContext("/tasks/subtask/epic", this::handlerEpicSubtasks);
     }
 
-    public void startHttpTaskServer() {
+    private void tasksCollectionHandler(HttpExchange h) throws IOException {
         try {
-            httpServer = HttpServer.create();
-            taskManager = Managers.getDefault();
-            historyManager = Managers.getDefaultHistory();
-            httpServer.bind(new InetSocketAddress(PORT), 0);
-            addHttpHandlers();
-            handlersStorage.forEach(
-                    (key, value) -> httpServer.createContext(key, value)
-            );
-            httpServer.start();
-            System.out.println("Запускаем HttpTaskServer на порту " + PORT);
-            System.out.println("Путь: http://localhost:" + PORT + "/");
-        } catch (IOException exception) {
-            System.out.println(exception.getMessage());
-        }
-    }
-
-    public void stopHttpTaskServer() {
-        httpServer.stop(5);
-        System.out.println("HttpTaskServer остановлен");
-    }
-
-    private void addHttpHandlers() {
-        handlersStorage = new HashMap<>();
-        handlersStorage.put(TASKS, new AllTasksHandler());
-        handlersStorage.put(TASKS_TASK, new ActionsWithTasksHandler(Task.class));
-        handlersStorage.put(TASKS_SUBTASK, new ActionsWithTasksHandler(SubTask.class));
-        handlersStorage.put(TASKS_EPIC, new ActionsWithTasksHandler(Epic.class));
-        handlersStorage.put(TASKS_HISTORY, new HistoryHandler());
-    }
-
-    class AllTasksHandler implements HttpHandler {
-
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-            List<Task> tasksCollection = taskManager.collectAllTasks();
-            if (!tasksCollection.isEmpty()) {
-                Gson gson = new Gson();
-                writeResponse(
-                        exchange,
-                        gson.toJson(tasksCollection),
-                        HttpURLConnection.HTTP_OK
-                );
+            System.out.println("\n/tasksCollectionHandler");
+            if ("GET".equals(h.getRequestMethod())) {
+                sendText(h, json.toJson(new ArrayList<>(taskManager.getPrioritizedTasks())));
             }
             else {
-                writeResponse(
-                        exchange,
-                        "Данных не обнаружено",
-                        HttpURLConnection.HTTP_NOT_FOUND
-                );
+                System.out.println("/tasks ждёт GET-запрос, а получил " + h.getRequestMethod());
+                h.sendResponseHeaders(405, 0);
             }
+        } catch (RuntimeException e) {
+            throw new KVTaskClientLoadException("Ошибка при обработке запроса.");
+        } finally {
+            h.close();
         }
     }
 
-    class ActionsWithTasksHandler implements HttpHandler {
-
-        private final Class<? extends Task> taskClass;
-
-        ActionsWithTasksHandler(Class<? extends Task> taskClass) {
-            super();
-            this.taskClass = taskClass;
-        }
-
-        @Override
-        public void handle(HttpExchange exchange) {
-            switch (exchange.getRequestMethod()) {
-                case GET:
-                    get(exchange);
-                    break;
-                case POST:
-                    post(exchange);
-                    break;
-                case DELETE:
-                    delete(exchange);
-                    break;
+    private void historyHandler(HttpExchange h) throws IOException {
+        try {
+            System.out.println("\n/historyHandler");
+            if ("GET".equals(h.getRequestMethod())) {
+                sendText(h, json.toJson(new ArrayList<>(taskManager.getHistory())));
             }
-        }
-
-        private Optional<Integer> getTaskKey(HttpExchange exchange) {
-            String[] uri = exchange.getRequestURI().getPath().split("/");
-            try {
-                return Optional.of(Integer.parseInt(uri[uri.length - 1]));
-            } catch (NumberFormatException exception) {
-                return Optional.empty();
+            else {
+                System.out.println("/tasks ждёт GET-запрос, а получил " + h.getRequestMethod());
+                h.sendResponseHeaders(405, 0);
             }
+        } catch (RuntimeException e) {
+            throw new KVTaskClientLoadException("Ошибка при обработке запроса.");
+        } finally {
+            h.close();
         }
+    }
 
-        private String getTaskType(HttpExchange exchange) {
-            String[] uri = exchange.getRequestURI().getPath().split("/");
-            return uri[2];
-        }
-
-        private Optional<Task> getTaskToWorkWith(HttpExchange exchange) {
-            try {
-                Optional<Integer> optionalTaskId = getTaskKey(exchange);
-                String taskType = getTaskType(exchange);
-                if (optionalTaskId.isEmpty()) {
-                    writeResponse(
-                            exchange,
-                            "Ключ задачи неправильный.",
-                            HttpURLConnection.HTTP_BAD_REQUEST
-                    );
-                }
-                else {
-                    int taskId = optionalTaskId.get();
-                    switch (taskType) {
-                        case "task":
-                            return Optional.of(taskManager.getTask(taskId));
-                        case "subTask":
-                            return Optional.of(taskManager.getSubTask(taskId));
-                        case "epic":
-                            return Optional.of(taskManager.getEpic(taskId));
+    private void taskHandler(HttpExchange h) throws IOException {
+        try {
+            System.out.println("\n/taskHandler");
+            String requestMethod = h.getRequestMethod();
+            int taskKey = getTaskIdFromPath(h.getRequestURI().getQuery());
+            switch (requestMethod) {
+                case "GET":
+                    if (taskKey > 0) {
+                        sendText(h, json.toJson(taskManager.getTask(taskKey)));
                     }
-                }
-            } catch (Exception exception) {
-                System.out.println(exception.getMessage());
-            }
-            return Optional.empty();
-        }
-
-        private void get(HttpExchange exchange) {
-            Optional<Task> optionalTask = getTaskToWorkWith(exchange);
-            try {
-                if (optionalTask.isEmpty()) {
-                    writeResponse(
-                            exchange,
-                            "Задача не обнаружена.",
-                            HttpURLConnection.HTTP_BAD_REQUEST
-                    );
-                }
-                else {
-                    Gson gson = new Gson();
-                    Task task = optionalTask.get();
-                    writeResponse(
-                            exchange,
-                            gson.toJson(task),
-                            HttpURLConnection.HTTP_OK
-                    );
-                }
-            } catch (IOException exception) {
-                System.out.println(exception.getMessage());
-            }
-        }
-
-        private void post(HttpExchange exchange) {
-            String taskType = getTaskType(exchange);
-            Gson gson = new Gson();
-            try {
-                InputStream in = exchange.getRequestBody();
-                byte[] bytes = in.readAllBytes();
-                String value = new String(bytes, CHARSET);
-                switch (taskType) {
-                    case "task":
-                        Task task = gson.fromJson(
-                                value,
-                                taskClass
-                        );
+                    else {
+                        sendText(h, json.toJson(new ArrayList<>(taskManager.getTasksCollection())));
+                    }
+                    break;
+                case "POST":
+                    Task task = json.fromJson(readText(h), Task.class);
+                    if (taskKey > 0) {
+                        taskManager.updateTask(task);
+                    }
+                    else {
                         taskManager.addTask(task);
-                        writeResponse(
-                                exchange,
-                                "Задача создана с ключом " + task.getTaskKey(),
-                                HttpURLConnection.HTTP_OK
-                        );
-                        break;
-                    case "subTask":
-                        SubTask subTask = (SubTask) gson.fromJson(
-                                value,
-                                taskClass
-                        );
-                        taskManager.addSubTask(subTask, subTask.getParentKey());
-                        writeResponse(
-                                exchange,
-                                "Задача создана с ключом " + subTask.getTaskKey(),
-                                HttpURLConnection.HTTP_OK
-                        );
-                        break;
-                    case "epic":
-                        Epic epicTask = (Epic) gson.fromJson(
-                                value,
-                                taskClass
-                        );
-                        taskManager.addEpic(epicTask);
-                        writeResponse(
-                                exchange,
-                                "Задача создана с ключом " + epicTask.getTaskKey(),
-                                HttpURLConnection.HTTP_OK
-                        );
-                        break;
-                }
-            } catch (IOException exception) {
-                System.out.println(exception.getMessage());
-            }
-        }
-
-        private void delete(HttpExchange exchange) {
-            Optional<Integer> optionalTaskId = getTaskKey(exchange);
-            String taskType = getTaskType(exchange);
-            try {
-                if (optionalTaskId.isEmpty()) {
-                    writeResponse(
-                            exchange,
-                            "Задача не обнаружена.",
-                            HttpURLConnection.HTTP_BAD_REQUEST
-                    );
-                }
-                else {
-                    int taskId = optionalTaskId.get();
-                    switch (taskType) {
-                        case "task":
-                            taskManager.deleteTask(taskId);
-                            break;
-                        case "subTask":
-                            taskManager.deleteSubTask(taskId);
-                            break;
-                        case "epic":
-                            taskManager.deleteEpic(taskId);
-                            break;
                     }
-                    writeResponse(
-                            exchange,
-                            "Задача с ключом " + taskId + " была успешно удалена",
-                            HttpURLConnection.HTTP_OK
-                    );
-                }
-            } catch (IOException exception) {
-                System.out.println(exception.getMessage());
+                    sendText(h, "");
+                    break;
+                case "DELETE":
+                    if (taskKey > 0) {
+                        taskManager.removeTask(taskKey);
+                    }
+                    else {
+                        taskManager.clearTasks();
+                    }
+                    sendText(h, "");
+                    break;
             }
+        } catch (RuntimeException e) {
+            throw new KVTaskClientLoadException("Ошибка при обработке запроса.");
+        } finally {
+            h.close();
         }
     }
 
-    class HistoryHandler implements HttpHandler {
-
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-            Gson gson = new Gson();
-            writeResponse(exchange, gson.toJson(historyManager.getHistory()), HttpURLConnection.HTTP_OK);
+    private void epicHandler(HttpExchange h) throws IOException {
+        try {
+            System.out.println("\n/epicHandler");
+            String requestMethod = h.getRequestMethod();
+            int taskKey = getTaskIdFromPath(h.getRequestURI().getQuery());
+            switch (requestMethod) {
+                case "GET":
+                    if (taskKey > 0) {
+                        sendText(h, json.toJson(taskManager.getEpic(taskKey)));
+                    }
+                    else {
+                        sendText(h, json.toJson(new ArrayList<>(taskManager.getEpicsCollection())));
+                    }
+                    break;
+                case "POST":
+                    Epic epic = json.fromJson(readText(h), Epic.class);
+                    if (taskKey > 0) {
+                        taskManager.updateEpic(epic);
+                    }
+                    else {
+                        taskManager.addEpic(epic);
+                    }
+                    sendText(h, "");
+                    break;
+                case "DELETE":
+                    if (taskKey > 0) {
+                        taskManager.removeEpic(taskKey);
+                    }
+                    else {
+                        taskManager.clearEpics();
+                    }
+                    sendText(h, "");
+                    break;
+            }
+        } catch (RuntimeException e) {
+            throw new KVTaskClientLoadException("Ошибка при обработке запроса.");
+        } finally {
+            h.close();
         }
+    }
+
+    private void subTaskHandler(HttpExchange h) throws IOException {
+        try {
+            System.out.println("\n/subTaskHandler");
+            String requestMethod = h.getRequestMethod();
+            int taskKey = getTaskIdFromPath(h.getRequestURI().getQuery());
+            switch (requestMethod) {
+                case "GET":
+                    if (taskKey > 0) {
+                        sendText(h, json.toJson(taskManager.getSubtask(taskKey)));
+                    }
+                    else {
+                        sendText(h, json.toJson(new ArrayList<>(taskManager.getSubtasksCollection())));
+                    }
+                    break;
+                case "POST":
+                    SubTask subtask = json.fromJson(readText(h), SubTask.class);
+                    if (taskKey > 0) {
+                        taskManager.updateSubtask(subtask);
+                    }
+                    else {
+                        taskManager.addSubtask(subtask);
+                    }
+                    sendText(h, "");
+                    break;
+                case "DELETE":
+                    if (taskKey > 0) {
+                        taskManager.removeSubtask(taskKey);
+                    }
+                    else {
+                        taskManager.clearSubTasks();
+                    }
+                    sendText(h, "");
+                    break;
+            }
+        } catch (RuntimeException e) {
+            throw new KVTaskClientLoadException("Ошибка при обработке запроса.");
+        } finally {
+            h.close();
+        }
+    }
+
+    private void handlerEpicSubtasks(HttpExchange h) throws IOException {
+        try {
+            System.out.println("\n/handlerEpicSubtasks");
+            String requestMethod = h.getRequestMethod();
+            int taskKey = getTaskIdFromPath(h.getRequestURI().getQuery());
+            if (requestMethod.equals("GET")) {
+                if (taskKey > 0) {
+                    sendText(h, json.toJson(new ArrayList<>(taskManager.getEpicRelatedSubtasks(taskKey))));
+                }
+                else {
+                    sendText(h, "");
+                }
+            }
+        } catch (RuntimeException e) {
+            throw new KVTaskClientLoadException("Ошибка при обработке запроса.");
+        } finally {
+            h.close();
+        }
+    }
+
+    public void start() {
+        System.out.println("Запускаем TaskManager. Порт " + PORT);
+        server.start();
+    }
+
+    public void stop() {
+        System.out.println("TaskManager остановлен." + PORT);
+        server.stop(0);
+    }
+
+    protected void sendText(HttpExchange h, String text) throws IOException {
+        byte[] resp = text.getBytes(UTF_8);
+        h.getResponseHeaders().add("Content-Type", "application/json");
+        h.sendResponseHeaders(200, resp.length);
+        h.getResponseBody().write(resp);
+    }
+
+    protected String readText(HttpExchange h) throws IOException {
+        return new String(h.getRequestBody().readAllBytes(), UTF_8);
+    }
+
+    private int getTaskIdFromPath(String query) {
+        if (query == null) {
+            return 0;
+        }
+        String[] paths = query.split("taskKey=");
+        System.out.println(paths.length);
+        if (paths.length > 1) {
+            return Integer.parseInt(paths[1]);
+        }
+        return 0;
     }
 }

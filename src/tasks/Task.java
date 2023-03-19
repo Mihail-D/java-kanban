@@ -1,65 +1,48 @@
 package tasks;
 
 import java.time.Duration;
-import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Task {
 
-    private String taskTitle;
-    private String taskDescription;
-    private Integer taskKey;
-    private TaskStatus taskStatus;
-    private final Instant taskStartTime;
-    private Duration taskDuration;
-    private Instant taskEndTime;
-    private static Instant taskTimeUpdateCheck;
-    public static int taskKeyCounter = 0;
+    protected int taskKey;
+    protected String taskTitle;
+    protected String taskDescription;
+    protected TaskStatus taskStatus;
+    protected Duration taskDuration;
+    protected LocalDateTime taskStartTime;
 
-    public Task(
-            String taskTitle, String taskDescription, TaskStatus taskStatus, Instant taskStartTime,
-            Duration taskDuration
-    ) {
+    public Task(String taskTitle, String taskDescription, TaskStatus taskStatus) {
         this.taskTitle = taskTitle;
         this.taskDescription = taskDescription;
         this.taskStatus = taskStatus;
-        this.taskStartTime = taskStartTime;
-        this.taskDuration = taskDuration;
-        this.taskEndTime = taskStartTime.plus(taskDuration);
+        this.taskStartTime = getTaskInitTime();
     }
 
-    public Task(
-            Integer taskKey, String taskTitle, String taskDescription, TaskStatus taskStatus,
-            Instant taskStartTime,
-            Duration taskDuration, Instant tmpTimeTaskWasUpdated
-    ) {
-        this.taskKey = taskKey;
+    public Task(String taskTitle, String taskDescription, TaskStatus taskStatus, Duration taskDuration) {
         this.taskTitle = taskTitle;
         this.taskDescription = taskDescription;
         this.taskStatus = taskStatus;
-        this.taskStartTime = taskStartTime;
         this.taskDuration = taskDuration;
-        taskTimeUpdateCheck = tmpTimeTaskWasUpdated;
-        this.taskEndTime = taskStartTime.plus(taskDuration);
+        this.taskStartTime = getTaskInitTime();
     }
 
-    public Integer getTaskKey() {
+    public Task(String taskTitle, String taskDescription, TaskStatus taskStatus, Duration taskDuration,
+                LocalDateTime taskStartTime) {
+        this.taskTitle = taskTitle;
+        this.taskDescription = taskDescription;
+        this.taskStatus = taskStatus;
+        this.taskDuration = taskDuration;
+        this.taskStartTime = taskStartTime;
+    }
+
+    public int getTaskKey() {
         return taskKey;
     }
 
-    public Integer setTaskKey() {
-        taskUpdateTime();
-        taskKeyCounter++;
-        this.taskKey = taskKeyCounter;
-        return this.taskKey;
-    }
-
-    public String getTaskTitle() {
-        return taskTitle;
-    }
-
-    public void setTaskTitle(String taskTitle) {
-        taskUpdateTime();
-        this.taskTitle = taskTitle;
+    public void setTaskKey(int taskKey) {
+        this.taskKey = taskKey;
     }
 
     public String getTaskDescription() {
@@ -67,7 +50,6 @@ public class Task {
     }
 
     public void setTaskDescription(String taskDescription) {
-        taskUpdateTime();
         this.taskDescription = taskDescription;
     }
 
@@ -76,60 +58,47 @@ public class Task {
     }
 
     public void setTaskStatus(TaskStatus taskStatus) {
-        taskUpdateTime();
         this.taskStatus = taskStatus;
-        if (taskStatus.equals(TaskStatus.DONE)) {
-            setTaskEndTime();
-        }
-    }
-
-    public Instant getTaskStartTime() {
-        return taskStartTime;
     }
 
     public Duration getTaskDuration() {
         return taskDuration;
     }
 
-    public static Instant getTaskTimeUpdateCheck() {
-        return taskTimeUpdateCheck;
+    public void setTaskDuration(Duration taskDuration) {
+        this.taskDuration = taskDuration;
     }
 
-    public static void taskUpdateTime() {
-        Task.taskTimeUpdateCheck = Instant.now();
+    public LocalDateTime getTaskStartTime() {
+        return taskStartTime;
     }
 
-    public void setTaskEndTime(Instant taskEndTime) {
-        this.taskEndTime = taskEndTime;
+    public void setTaskStartTime(LocalDateTime taskStartTime) {
+        this.taskStartTime = taskStartTime;
     }
 
-    public Instant getTaskEndTime() {
-        return this.taskEndTime;
+    public LocalDateTime getTaskEndTime() {
+        return taskStartTime.plus(taskDuration);
     }
 
-    public void setTaskEndTime() {
-        taskDuration = Duration.between(taskStartTime, taskTimeUpdateCheck);
-        this.taskEndTime = taskStartTime.plus(taskDuration);
+    public static DateTimeFormatter getTaskTimeFormatter() {
+        return DateTimeFormatter.ofPattern("HH.mm.dd_MM.yyyy");
     }
 
-    public static void setIdCounter(int taskKeyCounter) {
-        Task.taskKeyCounter = taskKeyCounter;
-    }
-
-    public void setTaskKey(Integer taskKey) {
-        this.taskKey = taskKey;
+    public static LocalDateTime getTaskInitTime() {
+        return LocalDateTime.parse("01.01.01_01.2200", getTaskTimeFormatter());
     }
 
     @Override
     public String toString() {
-        return "Task;"
-                + taskKey + ";"
-                + taskTitle + ";"
-                + taskDescription + ";"
-                + taskStatus + ";"
-                + taskStartTime + ";"
-                + taskDuration + ";"
-                + taskTimeUpdateCheck;
+        return taskKey +
+                "," + TaskType.TASK +
+                "," + taskTitle +
+                "," + taskStatus +
+                "," + taskDescription +
+                "," + taskDuration +
+                "," + taskStartTime.format(getTaskTimeFormatter()) +
+                ",";
     }
 
     @Override
@@ -143,36 +112,32 @@ public class Task {
 
         Task task = (Task) o;
 
-        if (!getTaskKey().equals(task.getTaskKey())) {
+        if (getTaskKey() != task.getTaskKey()) {
             return false;
         }
         if (!taskTitle.equals(task.taskTitle)) {
             return false;
         }
-        if (!taskDescription.equals(task.taskDescription)) {
+        if (!getTaskDescription().equals(task.getTaskDescription())) {
             return false;
         }
-        if (taskStatus != task.taskStatus) {
+        if (getTaskStatus() != task.getTaskStatus()) {
             return false;
         }
-        if (!taskStartTime.equals(task.taskStartTime)) {
+        if (!getTaskDuration().equals(task.getTaskDuration())) {
             return false;
         }
-        if (!taskDuration.equals(task.taskDuration)) {
-            return false;
-        }
-        return taskEndTime.equals(task.taskEndTime);
+        return getTaskStartTime().equals(task.getTaskStartTime());
     }
 
     @Override
     public int hashCode() {
-        int result = getTaskKey().hashCode();
+        int result = getTaskKey();
         result = 31 * result + taskTitle.hashCode();
-        result = 31 * result + taskDescription.hashCode();
-        result = 31 * result + taskStatus.hashCode();
-        result = 31 * result + taskStartTime.hashCode();
-        result = 31 * result + taskDuration.hashCode();
-        result = 31 * result + taskEndTime.hashCode();
+        result = 31 * result + getTaskDescription().hashCode();
+        result = 31 * result + getTaskStatus().hashCode();
+        result = 31 * result + getTaskDuration().hashCode();
+        result = 31 * result + getTaskStartTime().hashCode();
         return result;
     }
 }

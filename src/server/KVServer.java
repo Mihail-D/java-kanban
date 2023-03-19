@@ -2,6 +2,7 @@ package server;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
+import exceptions.KVServerLoadException;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -9,27 +10,27 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static server.Constants.KV_SERVER_PORT;
 
 public class KVServer {
 
+    public static final int PORT = 8078;
     private final String apiToken;
     private final HttpServer server;
     private final Map<String, String> data = new HashMap<>();
 
     public KVServer() throws IOException {
         apiToken = generateApiToken();
-        server = HttpServer.create(new InetSocketAddress("localhost", KV_SERVER_PORT), 0);
+        server = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
         server.createContext("/register", this::register);
         server.createContext("/save", this::save);
         server.createContext("/load", this::load);
     }
 
     private void load(HttpExchange h) throws IOException {
+
         try {
             System.out.println("\n/load");
-            boolean hasAuth = hasAuth(h);
-            if (!hasAuth) {
+            if (hasAuth(h)) {
                 System.out.println("Запрос не авторизован, нужен параметр в query API_TOKEN со значением апи-ключа");
                 h.sendResponseHeaders(403, 0);
                 return;
@@ -37,25 +38,22 @@ public class KVServer {
             if ("GET".equals(h.getRequestMethod())) {
                 String key = h.getRequestURI().getPath().substring("/load/".length());
                 if (key.isEmpty()) {
-                    System.out.println("Key для выгрузки пустой. key указывается в пути: /load/{key}");
+                    System.out.println("Key для загрузки пустой. key указывается в пути: /load/{key}");
                     h.sendResponseHeaders(400, 0);
                     return;
                 }
-                if (!data.isEmpty()) {
-                    String value = data.get(key);
-                    if (value.isEmpty()) {
-                        System.out.println("Value для выгрузки пустой");
-                        h.sendResponseHeaders(400, 0);
-                        return;
-                    }
-                    System.out.println("Нет данных для выгрузки");
-                    h.sendResponseHeaders(400, 0);
+                if (data.containsKey(key)) {
+                    sendText(h, data.get(key));
                 }
+                System.out.println("Значение для ключа " + key + " успешно выгружено!");
+                h.sendResponseHeaders(200, 0);
             }
             else {
-                System.out.println("/load ждёт GET-запрос, но получен: " + h.getRequestMethod());
+                System.out.println("/load ждёт GET-запрос, а получил: " + h.getRequestMethod());
                 h.sendResponseHeaders(405, 0);
             }
+        } catch (RuntimeException e) {
+            throw new KVServerLoadException("Ошибка при загрузке сервера.");
         } finally {
             h.close();
         }
@@ -64,7 +62,7 @@ public class KVServer {
     private void save(HttpExchange h) throws IOException {
         try {
             System.out.println("\n/save");
-            if (!hasAuth(h)) {
+            if (hasAuth(h)) {
                 System.out.println("Запрос не авторизован, нужен параметр в query API_TOKEN со значением апи-ключа");
                 h.sendResponseHeaders(403, 0);
                 return;
@@ -90,6 +88,8 @@ public class KVServer {
                 System.out.println("/save ждёт POST-запрос, а получил: " + h.getRequestMethod());
                 h.sendResponseHeaders(405, 0);
             }
+        } catch (RuntimeException e) {
+            throw new KVServerLoadException("Ошибка при загрузке сервера.");
         } finally {
             h.close();
         }
@@ -105,19 +105,16 @@ public class KVServer {
                 System.out.println("/register ждёт GET-запрос, а получил " + h.getRequestMethod());
                 h.sendResponseHeaders(405, 0);
             }
+        } catch (RuntimeException e) {
+            throw new KVServerLoadException("Ошибка при загрузке сервера.");
         } finally {
             h.close();
         }
     }
 
-    public void stop() {
-        server.stop(5);
-        System.out.println("KVServer остановлен");
-    }
-
     public void start() {
-        System.out.println("Запускаем KVServer на порту " + KV_SERVER_PORT);
-        System.out.println("Открой в браузере http://localhost:" + KV_SERVER_PORT + "/");
+        System.out.println("Запускаем сервер на порту " + PORT);
+        System.out.println("Открой в браузере http://localhost:" + PORT + "/");
         System.out.println("API_TOKEN: " + apiToken);
         server.start();
     }
@@ -128,7 +125,7 @@ public class KVServer {
 
     protected boolean hasAuth(HttpExchange h) {
         String rawQuery = h.getRequestURI().getRawQuery();
-        return rawQuery != null && (rawQuery.contains("API_TOKEN=" + apiToken) || rawQuery.contains("API_TOKEN=DEBUG"));
+        return rawQuery == null || (!rawQuery.contains("API_TOKEN=" + apiToken) && !rawQuery.contains("API_TOKEN=DEBUG"));
     }
 
     protected String readText(HttpExchange h) throws IOException {
@@ -136,9 +133,14 @@ public class KVServer {
     }
 
     protected void sendText(HttpExchange h, String text) throws IOException {
-        byte[] bytes = text.getBytes(UTF_8);
+        byte[] resp = text.getBytes(UTF_8);
         h.getResponseHeaders().add("Content-Type", "application/json");
-        h.sendResponseHeaders(200, bytes.length);
-        h.getResponseBody().write(bytes);
+        h.sendResponseHeaders(200, resp.length);
+        h.getResponseBody().write(resp);
+    }
+
+    public void stop() {
+        System.out.println("Сервер остановлен" + PORT);
+        server.stop(0);
     }
 }

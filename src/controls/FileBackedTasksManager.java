@@ -1,225 +1,291 @@
 package controls;
 
 import exceptions.ManagerLoadException;
-import tasks.TaskStatus;
-import tasks.Epic;
-import tasks.SubTask;
-import tasks.Task;
-import server.Constants;
+import tasks.*;
 import exceptions.ManagerSaveException;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
-import java.time.Instant;
-import java.util.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
 
-    private final List<String> savedTasksList = new ArrayList<>();
+    private final String backedFileName;
 
-    public void tasksForSave() {
-        savedTasksList.clear();
-        for (Task task : getTaskList()) {
-            savedTasksList.add(task.toString());
-        }
-        for (Epic epicTask : getEpicList()) {
-            savedTasksList.add(epicTask.toString());
-        }
-        for (SubTask subTask : getSubTaskList()) {
-            savedTasksList.add(subTask.toString());
-        }
+    public FileBackedTasksManager() {
+        super();
+        backedFileName = null;
     }
 
-    public String historyToString() {
-        StringBuilder tasks = new StringBuilder();
-        for (Integer taskKey : getHistoryList()) {
-            tasks.append(taskKey).append(";");
-        }
-        return tasks.toString();
-    }
-
-    public void loadTasks(ArrayList<String> taskList, String history, String taskKeyCounter) throws IOException {
-        String[] tokens = taskKeyCounter.split(":");
-        Task.setIdCounter(Integer.parseInt(tokens[1]));
-        String[] historySplit = history.split(":");
-
-        taskList.remove(0);
-        taskList.remove(taskList.size() - 1);
-
-        List<Integer> keys = new ArrayList<>();
-
-        String[] historyToken = historySplit[1].split(";");
-
-        Arrays.stream(historyToken).forEach(id -> keys.add(Integer.parseInt(id)));
-
-        for (Integer taskKey : keys) {
-            for (String task : taskList) {
-                String[] taskToken = task.split(";");
-                if (taskKey == Integer.parseInt(taskToken[1])) {
-                    historyRestore(taskToken);
-                }
-            }
-        }
-    }
-
-    private void historyRestore(String[] taskTokens) throws IOException {
-        switch (taskTokens[0]) {
-            case "Task":
-                Task task = new Task(
-                        Integer.parseInt(taskTokens[1]),
-                        taskTokens[2],
-                        taskTokens[3],
-                        TaskStatus.valueOf(taskTokens[4]),
-                        Instant.parse(taskTokens[5]),
-                        Duration.parse(taskTokens[6]),
-                        Instant.parse(taskTokens[7])
-                );
-                addTask(task);
-                addToPrioritizedTasks(task);
-                break;
-            case "SubTask":
-                int parentKey = Integer.parseInt(taskTokens[2]);
-
-                SubTask subTask = new SubTask(
-                        Integer.parseInt(taskTokens[1]),
-                        taskTokens[3],
-                        taskTokens[4],
-                        TaskStatus.valueOf(taskTokens[5]),
-                        Instant.parse(taskTokens[6]),
-                        Duration.parse(taskTokens[7]),
-                        Instant.parse(taskTokens[8]),
-                        parentKey
-                );
-
-                addSubTask(subTask, Integer.valueOf(taskTokens[0]));
-                addToPrioritizedTasks(subTask);
-                break;
-            case "Epic":
-                Set<SubTask> relatedSubTusks = new LinkedHashSet<>();
-
-                Epic epicTask = new Epic(
-                        Integer.parseInt(taskTokens[1]),
-                        taskTokens[3],
-                        taskTokens[4],
-                        TaskStatus.valueOf(taskTokens[5]),
-                        Instant.parse(taskTokens[6]),
-                        Duration.parse(taskTokens[7]),
-                        Instant.parse(taskTokens[8]),
-                        relatedSubTusks
-                );
-                addEpic(epicTask);
-                break;
-            default:
-                System.out.println("Задача не была выгружена из файла; taskKey = " + taskTokens[1]);
-                break;
-        }
-    }
-
-    public void save() {
-        try {
-            tasksForSave();
-            BufferedWriter writer = new BufferedWriter(new FileWriter(Constants.SERVER_URI));
-            writer.write("taskKeyCounter:" + Task.taskKeyCounter);
-            for (String aTask : savedTasksList) {
-                writer.write("\n" + aTask);
-            }
-            writer.write("\n historyOrder:" + historyToString());
-            writer.close();
-        } catch (IOException exception) {
-            exception.printStackTrace();
-        } catch (Exception exception) {
-            throw new ManagerSaveException("Ошибка при сохранении данных" + exception.getMessage());
-        }
-    }
-
-    public void load() {
-        ArrayList<String> tasks = new ArrayList<>();
-
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(Constants.SERVER_URI));
-            String line;
-            while (reader.ready()) {
-                line = reader.readLine();
-                tasks.add(line);
-            }
-            reader.close();
-            if (!tasks.isEmpty()) {
-                loadTasks(tasks, tasks.get(tasks.size() - 1), tasks.get(0));
-            }
-        } catch (FileNotFoundException e) {
-            throw new ManagerLoadException("Не удалось восстановить данные задач");
-        } catch (IOException e) {
-            throw new RuntimeException("Не удалось восстановить данные задач");
+    public FileBackedTasksManager(String backedFileName) {
+        super();
+        this.backedFileName = backedFileName;
+        if (!isBackedFileExist()) {
+            createBackedFile();
         }
     }
 
     @Override
-    public void addTask(Task task) throws IOException {
+    public void addEpic(Epic epic) {
+        super.addEpic(epic);
+        save();
+    }
+
+    @Override
+    public void addTask(Task task) {
         super.addTask(task);
         save();
     }
 
     @Override
-    public void addSubTask(SubTask subTask, Integer epicTaskKey) throws IOException {
-        super.addSubTask(subTask, epicTaskKey);
+    public void addSubtask(SubTask subtask) {
+        super.addSubtask(subtask);
         save();
     }
 
     @Override
-    public void addEpic(Epic epicTask) throws IOException {
-        super.addEpic(epicTask);
+    public void updateEpic(Epic epic) {
+        super.updateEpic(epic);
         save();
     }
 
     @Override
-    public void updateTask(Task task) throws IOException {
+    public void updateTask(Task task) {
         super.updateTask(task);
         save();
     }
 
     @Override
-    public void updateSubTask(SubTask subTask, Integer taskKey) throws IOException {
-        super.updateSubTask(subTask, taskKey);
+    public void updateSubtask(SubTask subTask) {
+        super.updateSubtask(subTask);
         save();
     }
 
     @Override
-    public void updateEpic(Epic epicTask, Integer taskKey) throws IOException {
-        super.updateEpic(epicTask, taskKey);
+    public void removeEpic(int taskKey) {
+        super.removeEpic(taskKey);
         save();
     }
 
     @Override
-    public boolean deleteTask(Integer taskKey) throws IOException {
-        boolean isDeleted = super.deleteTask(taskKey);
+    public void removeTask(int taskKey) {
+        super.removeTask(taskKey);
         save();
-        return isDeleted;
     }
 
     @Override
-    public boolean deleteSubTask(int taskKey) {
-        boolean isDeleted = super.deleteSubTask(taskKey);
+    public void removeSubtask(int taskKey) {
+        super.removeSubtask(taskKey);
         save();
-        return isDeleted;
     }
 
     @Override
-    public boolean deleteEpic(Integer taskKey) throws IOException {
-        boolean isDeleted = super.deleteEpic(taskKey);
+    public Epic getEpic(int taskKey) {
+        Epic epic = super.getEpic(taskKey);
         save();
-        return isDeleted;
+        return epic;
     }
 
     @Override
-    public boolean clearRelatedSubTusks(Integer taskKey) throws IOException {
-        boolean isClear = super.clearRelatedSubTusks(taskKey);
+    public Task getTask(int taskKey) {
+        Task task = super.getTask(taskKey);
         save();
-        return isClear;
+        return task;
     }
 
     @Override
-    public void tasksClear() {
-        super.tasksClear();
+    public SubTask getSubtask(int taskKey) {
+        SubTask subtask = super.getSubtask(taskKey);
         save();
+        return subtask;
+    }
+
+    @Override
+    public List<Epic> getEpicsCollection() {
+        List<Epic> allEpic = super.getEpicsCollection();
+        save();
+        return allEpic;
+    }
+
+    @Override
+    public List<SubTask> getSubtasksCollection() {
+        List<SubTask> allSubtask = super.getSubtasksCollection();
+        save();
+        return allSubtask;
+    }
+
+    @Override
+    public List<Task> getTasksCollection() {
+        save();
+        return super.getTasksCollection();
+    }
+
+    @Override
+    public void clearEpics() {
+        super.clearEpics();
+        save();
+    }
+
+    @Override
+    public void clearTasks() {
+        super.clearTasks();
+        save();
+    }
+
+    @Override
+    public void clearSubTasks() {
+        super.clearSubTasks();
+        save();
+    }
+
+    public void save() throws ManagerSaveException {
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(backedFileName))) {
+            for (Integer taskKey : tasks.keySet()) {
+                bufferedWriter.write(tasks.get(taskKey).toString() + "\n");
+            }
+            for (Integer epicId : epics.keySet()) {
+                bufferedWriter.write(epics.get(epicId).toString() + "\n");
+            }
+            for (Integer subtaskId : subtasks.keySet()) {
+                bufferedWriter.write(subtasks.get(subtaskId).toString() + "\n");
+            }
+            bufferedWriter.write(historyToString(historyManager));
+        } catch (IOException e) {
+            throw new ManagerSaveException(e.getMessage());
+        }
+    }
+
+    public static FileBackedTasksManager load(File file) {
+        FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(file.getPath());
+
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
+            String[] tokens = bufferedReader.lines().toArray(String[]::new);
+
+            for (int i = 0; i < tokens.length; i++) {
+                if (i < tokens.length - 2) {
+                    addTaskByType(fileBackedTasksManager, Objects.requireNonNull(taskFromString(tokens[i])));
+                }
+                else if (i == (tokens.length - 1)) {
+                    for (Integer taskKey : historyFromString(tokens[i])) {
+                        addTaskToHistoryByType(fileBackedTasksManager, taskKey);
+                    }
+                }
+            }
+            setTaskKey(fileBackedTasksManager);
+        } catch (IOException e) {
+            throw new ManagerLoadException(e.getMessage());
+        }
+        return fileBackedTasksManager;
+    }
+
+    static private void setTaskKey(FileBackedTasksManager fileBackedTasksManager) {
+        List<Integer> taskKeys = new ArrayList<>();
+        taskKeys.addAll(fileBackedTasksManager.tasks.keySet());
+        taskKeys.addAll(fileBackedTasksManager.subtasks.keySet());
+        taskKeys.addAll(fileBackedTasksManager.epics.keySet());
+        if (taskKeys.size() > 0) {
+            fileBackedTasksManager.setLastTaskId(Collections.max(taskKeys));
+        }
+    }
+
+    static private void addTaskByType(TaskManager tasksManager, Task task) {
+        if (task.getClass().equals(Epic.class)) {
+            tasksManager.updateEpic((Epic) task);
+        }
+        else if (task.getClass().equals(SubTask.class)) {
+            tasksManager.updateSubtask((SubTask) task);
+        }
+        else {
+            tasksManager.updateTask(task);
+        }
+    }
+
+    static private void addTaskToHistoryByType(FileBackedTasksManager fileBackedTasksManager, Integer taskKey) {
+        if (fileBackedTasksManager.getTask(taskKey) != null) {
+            fileBackedTasksManager.historyManager.add(fileBackedTasksManager.getTask(taskKey));
+        }
+        else if (fileBackedTasksManager.getSubtask(taskKey) != null) {
+            fileBackedTasksManager.historyManager.add(fileBackedTasksManager.getSubtask(taskKey));
+        }
+        else if (fileBackedTasksManager.getEpic(taskKey) != null) {
+            fileBackedTasksManager.historyManager.add(fileBackedTasksManager.getEpic(taskKey));
+        }
+    }
+
+    static private Task taskFromString(String value) {
+        String[] tokens = value.split(",");
+        switch (TaskType.valueOf(tokens[1])) {
+            case TASK:
+                Task task = new Task(tokens[2], tokens[4], TaskStatus.valueOf(tokens[3]),
+                        Duration.parse(tokens[5]), LocalDateTime.parse(tokens[6], Task.getTaskTimeFormatter())
+                );
+                task.setTaskKey(Integer.parseInt(tokens[0]));
+                return task;
+            case EPIC:
+                Epic epic = new Epic(tokens[2], tokens[4], TaskStatus.valueOf(tokens[3]));
+                epic.setTaskKey(Integer.parseInt(tokens[0]));
+                return epic;
+            case SUB_TASK:
+                SubTask subtask = new SubTask(tokens[2], tokens[4], TaskStatus.valueOf(tokens[3]),
+                        Duration.parse(tokens[5]), LocalDateTime.parse(tokens[6], Task.getTaskTimeFormatter()),
+                        Integer.parseInt(tokens[7])
+                );
+                subtask.setTaskKey(Integer.parseInt(tokens[0]));
+                return subtask;
+            default:
+                throw new ManagerLoadException("Не удалось создать задачу из строки.");
+        }
+    }
+
+    private boolean isBackedFileExist() {
+        return (Files.exists(Paths.get(backedFileName)));
+    }
+
+    private void createBackedFile() {
+        Path backedFilePath = Paths.get(backedFileName);
+        try {
+            Files.createFile(backedFilePath);
+        } catch (IOException e) {
+            throw new ManagerLoadException("Файл отсутствует.");
+        }
+    }
+
+    static String historyToString(HistoryManager manager) {
+        List<Task> history = manager.getHistory();
+        StringBuilder result = new StringBuilder("\n");
+
+        for (Task task : history) {
+            if (result.toString().isBlank()) {
+                result.append(task.getTaskKey());
+            }
+            else {
+                result.append(",").append(task.getTaskKey());
+            }
+        }
+        return result.toString();
+    }
+
+    static List<Integer> historyFromString(String value) {
+        ArrayList<Integer> history = new ArrayList<>();
+
+        if (!value.isBlank()) {
+            String[] line = value.split(",");
+            for (String taskKey : line) {
+                history.add(Integer.parseInt(taskKey));
+            }
+        }
+        return history;
+    }
+
+    @Override
+    public void load() {
+
     }
 }

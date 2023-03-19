@@ -3,7 +3,7 @@ package controls;
 public class Managers {
 
     public static TaskManager getDefault() {
-        return new HttpTaskManager();
+        return new HTTPTaskManager("http://localhost:8078/");
     }
 
     public static HistoryManager getDefaultHistory() {

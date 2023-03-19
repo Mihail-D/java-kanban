@@ -1,54 +1,40 @@
 package tasks;
 
-import java.time.Duration;
-import java.time.Instant;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public class Epic extends Task {
+    protected ArrayList<Integer> relatedSubTasks;
+    protected LocalDateTime endTime;
 
-    private final Set<SubTask> relatedSubtasks;
-
-    public Epic(
-            String taskTitle, String taskDescription, TaskStatus taskStatus, Instant taskStartTime,
-            Duration taskDuration
-    ) {
-        super(taskTitle, taskDescription, taskStatus, taskStartTime, taskDuration);
-        this.relatedSubtasks = new LinkedHashSet<>();
-        setTaskEndTime(taskStartTime.plus(taskDuration));
+public Epic(String taskTitle, String taskDescription, TaskStatus taskStatus) {
+        super(taskTitle, taskDescription, taskStatus);
+        relatedSubTasks = new ArrayList<>();
+        endTime = this.taskStartTime.plusMinutes(1);
     }
 
-    public Epic(
-            Integer taskKey, String taskTitle, String taskDescription, TaskStatus taskStatus, Instant taskStartTime,
-            Duration taskDuration, Instant tmpTimeTaskWasUpdated, Set<SubTask> relatedSubtasks
-    ) {
-        super(taskKey, taskTitle, taskDescription, taskStatus, taskStartTime, taskDuration, tmpTimeTaskWasUpdated);
-        this.relatedSubtasks = relatedSubtasks;
-        setTaskEndTime(taskStartTime.plus(taskDuration));
+    public void addChild(Integer subtaskId) {
+        relatedSubTasks.add(subtaskId);
     }
 
-    public Set<SubTask> getRelatedSubTasks() {
-        return relatedSubtasks;
+    public void removeSubtask(Integer taskKey) {
+        relatedSubTasks.remove(taskKey);
     }
 
-    public void addChildSubTask(SubTask subTask) {
-        relatedSubtasks.add(subTask);
+    public ArrayList<Integer> getRelatedSubTasks() {
+        return relatedSubTasks;
     }
 
-    public void removeChildSubTask(SubTask subTask) {
-        relatedSubtasks.remove(subTask);
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
 
     @Override
     public String toString() {
-        return "Epic;"
-                + getTaskKey() + ";"
-                + getRelatedSubTasks() + ";"
-                + getTaskTitle() + ";"
-                + getTaskDescription() + ";"
-                + getTaskStatus() + ";"
-                + getTaskStartTime() + ";"
-                + getTaskDuration() + ";"
-                + getTaskTimeUpdateCheck();
+        return  taskKey +
+                "," + TaskType.EPIC +
+                "," + taskTitle +
+                "," + taskStatus +
+                "," + taskDescription;
     }
 }

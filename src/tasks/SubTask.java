@@ -1,45 +1,35 @@
 package tasks;
 
 import java.time.Duration;
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 public class SubTask extends Task {
+    public int parentTaskKey;
 
-    private int parentTaskKey;
-
-    public SubTask(String taskTitle, String taskDescription, TaskStatus taskStatus,
-                   Instant taskStartTime, Duration taskDuration) {
-        super(taskTitle, taskDescription, taskStatus, taskStartTime, taskDuration);
-        setTaskEndTime(taskStartTime.plus(taskDuration));
-    }
-
-    public SubTask(
-            Integer taskKey, String taskTitle, String taskDescription, TaskStatus taskStatus, Instant taskStartTime,
-            Duration taskDuration, Instant tmpTimeTaskWasUpdated, Integer parentTaskKey
-    ) {
-        super(taskKey, taskTitle, taskDescription, taskStatus, taskStartTime, taskDuration, tmpTimeTaskWasUpdated);
+    public SubTask(String taskTitle, String taskDescription, TaskStatus taskStatus, Duration taskDuration,
+                   LocalDateTime taskStartTime, int parentTaskKey) {
+        super(taskTitle, taskDescription, taskStatus, taskDuration, taskStartTime);
         this.parentTaskKey = parentTaskKey;
-        setTaskEndTime(taskStartTime.plus(taskDuration));
     }
 
     public int getParentKey() {
         return parentTaskKey;
     }
 
-    public void setRelatedSubtasks(int parentTaskKey) {
+    public void setParentKey(int parentTaskKey) {
         this.parentTaskKey = parentTaskKey;
     }
 
     @Override
     public String toString() {
-        return "SubTask;"
-                + getTaskKey() + ";"
-                + parentTaskKey + ";"
-                + getTaskTitle() + ";"
-                + getTaskDescription() + ";"
-                + getTaskStatus() + ";"
-                + getTaskStartTime() + ";"
-                + getTaskDuration() + ";"
-                + getTaskTimeUpdateCheck();
+
+        return  taskKey +
+                "," + TaskType.SUB_TASK +
+                "," + taskTitle +
+                "," + taskStatus +
+                "," + taskDescription +
+                "," + taskDuration +
+                "," + taskStartTime.format(getTaskTimeFormatter()) +
+                "," + parentTaskKey;
     }
 }

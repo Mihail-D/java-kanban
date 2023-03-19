@@ -4,12 +4,11 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ManagerSaveExceptionTest {
-
+class KVServerLoadExceptionTest {
     @Test
     void shouldCreateException() {
         String exceptionMessage = "exception message";
-        ManagerSaveException exception = new ManagerSaveException(exceptionMessage);
+        KVServerLoadException exception = new KVServerLoadException(exceptionMessage);
         assertEquals(exceptionMessage, exception.getMessage());
     }
 }

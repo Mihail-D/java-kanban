@@ -1,21 +1,16 @@
 package controls;
 
-public class Node<T> {
-    T node;
-    Node<T> nextNode;
-    Node<T> previousNode;
+import tasks.Task;
 
-    public Node(Node<T> previousNode, T node) {
-        this.previousNode = previousNode;
-        this.node = node;
-        this.nextNode = null;
-    }
+class Node {
 
-    public T getNode() {
-        return this.node;
-    }
+    public Node next;
+    public Node prev;
+    public Task task;
 
-    public void setNode(T node) {
-        this.node = node;
+    public Node(Task task, Node next, Node prev) {
+        this.next = next;
+        this.prev = prev;
+        this.task = task;
     }
 }

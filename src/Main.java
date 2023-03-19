@@ -1,4 +1,4 @@
-import server.HttpTaskServer;
+import server.KVServer;
 
 public class Main {
 
@@ -6,8 +6,9 @@ public class Main {
         System.out.println("старт");
 
         try {
-            HttpTaskServer taskServer = new HttpTaskServer();
-            taskServer.startHttpTaskServer();
+            KVServer taskServer = new KVServer();
+            taskServer.start();
+            taskServer.stop();
         } catch (Exception exception) {
             exception.printStackTrace();
         }

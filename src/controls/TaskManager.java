@@ -1,64 +1,54 @@
 package controls;
 
-import tasks.Task;
 import tasks.Epic;
 import tasks.SubTask;
+import tasks.Task;
 
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 
 public interface TaskManager {
 
-    void addTask(Task task) throws IOException;
+    void addEpic(Epic epic);
 
-    void addEpic(Epic epicTask) throws IOException;
+    void addTask(Task task);
 
-    void addSubTask(SubTask subTask, Integer epicTaskKey) throws IOException;
+    void addSubtask(SubTask subTask);
 
-    void updateTask(Task task) throws IOException;
+    void updateEpic(Epic epic);
 
-    void updateEpic(Epic epicTask, Integer taskKey) throws IOException;
+    void updateTask(Task task);
 
-    void updateSubTask(SubTask subTask, Integer taskKey) throws IOException;
+    void updateSubtask(SubTask subTask);
 
-    Task getTask(Integer taskKey);
+    void removeEpic(int taskKey);
 
-    Epic getEpic(Integer taskKey);
+    void removeTask(int taskKey);
 
-    SubTask getSubTask(Integer taskKey);
+    void removeSubtask(int taskKey);
 
-    List<Task> getTaskList();
+    Epic getEpic(int taskKey);
 
-    List<Epic> getEpicList();
+    Task getTask(int taskKey);
 
-    List<SubTask> getSubTaskList();
+    SubTask getSubtask(int taskKey);
 
-    List<Task> collectAllTasks();
+    List<Epic> getEpicsCollection();
 
-    boolean deleteTask(Integer taskKey) throws IOException;
+    List<SubTask> getSubtasksCollection();
 
-    boolean deleteEpic(Integer taskKey) throws IOException;
+    List<Task> getTasksCollection();
 
-    boolean deleteSubTask(int taskKey);
+    List<SubTask> getEpicRelatedSubtasks(int epicTaskKey);
 
-    boolean clearRelatedSubTusks(Integer taskKey) throws IOException;
+    void clearEpics();
 
-    void setEpicStatus(Integer taskKey);
+    void clearTasks();
+
+    void clearSubTasks();
+
+    List<Task> getHistory();
 
     List<Task> getPrioritizedTasks();
 
-    void tasksClear();
-
     void load();
-
-    void save();
-
-    HashMap<Integer, Task> getTasksMap();
-
-    HashMap<Integer, Epic> getEpicsMap();
-
-    HashMap<Integer, SubTask> getSubTasksMap();
-
-    List<String> getAllTasksStringList();
 }
