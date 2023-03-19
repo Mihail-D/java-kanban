@@ -175,14 +175,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                     }
                 }
             }
-            getInitNumber(fileBackedTasksManager);
         } catch (IOException e) {
             throw new ManagerLoadException(e.getMessage());
         }
         return fileBackedTasksManager;
     }
 
-    private static int getInitNumber(FileBackedTasksManager fileBackedTasksManager) {
+    private int getInitNumber(FileBackedTasksManager fileBackedTasksManager) {
         int maxTaskKey = 0;
 
         for (Task task : fileBackedTasksManager.getTasksCollection()) {
