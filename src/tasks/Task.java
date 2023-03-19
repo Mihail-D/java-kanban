@@ -28,8 +28,10 @@ public class Task {
         this.taskStartTime = getTaskInitTime();
     }
 
-    public Task(String taskTitle, String taskDescription, TaskStatus taskStatus, Duration taskDuration,
-                LocalDateTime taskStartTime) {
+    public Task(
+            String taskTitle, String taskDescription, TaskStatus taskStatus, Duration taskDuration,
+            LocalDateTime taskStartTime
+    ) {
         this.taskTitle = taskTitle;
         this.taskDescription = taskDescription;
         this.taskStatus = taskStatus;

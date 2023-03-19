@@ -19,7 +19,7 @@ class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>
 
     @BeforeEach
     void StartUp() {
-        filePath = "test_" + System.nanoTime()+".csv";
+        filePath = "test_" + System.nanoTime() + ".csv";
         taskManager = new FileBackedTasksManager(filePath);
         initTasks();
     }

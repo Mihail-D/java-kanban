@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class InMemoryHistoryManagerTest {
+
     Task task;
     Task task2;
 
@@ -22,10 +23,10 @@ class InMemoryHistoryManagerTest {
     public void beforeEach() {
         historyManager = new InMemoryHistoryManager();
         task = new Task("Task 1", "Description 1", TaskStatus.NEW, Duration.parse("PT0H120M"),
-                LocalDateTime.parse("15.28.08_05.2023", Task.getTaskTimeFormatter()));
+                LocalDateTime.parse("15.28.08_05.2023", Task.getTaskTimeFormatter())
+        );
         task2 = new Task("Task 2", "Description 2", TaskStatus.NEW, Duration.parse("PT0H100M"));
     }
-
 
     @Test
     void shouldAdd() {

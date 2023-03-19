@@ -11,13 +11,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class HTTPTaskManagerTest extends TaskManagerTest<HTTPTaskManager> {
+
     public KVServer kvServer;
 
     @BeforeEach
     void StartUp() throws IOException {
         kvServer = new KVServer();
         kvServer.start();
-        taskManager =  new HTTPTaskManager("http://localhost:8078/");
+        taskManager = new HTTPTaskManager("http://localhost:8078/");
         initTasks();
     }
 

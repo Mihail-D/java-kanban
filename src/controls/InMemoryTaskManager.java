@@ -242,13 +242,12 @@ public class InMemoryTaskManager implements TaskManager {
         boolean isAllNew = set.stream().allMatch(i -> subtasks.get(i).getTaskStatus() == NEW);
         boolean isAllDone = set.stream().allMatch(i -> subtasks.get(i).getTaskStatus() == DONE);
 
-            if (isAllNew || set.isEmpty()) {
-                status = NEW;
-            }
-            else if (isAllDone) {
-                status = DONE;
-            }
-
+        if (isAllNew || set.isEmpty()) {
+            status = NEW;
+        }
+        else if (isAllDone) {
+            status = DONE;
+        }
 
         epicTask.setTaskStatus(status);
     }
@@ -262,15 +261,18 @@ public class InMemoryTaskManager implements TaskManager {
                 continue;
             }
             if (task.getTaskEndTime() != null) {
-                if ((!task.getTaskStartTime().isAfter(value.getTaskStartTime()) && !task.getTaskEndTime().isBefore(value.getTaskStartTime()))
-                        || (!value.getTaskStartTime().isAfter(task.getTaskStartTime()) && !value.getTaskEndTime().isBefore(task.getTaskStartTime()))) {
+                if ((!task.getTaskStartTime().isAfter(value.getTaskStartTime())
+                        && !task.getTaskEndTime().isBefore(value.getTaskStartTime()))
+                        || (!value.getTaskStartTime().isAfter(task.getTaskStartTime())
+                        && !value.getTaskEndTime().isBefore(task.getTaskStartTime()))) {
                     return false;
                 }
             }
             if (task.getTaskEndTime() == null) {
                 if ((!task.getTaskStartTime().isAfter(value.getTaskStartTime()))
                         ||
-                        (!value.getTaskStartTime().isAfter(task.getTaskStartTime()) && !value.getTaskEndTime().isBefore(task.getTaskStartTime()))) {
+                        (!value.getTaskStartTime().isAfter(task.getTaskStartTime())
+                                && !value.getTaskEndTime().isBefore(task.getTaskStartTime()))) {
                     return false;
                 }
             }
@@ -303,6 +305,5 @@ public class InMemoryTaskManager implements TaskManager {
     public void load() {
 
     }
-
 
 }

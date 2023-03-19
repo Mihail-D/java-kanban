@@ -4,10 +4,13 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class SubTask extends Task {
+
     public int parentTaskKey;
 
-    public SubTask(String taskTitle, String taskDescription, TaskStatus taskStatus, Duration taskDuration,
-                   LocalDateTime taskStartTime, int parentTaskKey) {
+    public SubTask(
+            String taskTitle, String taskDescription, TaskStatus taskStatus, Duration taskDuration,
+            LocalDateTime taskStartTime, int parentTaskKey
+    ) {
         super(taskTitle, taskDescription, taskStatus, taskDuration, taskStartTime);
         this.parentTaskKey = parentTaskKey;
     }
@@ -23,7 +26,7 @@ public class SubTask extends Task {
     @Override
     public String toString() {
 
-        return  taskKey +
+        return taskKey +
                 "," + TaskType.SUB_TASK +
                 "," + taskTitle +
                 "," + taskStatus +
